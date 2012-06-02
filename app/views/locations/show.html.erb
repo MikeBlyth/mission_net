@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @location.name %>
+</p>
+
+<p>
+  <b>State:</b>
+  <%= @location.state %>
+</p>
+
+<p>
+  <b>City:</b>
+  <%= @location.city %>
+</p>
+
+<p>
+  <b>Lga:</b>
+  <%= @location.lga %>
+</p>
+
+<p>
+  <b>Gps latitude:</b>
+  <%= @location.gps_latitude %>
+</p>
+
+<p>
+  <b>Gps longitude:</b>
+  <%= @location.gps_longitude %>
+</p>
+
+
+<%= link_to 'Edit', edit_location_path(@location) %> |
+<%= link_to 'Back', locations_path %>

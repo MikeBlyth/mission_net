@@ -29,7 +29,7 @@ GEM
       i18n (~> 0.6)
       multi_json (~> 1.0)
     addressable (2.2.8)
-    annotate-models (1.0.4)
+    annotate (2.4.1.beta1)
     arel (3.0.2)
     builder (3.0.0)
     capybara (0.4.1.2)
@@ -152,7 +152,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  annotate-models
+  annotate (~> 2.4.1.beta)
   capybara (= 0.4.1.2)
   coffee-rails (~> 3.2.1)
   database_cleaner

@@ -23,7 +23,7 @@ end
 gem 'jquery-rails'
 
 group :development, :test do
-  gem 'annotate-models' #, '1.0.4'
+  gem 'annotate', '~> 2.4.1.beta' 
   gem "rspec-rails"#, "2.5.0"
   gem "capybara", "= 0.4.1.2"
 #  gem "rcov"

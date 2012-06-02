@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Code:</b>
+  <%= @country.code %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @country.name %>
+</p>
+
+<p>
+  <b>Nationality:</b>
+  <%= @country.nationality %>
+</p>
+
+<p>
+  <b>Include in selection:</b>
+  <%= @country.include_in_selection %>
+</p>
+
+
+<%= link_to 'Edit', edit_country_path(@country) %> |
+<%= link_to 'Back', countries_path %>

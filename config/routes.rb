@@ -1,4 +1,14 @@
 Joslink::Application.routes.draw do
+  resources :locations
+
+  resources :countries
+
+  resources :blood_types
+
+  resources :people
+
+  resources :families
+
   get "home/index"
   root :to => "home#index"
   
