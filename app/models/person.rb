@@ -2,6 +2,11 @@ class Person < ActiveRecord::Base
   attr_accessible :arrival_date, :departure_date, :email_1, :email_2, :first_name, :last_name, :location_detail, :location_id, :middle_name, :phone_1, :phone_2, 
       :receive_email, :receive_sms, :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
       :country_id, :blood_donor, :blood_type_id
+
+  belongs_to :country
+  belongs_to :location
+  belongs_to :blood_type
+  belongs_to :family
 end
 # == Schema Information
 #

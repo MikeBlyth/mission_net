@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120602212546) do
+ActiveRecord::Schema.define(:version => 20120603091228) do
 
   create_table "blood_types", :force => true do |t|
     t.string   "abo"
@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(:version => 20120602212546) do
     t.string   "full"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "comment"
   end
 
   create_table "countries", :force => true do |t|
