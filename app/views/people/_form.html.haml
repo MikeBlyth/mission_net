@@ -54,7 +54,7 @@
   .field
     = f.label :location_id
     %br/
-    = f.collection_select(:location_id, Location.all(:order=>'name'), :id, :name)
+    = f.collection_select(:location_id, Location.all(:order=>'name'), :id, :name, {:include_blank => true} )
   .field
     = f.label :location_detail
     %br/
@@ -62,15 +62,15 @@
   .field
     = f.label :country_id
     %br/
-    = f.collection_select(:country_id, Country.all(:order=>'name'), :id, :name)
+    = f.collection_select(:country_id, Country.all(:order=>'name'), :id, :name, {:include_blank => true})
   .field
     = f.label :blood_type_id
     %br/
-    = f.collection_select(:blood_type_id, BloodType.all, :id, :full)
+    = f.collection_select(:blood_type_id, BloodType.all, :id, :full, {:include_blank => true})
   .field
-    = f.label :family_id
+    = f.label :family_id, "Family (leave blank to generate new family)"
     %br/
-    = f.collection_select(:family_id, Family.all, :id, :name)
+    = f.collection_select(:family_id, Family.all, :id, :name, {:include_blank => true})
   .actions
     = f.submit
 

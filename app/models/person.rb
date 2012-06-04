@@ -1,13 +1,3 @@
-class Person < ActiveRecord::Base
-  attr_accessible :arrival_date, :departure_date, :email_1, :email_2, :first_name, :last_name, :location_detail, :location_id, :middle_name, :phone_1, :phone_2, 
-      :receive_email, :receive_sms, :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
-      :country_id, :blood_donor, :blood_type_id
-
-  belongs_to :country
-  belongs_to :location
-  belongs_to :blood_type
-  belongs_to :family
-end
 # == Schema Information
 #
 # Table name: people
@@ -36,4 +26,32 @@ end
 #  created_at              :datetime        not null
 #  updated_at              :datetime        not null
 #
+class Person < ActiveRecord::Base
+  include NameHelper
+  attr_accessible :arrival_date, :departure_date, :email_1, :email_2, :first_name, :last_name, :location_detail, :location_id, :middle_name, :phone_1, :phone_2, 
+      :receive_email, :receive_sms, :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
+      :country_id, :blood_donor, :blood_type_id, :family_id
+
+  belongs_to :country
+  belongs_to :location
+  belongs_to :blood_type
+  belongs_to :family
+  validate   :unique_name
+  after_save :create_family_if_needed
+ 
+  # If a person does not belong to a family then create one
+  def create_family_if_needed
+    if family_id.nil?
+      update_attributes(:family_id => Family.create(:head=>self).id)
+    end
+  end
+  
+private
+  def unique_name
+    unless Person.where("last_name = ? AND first_name = ? AND middle_name = ?", last_name, first_name, middle_name).empty?
+      self.errors.add(:name, "already exists in database. Use existing person or modify this name.")
+    end
+  end
+  
+end
 

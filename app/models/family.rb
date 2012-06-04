@@ -8,12 +8,14 @@
 #  updated_at :datetime        not null
 #
 class Family < ActiveRecord::Base
-  # attr_accessible :title, :body
+ # include NameHelper
+  
+  attr_accessible :head
   has_many :people
   belongs_to :head, :class_name => "Person"
 
   def name
-    head_id? ? head.last_name : '?'
+    head_id? ? head.last_name_first : '?'
   end
 end
 

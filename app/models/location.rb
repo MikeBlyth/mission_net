@@ -1,6 +1,3 @@
-class Location < ActiveRecord::Base
-  attr_accessible :city, :gps_latitude, :gps_longitude, :lga, :name, :state
-end
 # == Schema Information
 #
 # Table name: locations
@@ -15,4 +12,11 @@ end
 #  created_at    :datetime        not null
 #  updated_at    :datetime        not null
 #
+class Location < ActiveRecord::Base
+  attr_accessible :city, :gps_latitude, :gps_longitude, :lga, :name, :state
+  
+  def to_s
+    self.name
+  end
+end
 

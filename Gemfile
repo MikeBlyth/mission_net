@@ -33,6 +33,7 @@ group :development, :test do
   # To use debugger
   gem "selenium-client"
   gem "database_cleaner"
+  gem 'spork', '>= 0.9.2'
 end
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
