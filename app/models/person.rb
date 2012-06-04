@@ -46,9 +46,14 @@ class Person < ActiveRecord::Base
     end
   end
   
-private
+
   def unique_name
-    unless Person.where("last_name = ? AND first_name = ? AND middle_name = ?", last_name, first_name, middle_name).empty?
+    if self.new_record?
+      existing = Person.where("last_name = ? AND first_name = ? AND middle_name = ?", last_name, first_name, middle_name)
+    else
+      existing = Person.where("last_name = ? AND first_name = ? AND middle_name = ? AND NOT (id = ?)", last_name, first_name, middle_name, id)
+    end
+    unless existing.count == 0
       self.errors.add(:name, "already exists in database. Use existing person or modify this name.")
     end
   end

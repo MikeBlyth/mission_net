@@ -21,6 +21,7 @@ describe "people/new" do
     render
 
     # Run the generator again with the --webrat flag if you want to use webrat matchers
+
     assert_select "form", :action => people_path, :method => "post" do
       assert_select "input#person_last_name", :name => "person[last_name]"
       assert_select "input#person_first_name", :name => "person[first_name]"
@@ -29,7 +30,7 @@ describe "people/new" do
       assert_select "input#person_phone_2", :name => "person[phone_2]"
       assert_select "input#person_email_1", :name => "person[email_1]"
       assert_select "input#person_email_2", :name => "person[email_2]"
-      assert_select "input#person_location_id", :name => "person[location_id]"
+      assert_select "select#person_location_id", :name => "person[location_id]"
       assert_select "input#person_location_detail", :name => "person[location_detail]"
       assert_select "input#person_receive_sms", :name => "person[receive_sms]"
       assert_select "input#person_receive_email", :name => "person[receive_email]"

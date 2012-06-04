@@ -29,7 +29,7 @@ describe "people/edit" do
       assert_select "input#person_phone_2", :name => "person[phone_2]"
       assert_select "input#person_email_1", :name => "person[email_1]"
       assert_select "input#person_email_2", :name => "person[email_2]"
-      assert_select "input#person_location_id", :name => "person[location_id]"
+      assert_select "select#person_location_id", :name => "person[location_id]"
       assert_select "input#person_location_detail", :name => "person[location_detail]"
       assert_select "input#person_receive_sms", :name => "person[receive_sms]"
       assert_select "input#person_receive_email", :name => "person[receive_email]"

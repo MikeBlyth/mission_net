@@ -15,7 +15,9 @@ class Family < ActiveRecord::Base
   belongs_to :head, :class_name => "Person"
 
   def name
-    head_id? ? head.last_name_first : '?'
+    # ToDo -- fix this kludge or make it unnecessary
+    return 'missing head' if (!head_id.nil? && Person.where('id = ?',head_id).count == 0)
+    (head_id? && head) ? head.last_name_first : '?'
   end
 end
 

@@ -1,13 +1,15 @@
 require 'spec_helper'
 
 describe Person do
-  pending "add some examples to (or delete) #{__FILE__}"
+  before(:each) do
+    @person = Person.new(:last_name=>'Jones', :first_name=>'Greg', :middle_name=>'x')
+  end
 
   it 'does not save person with duplicate name' do
-    @person = Person.create(:last_name=>'Jones', :first_name=>'Greg')
-    @person = Person.new(:last_name=>'Jones', :first_name=>'Greg')
-    @person.should_not be_valid
-    @person.errors[:name][0].should match('exist')
+    @person.save
+    @person2 = Person.new(:last_name=>'Jones', :first_name=>'Greg', :middle_name=>'x')
+    @person2.should_not be_valid
+    @person2.errors[:name][0].should match('exist')
   end
 
 end
