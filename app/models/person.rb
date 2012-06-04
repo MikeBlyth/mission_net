@@ -37,8 +37,10 @@ class Person < ActiveRecord::Base
   belongs_to :blood_type
   belongs_to :family
   validate   :unique_name
+  validates_presence_of :last_name, :first_name
   after_save :create_family_if_needed
- 
+  before_destroy :check_if_family_head
+  
   # If a person does not belong to a family then create one
   def create_family_if_needed
     if family_id.nil?
@@ -46,7 +48,7 @@ class Person < ActiveRecord::Base
     end
   end
   
-
+private
   def unique_name
     if self.new_record?
       existing = Person.where("last_name = ? AND first_name = ? AND middle_name = ?", last_name, first_name, middle_name)
@@ -57,6 +59,18 @@ class Person < ActiveRecord::Base
       self.errors.add(:name, "already exists in database. Use existing person or modify this name.")
     end
   end
+  
+  def check_if_family_head
+ puts "**** self.id=#{self.id}, family.head = #{family.head_id}"
+    if self.family.head_id == self.id
+      self.errors.add(:delete, "Can't delete head of family.")
+      return false
+    else
+      true  
+    end
+  end
+  
+  
   
 end
 

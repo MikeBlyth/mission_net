@@ -24,7 +24,7 @@ describe PeopleController do
   # Person. As you add validations to Person, be sure to
   # update the return value of this method accordingly.
   def valid_attributes
-    {}
+    {:last_name=>'LastName', :first_name=>'FirstName'}
   end
   
   # This should return the minimal set of values that should be in the session
@@ -148,7 +148,8 @@ describe PeopleController do
 
   describe "DELETE destroy" do
     it "destroys the requested person" do
-      person = Person.create! valid_attributes
+      head = Person.create! valid_attributes
+      person = Person.create! valid_attributes.merge(:family_id=>head.family.id)
       expect {
         delete :destroy, {:id => person.to_param}, valid_session
       }.to change(Person, :count).by(-1)
