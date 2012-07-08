@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120603091228) do
+ActiveRecord::Schema.define(:version => 20120708213008) do
 
   create_table "blood_types", :force => true do |t|
     t.string   "abo"
@@ -37,6 +37,15 @@ ActiveRecord::Schema.define(:version => 20120603091228) do
     t.datetime "updated_at", :null => false
   end
 
+  create_table "groups", :force => true do |t|
+    t.string   "name"
+    t.integer  "parent_group_id"
+    t.string   "description"
+    t.boolean  "primary"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
   create_table "locations", :force => true do |t|
     t.string   "name"
     t.string   "state"
@@ -46,6 +55,27 @@ ActiveRecord::Schema.define(:version => 20120603091228) do
     t.float    "gps_longitude"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+  end
+
+  create_table "messages", :force => true do |t|
+    t.text     "body"
+    t.integer  "from_id"
+    t.string   "code"
+    t.integer  "confirm_time_limit"
+    t.integer  "retries"
+    t.integer  "retry_interval"
+    t.integer  "expiration"
+    t.integer  "response_time_limit"
+    t.integer  "importance"
+    t.integer  "to_groups"
+    t.boolean  "send_email"
+    t.boolean  "send_sms"
+    t.integer  "user_id"
+    t.string   "subject"
+    t.string   "sms_only"
+    t.integer  "following_up"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
   end
 
   create_table "people", :force => true do |t|
@@ -71,6 +101,20 @@ ActiveRecord::Schema.define(:version => 20120603091228) do
     t.integer  "blood_type_id"
     t.datetime "created_at",              :null => false
     t.datetime "updated_at",              :null => false
+  end
+
+  create_table "sent_messages", :force => true do |t|
+    t.integer  "message_id"
+    t.integer  "member_id"
+    t.integer  "msg_status"
+    t.datetime "confirmed_time"
+    t.string   "delivery_modes"
+    t.string   "confirmed_mode"
+    t.string   "confirmation_message"
+    t.integer  "attempts"
+    t.string   "gateway_message_id"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
   end
 
 end
