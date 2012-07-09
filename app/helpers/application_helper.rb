@@ -57,7 +57,7 @@ module ApplicationHelper
     return false
   end
 
-  def to_local_time(time, format=:date_time, time_zone=SIM::Application.config.time_zone)
+  def to_local_time(time, format=:date_time, time_zone=Joslink::Application.config.time_zone)
     time.in_time_zone(time_zone).to_s(format) if time.respond_to? :in_time_zone
   end  
 

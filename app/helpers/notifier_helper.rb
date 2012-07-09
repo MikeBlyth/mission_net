@@ -14,7 +14,7 @@ MISSING_CONTACT = '---None on file---'
   # generate phrase like 'immediately', by '2:43 pm', or
   # 'by 2:43 PM 24 Jun.' 
   def respond_by(response_time_limit, html=true)
-    deadline = (Time.now + response_time_limit*60).in_time_zone(SIM::Application.config.time_zone)
+    deadline = (Time.now + response_time_limit*60).in_time_zone(Joslink::Application.config.time_zone)
     max_minutes = response_time_limit  # just renaming for convenience
     formatted = case max_minutes
     when 0..59 then "<strong>immediately</strong>"

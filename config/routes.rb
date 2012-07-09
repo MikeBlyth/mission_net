@@ -9,6 +9,12 @@ Joslink::Application.routes.draw do
 
   resources :families
 
+  resources :groups
+  
+  resources :messages
+  
+  resources :sent_messages
+
   get "home/index"
   root :to => "home#index"
   
