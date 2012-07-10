@@ -1,4 +1,6 @@
 Joslink::Application.routes.draw do
+  resources :app_logs
+
   resources :locations
 
   resources :countries

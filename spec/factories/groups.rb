@@ -2,9 +2,9 @@
 
 FactoryGirl.define do
   factory :group do
-    name "MyString"
+    group_name "MyString"
     parent_group_id 1
-    description "MyString"
+    abbrev "MyString"
     primary false
   end
 end

@@ -1,0 +1,35 @@
+= form_for(@location) do |f|
+  - if @location.errors.any?
+    #error_explanation
+      %h2
+        = pluralize(@location.errors.count, "error")
+        prohibited this location from being saved:
+      %ul
+        - @location.errors.full_messages.each do |msg|
+          %li= msg
+  .field
+    = f.label :name
+    %br/
+    = f.text_field :name
+  .field
+    = f.label :state
+    %br/
+    = f.text_field :state
+  .field
+    = f.label :city
+    %br/
+    = f.text_field :city
+  .field
+    = f.label :lga
+    %br/
+    = f.text_field :lga
+  .field
+    = f.label :gps_latitude
+    %br/
+    = f.text_field :gps_latitude
+  .field
+    = f.label :gps_longitude
+    %br/
+    = f.text_field :gps_longitude
+  .actions
+    = f.submit

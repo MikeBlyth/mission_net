@@ -1,0 +1,39 @@
+%h1 Listing people
+%table
+  %tr
+    %th Last name
+    %th First name
+    %th Middle name
+    %th Phone 1
+    %th Phone 2
+    %th Email 1
+    %th Email 2
+    %th Location
+    %th Location detail
+    %th Arrival date
+    %th Departure date
+    %th Receive sms
+    %th Receive email
+    %th
+    %th
+    %th
+  - @people.each do |person|
+    %tr
+      %td= person.last_name
+      %td= person.first_name
+      %td= person.middle_name
+      %td= person.phone_1
+      %td= person.phone_2
+      %td= person.email_1
+      %td= person.email_2
+      %td= person.location
+      %td= person.location_detail
+      %td= person.arrival_date
+      %td= person.departure_date
+      %td= person.receive_sms
+      %td= person.receive_email
+      %td= link_to 'Show', person
+      %td= link_to 'Edit', edit_person_path(person)
+      %td= link_to 'Destroy', person, confirm: 'Are you sure?', method: :delete
+%br/
+= link_to 'New Person', new_person_path

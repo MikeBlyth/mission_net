@@ -67,10 +67,6 @@
     = f.label :blood_type_id
     %br/
     = f.collection_select(:blood_type_id, BloodType.all, :id, :full, {:include_blank => true})
-  .field
-    = f.label :family_id, "Family (leave blank to generate new family)"
-    %br/
-    = f.collection_select(:family_id, Family.all, :id, :name, {:include_blank => true})
   .actions
     = f.submit
 

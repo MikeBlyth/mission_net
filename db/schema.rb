@@ -11,7 +11,15 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120708213008) do
+ActiveRecord::Schema.define(:version => 20120710092539) do
+
+  create_table "app_logs", :force => true do |t|
+    t.string   "severity"
+    t.string   "code"
+    t.string   "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
 
   create_table "blood_types", :force => true do |t|
     t.string   "abo"
@@ -38,9 +46,9 @@ ActiveRecord::Schema.define(:version => 20120708213008) do
   end
 
   create_table "groups", :force => true do |t|
-    t.string   "name"
+    t.string   "group_name"
     t.integer  "parent_group_id"
-    t.string   "description"
+    t.string   "abbrev"
     t.boolean  "primary"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false

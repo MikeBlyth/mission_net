@@ -1,0 +1,13 @@
+%h1 Listing app_logs
+%table
+  %tr
+    %th
+    %th
+    %th
+  - @app_logs.each do |app_log|
+    %tr
+      %td= link_to 'Show', app_log
+      %td= link_to 'Edit', edit_app_log_path(app_log)
+      %td= link_to 'Destroy', app_log, confirm: 'Are you sure?', method: :delete
+%br/
+= link_to 'New App log', new_app_log_path
