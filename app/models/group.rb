@@ -74,3 +74,17 @@ class Group < ActiveRecord::Base
   end
 end
 
+# == Schema Information
+# Schema version: 20120710102112
+#
+# Table name: groups
+#
+#  id              :integer         not null, primary key
+#  group_name      :string(255)
+#  parent_group_id :integer
+#  abbrev          :string(255)
+#  primary         :boolean
+#  created_at      :datetime        not null
+#  updated_at      :datetime        not null
+#
+

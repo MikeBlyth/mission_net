@@ -114,7 +114,7 @@ class ClickatellGateway < SmsGateway
  
   def self.parse_status_params(params)
     gateway_msg_id = params[:apiMsgId]
-puts "**** params[:apiMsgId]=#{params[:apiMsgId]}, quoted=#{params['apiMsgId']}"
+#puts "**** params[:apiMsgId]=#{params[:apiMsgId]}, quoted=#{params['apiMsgId']}"
     status = decode_status(params[:status])
     return {:gateway_msg_id => gateway_msg_id, 
       :updates=>{:msg_status=>status, :confirmed_time=> Time.now }  # These are the changes applied to sent_message

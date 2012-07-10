@@ -12,4 +12,17 @@
 
 class AppLog < ActiveRecord::Base
   # attr_accessible :title, :body
+  before_save :control_description_length
+  def self.tail(lines=10)
+    reply = ''
+    first_line = self.count > lines ? self.count-lines : 0
+    self.order('id ASC').offset(first_line).each do |line|
+      reply << "#{line.id} #{line.created_at} #{line.code} #{line.description}\n"
+    end
+    reply
+  end
+
+  def control_description_length
+    self.description = self.description[0..254]
+  end
 end

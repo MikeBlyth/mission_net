@@ -1,21 +1,24 @@
 Joslink::Application.routes.draw do
-  resources :app_logs
 
-  resources :locations
-
-  resources :countries
-
-  resources :blood_types
-
-  resources :people
-
-  resources :families
-
-  resources :groups
-  
-  resources :messages
-  
-  resources :sent_messages
+  resources :app_logs do as_routes end
+  resources :bloodtypes do as_routes end
+  resources :incoming_mails do as_routes end
+  resources :countries do as_routes end
+  resources :groups do as_routes end
+  resources :incoming_mails do as_routes end
+  resources :locations do as_routes end
+  resources :members do as_routes end
+    match "sent_messages/clickatell_status",  :to => "sent_messages#update_status_clickatell"
+    get "messages/:id/followup", :to => "messages#followup"
+    match "messages/:id/followup_send", :to => "messages#followup_send"
+  resources :messages do as_routes end
+  resources :sent_messages do as_routes end
+  resources :users do
+    member do
+      get 'edit_roles'
+      put 'update_roles'
+    end
+  end
 
   get "home/index"
   root :to => "home#index"

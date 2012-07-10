@@ -1,84 +1,37 @@
-
 class SentMessagesController < ApplicationController
-  # GET /sent_messages
-  # GET /sent_messages.json
-  def index
-    @sent_messages = SentMessage.all
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @sent_messages }
-    end
+  active_scaffold :sent_message do |config|
+    config.list.columns = [:id, :message_id, :member, :msg_status, :confirmed_time, :confirmed_mode, :confirmation_message]
+ #   config.subform.columns.exclude :message
+    config.list.empty_field_text = '--'
+    list.sorting = {:message_id => 'DESC', :confirmed_time => 'DESC'}
+  #  config.delete.link = false
+    config.show.link = false
+    config.actions.exclude :update
+# These cause some error in ActiveScaffold -- debug when there is the occasion.
+#    config.columns[:msg_status].form_ui = :select 
+#    config.columns[:msg_status].options[:options] = 
+#      [['Error', MessagesHelper::MsgError], 
+#      ['Sent to Gateway', MessagesHelper::MsgSentToGateway],
+#      ['Pending', MessagesHelper::MsgPending],
+#      ['Delivered', MessagesHelper::MsgDelivered],
+#      ['Responded', MessagesHelper::MsgResponseReceived] ]    
+#    config.columns[:confirmed_time].inplace_edit = true
+#    config.columns[:confirmed_mode].options[:options] = [['email', 'email'], ['sms', 'sms']]
+#    config.columns[:confirmed_mode].form_ui = :select 
+#    config.columns[:confirmation_message].inplace_edit = true
   end
 
-  # GET /sent_messages/1
-  # GET /sent_messages/1.json
-  def show
-    @sent_message = SentMessage.find(params[:id])
+#  include AuthenticationHelper
+skip_authorize_resource :only => :update_status_clickatell
 
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @sent_message }
-    end
+  def update_status_clickatell
+#puts "Clickatell status call with params=#{params}"
+    parsed = ClickatellGateway.parse_status_params(params)  # Let Gateway be responsible for understanding the params
+#puts "**** parsed=#{parsed}"
+    @sent_message = SentMessage.find_by_gateway_message_id parsed[:gateway_msg_id]  # The message whose status is being reported
+#puts "**** @sent_message=#{@sent_message}, parsed[:updates]=#{parsed[:updates]} "
+    @sent_message.update_attributes(parsed[:updates]) if @sent_message
+    AppLog.create(:code => "SMS.clickatell.update", :description=>"params=#{params}")
+    render :text => "Success", :status => 200
   end
-
-  # GET /sent_messages/new
-  # GET /sent_messages/new.json
-  def new
-    @sent_message = SentMessage.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @sent_message }
-    end
-  end
-
-  # GET /sent_messages/1/edit
-  def edit
-    @sent_message = SentMessage.find(params[:id])
-  end
-
-  # POST /sent_messages
-  # POST /sent_messages.json
-  def create
-    @sent_message = SentMessage.new(params[:sent_message])
-
-    respond_to do |format|
-      if @sent_message.save
-        format.html { redirect_to @sent_message, notice: 'Sent message was successfully created.' }
-        format.json { render json: @sent_message, status: :created, location: @sent_message }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @sent_message.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PUT /sent_messages/1
-  # PUT /sent_messages/1.json
-  def update
-    @sent_message = SentMessage.find(params[:id])
-
-    respond_to do |format|
-      if @sent_message.update_attributes(params[:sent_message])
-        format.html { redirect_to @sent_message, notice: 'Sent message was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @sent_message.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /sent_messages/1
-  # DELETE /sent_messages/1.json
-  def destroy
-    @sent_message = SentMessage.find(params[:id])
-    @sent_message.destroy
-
-    respond_to do |format|
-      format.html { redirect_to sent_messages_url }
-      format.json { head :no_content }
-    end
-  end
-end
+end 

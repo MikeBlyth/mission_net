@@ -9,6 +9,7 @@ gem 'pg'
 gem 'haml'
 gem 'twiliolib'
 gem 'httparty'
+gem 'active_scaffold'
 
 # Gems used only for assets and not required
 # in production environments by default.
