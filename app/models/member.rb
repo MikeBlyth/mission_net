@@ -34,7 +34,8 @@ class Member < ActiveRecord::Base
       :receive_email, :receive_sms, :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
       :country_id, :blood_donor, :bloodtype_id
   has_and_belongs_to_many :groups
-  has_and_belongs_to_many
+  has_many :sent_messages
+  has_many :messages, :through => :sent_messages
   belongs_to :country
   belongs_to :location
   belongs_to :bloodtype
