@@ -28,8 +28,8 @@ include MessagesHelper
 class Message < ActiveRecord::Base
   attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, :importance, :response_sime_limit, :retries, :retry, :send_email, :send_sms, :sms_only, :subject, :to_groups, :user_id
   has_many :sent_messages
-  has_many :members, :through => :sent_messages  # May not be needed, 
-  belongs_to :user
+  has_many :members, :through => :sent_messages 
+  belongs_to :user, :class_name => 'Member'
   validates_numericality_of :confirm_time_limit, :retries, :retry_interval, 
       :expiration, :response_time_limit, :importance, :allow_nil => true
   validates_presence_of :body, :if => 'send_email', :message=>'You need to write something in your message!'
