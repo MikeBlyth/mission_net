@@ -2,9 +2,9 @@
 
 FactoryGirl.define do
   factory :group do
-    group_name "MyString"
+    sequence(:group_name) {|n| "Group #{n}" }
+    sequence(:abbrev) {|n| "group#{n}"}
     parent_group_id 1
-    abbrev "MyString"
     primary false
   end
 end

@@ -638,150 +638,16 @@ class Member < ActiveRecord::Base
 #puts "**** updated: success = #{ok}"
   end  
   
-  # Finds primary contact for this member:
-  # * His own contact record marked as primary (arbitrary selection if more than one)
-  # * His spouse's contact marked as primary, if he has none himself
-  # * His family head's primary_contact in the case of a child.
-  def primary_contact(options={})
-    primary = self.contacts.where(:is_primary=>true).first
-    primary ||= (self.family.head.primary_contact if self.child && family.head.primary_contact)
-    if !primary && is_married? && options[:no_substitution].nil?
-      primary = spouse.contacts.where(:is_primary=>true).first
-    end
-    return primary
-  end
-  
   def primary_phone(options={:with_plus => false})
-    contact = self.primary_contact || return
     phone = contact.phone_1 || contact.phone_2
     phone = phone[1..20] if phone && !options[:with_plus] && phone[0]='+'
     return phone
   end
 
   def primary_email(options={})
-    contact = self.primary_contact || return
     return contact.email_1 || contact.email_2
   end
 
-  def create_contact(options={})
-    defaults = {:contact_type_id => Settings.contacts.primary_contact_type_code}
-    self.contacts.create(defaults.merge(options))
-  end
-
-  # Email address in member's primary contact record. Return one only with email_1 having priority.
-  def email
-    self.primary_contact ? (primary_contact.email_1 || primary_contact.email_2) : nil
-  end
-
-  def current_travel
-    if spouse
-      spouse_travel = Travel.current.where("member_id = ? and with_spouse = ?", spouse_id, true)
-    else
-      spouse_travel = []
-    end
-    return Travel.current.where("member_id = ?", self.id) + spouse_travel
-  end
-  
-  # This is the most recent trip regardless of the return status.
-  def most_recent_travel
-    if spouse
-      spouse_travel = Travel.not_future.where("member_id = ? and with_spouse = ?", spouse_id, true)
-    else
-      spouse_travel = []
-    end
-    return (Travel.not_future.where("member_id = ?", self.id) + spouse_travel).sort.last
-  end
-    
-
-  def pending_travel
-    if spouse
-      spouse_travel = Travel.pending.where("member_id = ? and with_spouse = ?", spouse_id, true)
-    else
-      spouse_travel = []
-    end
-    return Travel.pending.where("member_id = ?", self.id) + spouse_travel
-  end  
-
-  def in_country_per_travel
-    rt = self.most_recent_travel
-    if rt
-      if rt.date == Date.today
-        # "in country" should always be true on date of travel, whether coming or going.
-        return true
-      else
-        # date must be prior to today, so person is in country if the travel was an arrival
-        return rt.arrival
-      end
-    end
-    # There is NO travel record for this person, so use whatever status is posted already  
-    return self.on_field
-  end
-  
-private
-
-  # Return true if I have existing spouse whose spouse_id points back to me (as it ordinarily should)
-  def my_spouse_links_to_me
-    return spouse && spouse.spouse_id == self.id
-  end  
-
-  # If self is deceased, changed spouse, etc. then need to unlink spouse
-  # Call-back on before_save, so changed attributes will be saved
-  def unlink_spouses_if_indicated
-    # Unlink spouses if member is deceased
-    if spouse_id && status_id && status.code=='deceased'
-      if my_spouse_links_to_me
-        # spouse.update_attributes(:spouse_id=>nil)  # for some reason this doesn't work, so use following
-        spouse.reload
-        spouse.spouse_id = nil
-        spouse.save! 
-      end
-      self.spouse_id = nil  # This method unlink_spouse is a before_save callback, so new nil value will be saved
-      return
-    end       
-  end
- 
-  # return a string in days, weeks, months, or years, whatever makes sense for the age, from
-  # time (t) in seconds. Sensible rounding is applied as we would normally describe someone's age.
-  # Thus time_human(187000) = "2 days," time_human(34000000) = "12 months", time_human(120000000) = "3.8 years"
-  # d, w, m, and y are day, week, month and year in seconds. Not efficient to calculate it each call, but 
-  # helps make clear what we're doing, and we can't define constants in a function
-  def time_human(t, expand=true)    # where t is time in seconds
-    return nil if t.nil?
-   
-    d = SECONDS_PER_DAY  
-    w = SECONDS_PER_WEEK
-    m = SECONDS_PER_MONTH
-    y = SECONDS_PER_YEAR
-    return "#{(t/d).floor} days" if t < m
-    return sprintf("%0.1f weeks", t/w) if t < (m * 2)
-    if t < (m * 24)
-      s = sprintf("%d months", t/m, t/y) 
-      s = sprintf("%d months (%0.1f years)", t/m, t/y) if expand
-      return s
-    end
-    return sprintf("%1.1f years", t/y) if t < (y * 7)
-    return "#{(t/y).to_i} years"
-  end
-
-  def check_if_family_head
-    if family_head
-      self.errors.add(:delete, "Can't delete head of family.")
-      return false
-    else
-      true  
-    end
-  end
-  
-  def check_if_spouse
-    # if someone is married to me, don't delete me from the database
-    orphan_spouse = Member.find_by_spouse_id(self.id)
-    if orphan_spouse
-      self.errors.add(:delete, "can't delete while still spouse of #{orphan_spouse.to_label}")
-      return false
-    else
-      return true
-    end  
-  end
-end
+ end
 
 
