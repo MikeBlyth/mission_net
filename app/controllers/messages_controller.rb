@@ -1,15 +1,9 @@
-
 class MessagesController < ApplicationController
-  include AuthenticationHelper
-  include AuthorizationHelper
-
-load_and_authorize_resource
-
   active_scaffold :message do |config|
     config.list.columns = [:id, :created_at, :user, :body,  :send_sms, :send_email, :to_groups, 
         :sent_messages, :importance, :status_summary]
     config.create.link.page = true 
-    config.columns[:sent_messages].label = 'Sent to'
+#    config.columns[:sent_messages].label = 'Sent to'
     config.columns[:importance].label = 'Imp'
     config.create.link.inline = false 
     config.update.link = false
@@ -20,13 +14,13 @@ load_and_authorize_resource
 
   def do_new
     super
-    @record.body = "(from #{@current_user.name})"
-    @record.sms_only = "(#{@current_user.name})"
+#    @record.body = "(from #{@current_user.name})"
+#    @record.sms_only = "(#{@current_user.name})"
   end
 
   def before_create_save(record)
     super
-    record.user = current_user if current_user
+#    record.user = current_user if current_user
   end
 
   def after_create_save(record)
@@ -66,5 +60,5 @@ load_and_authorize_resource
     flash[:notice] = 'Follow up message sent'
     redirect_to messages_path
   end
-   
+
 end 

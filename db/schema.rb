@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120710110255) do
+ActiveRecord::Schema.define(:version => 20120710131757) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -34,9 +34,9 @@ ActiveRecord::Schema.define(:version => 20120710110255) do
     t.string   "code"
     t.string   "name"
     t.string   "nationality"
-    t.string   "include_in_selection"
     t.datetime "created_at",           :null => false
     t.datetime "updated_at",           :null => false
+    t.boolean  "include_in_selection"
   end
 
   create_table "families", :force => true do |t|
@@ -52,6 +52,11 @@ ActiveRecord::Schema.define(:version => 20120710110255) do
     t.boolean  "primary"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+  end
+
+  create_table "groups_members", :id => false, :force => true do |t|
+    t.integer "group_id"
+    t.integer "member_id"
   end
 
   create_table "locations", :force => true do |t|

@@ -13,12 +13,12 @@ Joslink::Application.routes.draw do
     match "messages/:id/followup_send", :to => "messages#followup_send"
   resources :messages do as_routes end
   resources :sent_messages do as_routes end
-  resources :users do
-    member do
-      get 'edit_roles'
-      put 'update_roles'
-    end
-  end
+#  resources :users do
+#    member do
+#      get 'edit_roles'
+#      put 'update_roles'
+#    end
+#  end
 
   get "home/index"
   root :to => "home#index"

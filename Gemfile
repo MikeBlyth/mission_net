@@ -10,6 +10,7 @@ gem 'haml'
 gem 'twiliolib'
 gem 'httparty'
 gem 'active_scaffold'
+#gem 'active_scaffold_config_list_vho'
 
 # Gems used only for assets and not required
 # in production environments by default.

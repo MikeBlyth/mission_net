@@ -22,7 +22,7 @@ class SentMessagesController < ApplicationController
   end
 
 #  include AuthenticationHelper
-skip_authorize_resource :only => :update_status_clickatell
+#skip_authorize_resource :only => :update_status_clickatell
 
   def update_status_clickatell
 #puts "Clickatell status call with params=#{params}"

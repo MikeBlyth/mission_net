@@ -1,8 +1,3 @@
-require 'spec_helper'
-
-describe BloodType do
-  pending "add some examples to (or delete) #{__FILE__}"
-end
 # == Schema Information
 #
 # Table name: blood_types
@@ -16,3 +11,14 @@ end
 #  comment    :string(255)
 #
 
+class Bloodtype < ActiveRecord::Base
+  attr_reader :abo, :full, :rh, :comment
+  has_many :members
+  def to_label
+    "#{full}"
+  end
+  
+  def to_s
+    "#{full}"
+  end
+end
