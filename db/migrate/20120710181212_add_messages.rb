@@ -11,7 +11,7 @@ class AddMessages < ActiveRecord::Migration
       t.integer :expiration
       t.integer :response_time_limit
       t.integer :importance
-      t.integer :to_groups
+      t.string :to_groups
       t.boolean :send_email
       t.boolean :send_sms
       t.integer :user_id

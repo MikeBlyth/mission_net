@@ -1,8 +1,4 @@
-class SentMessage < ActiveRecord::Base
-  # attr_accessible :title, :body
-end
 # == Schema Information
-# Schema version: 20120710102112
 #
 # Table name: sent_messages
 #
@@ -18,5 +14,28 @@ end
 #  gateway_message_id   :string(255)
 #  created_at           :datetime        not null
 #  updated_at           :datetime        not null
+#  phone                :string(255)
+#  email                :string(255)
 #
 
+class SentMessage < ActiveRecord::Base
+  require 'mail'
+  belongs_to :message
+  belongs_to :member
+  before_save :add_contacts
+  
+  def add_contacts
+    self.phone = member.primary_phone
+    self.email = member.primary_email
+  end
+
+  def to_s
+    member.full_name_short
+  end
+
+  def set_confirmed_time  
+    self.confirmed_time = Time.now
+  end
+
+
+end

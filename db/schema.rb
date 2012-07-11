@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120710181212) do
+ActiveRecord::Schema.define(:version => 20120711214043) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -107,7 +107,7 @@ ActiveRecord::Schema.define(:version => 20120710181212) do
     t.integer  "expiration"
     t.integer  "response_time_limit"
     t.integer  "importance"
-    t.integer  "to_groups"
+    t.string   "to_groups"
     t.boolean  "send_email"
     t.boolean  "send_sms"
     t.integer  "user_id"
@@ -130,6 +130,8 @@ ActiveRecord::Schema.define(:version => 20120710181212) do
     t.string   "gateway_message_id"
     t.datetime "created_at",           :null => false
     t.datetime "updated_at",           :null => false
+    t.string   "phone"
+    t.string   "email"
   end
 
 end

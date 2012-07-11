@@ -1,0 +1,104 @@
+# This file controls what config variables you want to be able to allow your users
+# to set, as well as those you'll be able to access from within the application.
+# 
+# If you want to be able to access a string config[:site_title], for example:
+#   
+# site_title:
+#   name: Site Title
+#   type: string
+#   default: My Site
+#   
+# 'name' is the name that appears in the edit form
+# 
+# 'type' can be 'string' for a text field, 'password' for a password field or 'text' for a text area
+#   'type' defaults to 'string'
+# 
+# 'default' is the default value to use if there's no entry in the database. Otherwise, nil will be returned
+# 
+# Some Examples:
+#   
+# site_title:
+#   name: Site Title
+#   default: My Site
+#   type: string
+#   
+# site_description:
+#   name: Description for Google
+#   default: Lots of Awesomeness Here
+#   type: text
+#   
+# secret:
+#   name: Secret Password for Accessing Secret Areas
+#   default: secret
+#   type: password
+
+base_url:
+  name: Base URL for this site
+  default: https://simjos.heroku.com/
+  type: string
+
+birthday_prefix: 
+  name: Prefix to show on calendar for birthdays
+  default: BD 
+  type: string
+    
+outgoing_sms:
+  name: SMS gateway for outgoing messages
+  default: Clickatell
+  type: string
+
+clickatell_user_name:
+  name: Clickatell User Name
+  type: string
+      
+clickatell_password:
+  name: Clickatell Password
+  type: password
+  
+clickatell_api_id:
+  name: Clickatell HTTP API number
+  type: string
+
+twilio_api_version:
+  name: Twilio API Version
+  type: string
+  default: '2010-04-01'
+  
+twilio_account_sid:  
+  name: Twilio Account SID
+  type: string
+  
+twilio_account_token:
+  name: Twilio Account Token
+  type: string
+  
+twilio_phone_number:
+  name: Twilio Phone Number
+  type: string
+    
+sendgrid_user_name:
+  name: Sendgrid User Name
+  type: string
+  
+sendgrid_password:
+  name: Sendgrid Password
+  type: password
+ 
+contact_update_recipients:
+  name: Contact Update Recipients
+  type: string
+  
+travel_update_recipients:
+  name: Travel Update Recipients
+  default: test@test.com
+  type: string
+ 
+travel_update_window:
+  name: Travel Update Default Window (Days)
+  default: 10
+  type: integer  
+    
+    
+  
+      
+

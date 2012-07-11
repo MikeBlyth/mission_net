@@ -36,7 +36,6 @@ class Country < ActiveRecord::Base
   end
 end
 # == Schema Information
-# Schema version: 20120710102112
 #
 # Table name: countries
 #
@@ -44,8 +43,8 @@ end
 #  code                 :string(255)
 #  name                 :string(255)
 #  nationality          :string(255)
-#  include_in_selection :string(255)
 #  created_at           :datetime        not null
 #  updated_at           :datetime        not null
+#  include_in_selection :boolean
 #
 

@@ -187,6 +187,10 @@ class Member < ActiveRecord::Base
   
 # ******* End methods to return data from associated records (family, personnel_data, health_data ...)
 
+  def to_s
+    "#{name}[#{id}]"
+  end
+
   def add_to_family(child)
     child.id = nil
     child.last_name=self.last_name
@@ -639,13 +643,13 @@ class Member < ActiveRecord::Base
   end  
   
   def primary_phone(options={:with_plus => false})
-    phone = contact.phone_1 || contact.phone_2
+    phone = phone_1 || phone_2
     phone = phone[1..20] if phone && !options[:with_plus] && phone[0]='+'
     return phone
   end
 
   def primary_email(options={})
-    return contact.email_1 || contact.email_2
+    return email_1 || email_2
   end
 
  end

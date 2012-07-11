@@ -1,0 +1,73 @@
+# For use with SETTINGSLOGIC
+# See https://github.com/binarylogic/settingslogic
+# Access variables like this: page_size = Settings.reports.page_size
+# Can set like this if desired:
+#  Settings[:rows_per_screen_page] = 20
+defaults: &defaults
+  site: 
+    name: 'SIM Nigeria Database'
+    org:  'SIM Nigeria'
+    parent_org: 'SIM'
+  reports: 
+    page_size: 'A4'
+    filename_prefix: 'sim_nigeria_'
+    birthday_calendar:
+      birthday_prefix: 'BD: '
+    travel:
+      date_format: '%e %b'
+    travel_calendar:
+      arrival_prefix: 'AR: '
+      departure_prefix: 'DP: '  
+    row_shading: ['F0F0F0', 'FFFFCC']
+  screen:
+    rows_per_screen_page: 20
+  contacts:
+    primary_contact_type_code: 1  # Contact records of this type are the one used as primary contacts. Usually field.
+    updates_window: 14 # days -- default window for reporting updates to contacts.
+    local_country_code: '+234'
+  travel:
+    # Travel to these airports will be reported as arrivals, from them = departures.
+    airports_local: ['Kano', 'Lagos', 'Abuja']
+    include_spouse_name_in_list: false
+    pending_window: 14 # days -- "Pending Travel" is those trips occuring within this many days from now
+  family:
+    member_names_delimiter: ', '
+    member_names_dependent_only: true
+    info_summary_interval: 180 # days
+  formatting:
+    format_phone_numbers: true  # by method ApplicationHelper::format_phone; false means bypass formatting
+  email:
+    travel: jos.travel@sim.org
+    personnel: jos.perasst@sim.org
+  pers_task_types: [:pipeline, :orientation, :start_of_term, :end_of_term, :end_of_service]
+  export: 
+    # **** NOTE ****
+    # Be careful what you put in these lists of fields for export, to avoid privileged information 'leaking'
+    # If, for example, you allow health information to be exported, you will have to be sure you have controlled
+    # the circumstances so that the exported data remains secure and is accessible only by those authorized.
+    # 
+    family_fields: id head_id name head spouse status residence_location
+    member_fields: id family_id name last_name first_name middle_name country ministry work_location school school_grade residence_location status
+    pers_fields: education qualifications employment_status date_active est_end_of_service
+    contact_fields: id member_id member phone_1 phone_2 email_1 email_2 address contact_name contact_type is_primary skype other_website blog facebook email_private phone_private skype_private
+    field_term_fields: id family_id member_id member start_date end_date ministry employment_status primary_work_location                  
+    group_fields: group_name abbrev primary type_of_group members parent_group subgroups
+    travel_fields: id family_id member_id member date return_date flight origin destination total_passengers other_travelers with_spouse with_children arrival time return_time term_passage personal ministry_related own_arrangements        
+  messages:
+    confirm_time_limit: 15 # minutes
+    retries: 0
+    retry_interval: 10 # minutes
+    expiration: 0 # minutes 
+    response_time_limit: # nil minutes
+    importance: 1 # arbitrary unit
+development:
+  <<: *defaults
+  screen:
+    rows_per_screen_page: 40
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
+

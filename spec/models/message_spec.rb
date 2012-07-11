@@ -1,3 +1,28 @@
+# == Schema Information
+#
+# Table name: messages
+#
+#  id                  :integer         not null, primary key
+#  body                :text
+#  from_id             :integer
+#  code                :string(255)
+#  confirm_time_limit  :integer
+#  retries             :integer
+#  retry_interval      :integer
+#  expiration          :integer
+#  response_time_limit :integer
+#  importance          :integer
+#  to_groups           :string(255)
+#  send_email          :boolean
+#  send_sms            :boolean
+#  user_id             :integer
+#  subject             :string(255)
+#  sms_only            :string(255)
+#  following_up        :integer
+#  created_at          :datetime        not null
+#  updated_at          :datetime        not null
+#
+
 require 'spec_helper'
 require 'mock_clickatell_gateway'
 require 'messages_test_helper'
@@ -43,34 +68,30 @@ describe Message do
       @message.to_groups.should == "1,4"
     end          
 
-    it 'is stored as string when saved' do
-      Message.stub(:save).and_return(true)
-      @message.stub(:deliver).and_return(true)
-      @message.send_email = true
-      @message.to_groups = ["1", "4"]
-      @message.save
-      @message.should be_valid
-      @message.to_groups.should == "1,4"
-    end
-
+    it "should have convert_groups_to_string defined as a before_save callback" do
+      Message._save_callbacks.select { |cb| cb.kind.eql?(:before) }.map(&:raw_filter).include?(:convert_groups_to_string).should == true
+    end    
+    
   end # to_groups field
 
   it 'returns correct timestamp' do
     message = Message.new
     message.created_at = Time.new(2000,07,12,10,14)
     message.timestamp.should == '12Jul1014a'
+     Message.stub(:save).and_return(true)
+    message.save
   end
             
   describe 'generates sent_message records' do
     before(:each) do
-      @members = members_w_contacts(2) # creates two members and arranges for them to appear as the targets for this message
+      @members = members_w_contacts(2, false) # creates two members and arranges for them to appear as the targets for this message
                                        # See in messages_test_helper.rb
       @message = FactoryGirl.build(:message, :created_at=>@created_at, :send_email=>true)
     end
     
     it 'excludes members who are not on the field' do
       Member.stub(:those_in_country).and_return([@members[0]])
-      @message.save.should be_true   
+      @message.save || (raise "@message save failed: error = #{@message.errors.messages}"   )
       @message.members.should == [@members[0]]
     end      
 
@@ -105,8 +126,11 @@ describe Message do
         silence_warnings { AppLog = mock('AppLog').as_null_object }
       # *** Message ***
         @created_at = Time.new(2000,06,07,14,20)
-        @message = FactoryGirl.build(:message, :created_at=>@created_at, :subject=>'Subject line',
+        @message = FactoryGirl.stub(:message, :created_at=>@created_at, :subject=>'Subject line',
             :sms_only => "#"*40)
+    end
+
+    it '(check setup)' do
     end
 
     describe 'with single addresses' do
@@ -118,23 +142,26 @@ describe Message do
         # records that tie the message to the members.
         # Note that you can't access sent_message records unless they *are* created.
         @resp_time_limit = 5
+        @message = FactoryGirl.build(:message, :send_email=>true)
         @members = members_w_contacts(1, false)
-        @message.stub(:subject).and_return('Subject line')
-        @message.stub(:id).and_return(21)
-        @message.response_time_limit = @resp_time_limit
         @gateway = MockClickatellGateway.new(nil,@members)
       end
       
+      it '(check setup)' do
+        @message.save
+        @message.subject.should == 'Subject line'
+      end
+
       it "Sends an email only" do
-        select_media(:email=>true)
-        @message.response_time_limit.should == @resp_time_limit
+        @message.send_email = true
         Notifier.should_receive(:send_group_message).
-          with(:recipients => [@members[0].primary_contact.email_1], :content => @message.body, 
+          with(:recipients => [@members[0].email_1], :content => @message.body, 
           :subject => @message.subject, :id => anything(), 
           :response_time_limit => @resp_time_limit, #@message.response_time_limit,
           :bcc => true,
           :following_up => nil)
         @gateway.should_not_receive(:deliver)
+        @message.save
         @message.deliver
       end
 
@@ -235,7 +262,7 @@ describe Message do
           @message.sent_messages.each do |sent_message|
             gtw_id = sent_message.gateway_message_id  
             gtw_id.should_not be_nil
-            phone = sent_message.member.primary_contact.phone_1.gsub("+",'')
+            phone = sent_message.member.phone_1.gsub("+",'')
             @gateway.mock_response.should match("ID: #{gtw_id}\s+To: #{phone}")
           end
         end
@@ -255,23 +282,23 @@ describe Message do
         it "does not include empty phone numbers" do
           #NB: The message w contact list is already formed by all the before(:all) blocks. In order to test a message
           #    going to someone without a phone number, we need to recreate the message after deleting the phone numbers.
-          @members[1].primary_contact.update_attributes(:phone_1 => nil, :phone_2 => nil)
+          @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
           @message.save
           @message.deliver(:sms_gateway=>@gateway)
-          @gateway.numbers.should == [@members[0].primary_contact.phone_1.sub('+', '')] # i.e., should only include 1 number
+          @gateway.numbers.should == [@members[0].phone_1.sub('+', '')] # i.e., should only include 1 number
         end          
 
         it "does not include duplicate phone numbers" do
           #NB: See above
-          @members[1].primary_contact.update_attributes(:phone_1 => @members[0].primary_contact.phone_1, :phone_2 => nil)
-          @members[1].primary_contact.phone_1.should == @members[0].primary_contact.phone_1
+          @members[1].update_attributes(:phone_1 => @members[0].phone_1, :phone_2 => nil)
+          @members[1].phone_1.should == @members[0].phone_1
           @message.create_sent_messages
           @message.deliver(:sms_gateway=>@gateway)
-          @gateway.numbers.should == [@members[0].primary_contact.phone_1.sub('+', '')] # i.e., should only include 1 number
+          @gateway.numbers.should == [@members[0].phone_1.sub('+', '')] # i.e., should only include 1 number
         end
         
         it 'does not create sent_message record for SMS person without phone' do
-          @members[1].primary_contact.update_attributes(:phone_1 => nil, :phone_2 => nil)
+          @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
           @message.stub(:send_sms => true)
           @message.stub(:send_email => false)
           @message.create_sent_messages
@@ -279,7 +306,7 @@ describe Message do
         end
                             
         it '*does* create sent_message record for emailing person without phone' do
-          @members[1].primary_contact.update_attributes(:phone_1 => nil, :phone_2 => nil)
+          @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
           @message.stub(:send_sms => false)
           @message.stub(:send_email => true)
           @message.create_sent_messages
@@ -287,7 +314,7 @@ describe Message do
         end
                             
         it 'does not create sent_message record for email person without address' do
-          @members[1].primary_contact.update_attributes(:email_1 => nil, :email_2 => nil)
+          @members[1].update_attributes(:email_1 => nil, :email_2 => nil)
           @message.stub(:send_sms => false)
           @message.stub(:send_email => true)
           @message.create_sent_messages
@@ -295,7 +322,7 @@ describe Message do
         end
                             
         it 'does not create sent_message record someone w no phone or email' do
-          @members[1].primary_contact.update_attributes(:email_1 => nil, :email_2 => nil, :phone_1=>nil, :phone_2=>nil)
+          @members[1].update_attributes(:email_1 => nil, :email_2 => nil, :phone_1=>nil, :phone_2=>nil)
           @message.stub(:send_sms => true)
           @message.stub(:send_email => true)
           @message.create_sent_messages

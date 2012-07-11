@@ -11,8 +11,8 @@ end
 #  code                 :string(255)
 #  name                 :string(255)
 #  nationality          :string(255)
-#  include_in_selection :string(255)
 #  created_at           :datetime        not null
 #  updated_at           :datetime        not null
+#  include_in_selection :boolean
 #
 

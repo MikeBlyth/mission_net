@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: bloodtypes
+#
+#  id         :integer         not null, primary key
+#  abo        :string(255)
+#  rh         :string(255)
+#  full       :string(255)
+#  created_at :datetime        not null
+#  updated_at :datetime        not null
+#  comment    :string(255)
+#
+
 describe Bloodtype do
   include SimTestHelper
 

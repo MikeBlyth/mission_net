@@ -12,7 +12,7 @@
 #  expiration          :integer
 #  response_time_limit :integer
 #  importance          :integer
-#  to_groups           :integer
+#  to_groups           :string(255)
 #  send_email          :boolean
 #  send_sms            :boolean
 #  user_id             :integer
@@ -39,16 +39,16 @@ class Message < ActiveRecord::Base
   before_save :convert_groups_to_string
   after_save  :create_sent_messages   # each record represents this message for one recipient
   
-  def after_initialize
+  after_initialize do |message|
     [:confirm_time_limit, :retries, :retry_interval, :expiration, :response_time_limit, :importance].each do |setting|
-      self.send "#{setting}=", Settings.messages[setting] if (self.send setting).nil?
+      message.send "#{setting}=", Settings.messages[setting] if (message.send setting).nil?
     end
   #  user = current_user 
   end   
   
   # Convert :to_groups=>["1", "2", "4"] or [1,2,4] to "1,2,4", as maybe 
   #    simpler than converting with YAML
-  def convert_groups_to_string
+  def convert_groups_to_string   
     if self.to_groups.is_a? Array
       self.to_groups = self.to_groups.map {|g| g.to_i}.join(",")
     else
@@ -70,19 +70,18 @@ class Message < ActiveRecord::Base
     target_members = self.members +
                      (Group.members_in_multiple_groups(to_groups_array) & # an array of users
                       Member.those_in_country)
-    @contact_info = target_members.map {|m| {:member => m, :phone => m.primary_phone, :email => m.primary_email}}
     # Remove members from @contact_info if they do not have the needed contact info (phone or email)
     # We may want to keep track of those people since they _should_ get the message but we don't have
     # the necessary info to get it to them by the specified routes (phone or email).
     case
     when self.send_sms && !self.send_email
-      @contact_info.delete_if {|c| c[:phone].nil?}
+      target_members.delete_if {|c| c.primary_phone.nil?}
     when !self.send_sms && self.send_email
-      @contact_info.delete_if {|c| c[:email].nil?}
+      target_members.delete_if {|c| c.primary_email.nil?}
     when self.send_sms && self.send_email
-      @contact_info.delete_if {|c| c[:email].nil? && c[:phone].nil?}
+      target_members.delete_if {|c| c.primary_email.nil? && c.primary_phone.nil?}
     end
-    self.members = @contact_info.map {|c| c[:member]}
+    self.members = target_members
   end
   
   # Send the messages -- done by creating the sent_message objects, one for each member
@@ -97,8 +96,9 @@ class Message < ActiveRecord::Base
   end
   
   # Array of members who have not yet responded to this message
+  # (select all of this messages members whose sent_message status is less than "delivered")
   def members_not_responding
-    memb = sent_messages.map { |sm| (sm.msg_status || -1) < MessagesHelper::MsgDelivered ? sm.member : nil }.compact
+    sent_messages.select{|sm| (sm.msg_status || -99) < MessagesHelper::MsgDelivered}.map {|sm| sm.member}
   end
 
   # Send messages to those not responding or not receiving the SMS message.
@@ -109,14 +109,15 @@ class Message < ActiveRecord::Base
   # (2) those who have not responded. (1) would be useful to overcome transient errors, while (2) would only be used
   # when we have specifically requested a response.
   def send_followup(params={})
-    @contact_info = sent_messages.map do |sm|  # including only sent_messages w/o response
-      m = sm.member  # member to whom this message was sent
-      if m.msg_status < MessagesHelper::MsgDelivered
-        {:member => m, :phone => m.primary_phone, :email => m.primary_email} 
-      else
-        nil
-      end
-    end
+    self.members = members_not_responding
+#    @contact_info = sent_messages.map do |sm|  # including only sent_messages w/o response
+#      m = sm.member  # member to whom this message was sent
+#      if m.msg_status < MessagesHelper::MsgDelivered
+#        {:member => m, :phone => m.primary_phone, :email => m.primary_email} 
+#      else
+#        nil
+#      end
+#    end
     deliver_email if send_email
     deliver_sms(:sms_gateway=>params[:sms_gateway]) if send_sms
   end    
@@ -139,32 +140,36 @@ class Message < ActiveRecord::Base
   end
 
   def sent_messages_pending
-    sent_messages.map {|m| m if m.msg_status == MessagesHelper::MsgSentToGateway || 
-                               m.msg_status == MessagesHelper::MsgPending}.compact
+    sent_messages.select {|m|  m.msg_status == MessagesHelper::MsgSentToGateway || 
+                               m.msg_status == MessagesHelper::MsgPending}
   end                               
   
   def sent_messages_errors
-    sent_messages.map  {|m| m if m.msg_status == MessagesHelper::MsgError || m.msg_status.nil?}.compact
+    sent_messages.select {|m| m.msg_status == MessagesHelper::MsgError || m.msg_status.nil?}
   end                               
   
   def sent_messages_delivered
-    sent_messages.map {|m| m if m.msg_status == MessagesHelper::MsgDelivered}.compact
+    sent_messages.select {|m| m.msg_status == MessagesHelper::MsgDelivered}
   end                               
   
   def sent_messages_replied
-    sent_messages.map {|m| m if m.msg_status == MessagesHelper::MsgResponseReceived}.compact
+    sent_messages.select {|m| m.msg_status == MessagesHelper::MsgResponseReceived}
   end                               
   
+  def member_names_string(sm_array)
+    sm_array.map{|sm| sm.member.shorter_name}.join(', ')
+  end
+
   def current_status
 #puts "**** current_status"
     errors = sent_messages_errors
-    errors_names = errors.map{|m| m.member.shorter_name}.join(', ')
+    errors_names = member_names_string(errors)
     pending = sent_messages_pending
-    pending_names = pending.map{|m| m.member.shorter_name}.join(', ')
+    pending_names = member_names_string(pending)
     delivered = sent_messages_delivered
-    delivered_names = delivered.map{|m| m.member.shorter_name}.join(', ')
+    delivered_names = member_names_string(delivered)
     replied = sent_messages_replied
-    replied_names = replied.map{|m| m.member.shorter_name}.join(', ')
+    replied_names = member_names_string(replied)
 
     status = {:errors=>errors.size, :errors_names => errors_names,
               :pending=>pending.size, :pending_names => pending_names,
@@ -197,7 +202,7 @@ class Message < ActiveRecord::Base
   # ToDo: clean up this mess and just give Notifier the Message object!
   def deliver_email
 #puts "**** deliver_email: emails=#{emails}"
-    emails = @contact_info.map {|c| c[:email]}.compact.uniq
+    emails = members.map {|m| m.primary_email}.compact.uniq
     self.subject ||= 'Message from SIM Nigeria'
     id_for_reply = self.following_up || id  # a follow-up message uses id of the original msg
 #puts "**** Messages#deliver_email response_time_limit=#{response_time_limit}"
@@ -224,7 +229,7 @@ raise "send_email with nil email produced" if outgoing.nil?
   def deliver_sms(params)
 #puts "**** Message#deliver_sms; params=#{params}"
     sms_gateway = params[:sms_gateway]
-    phone_number_array = @contact_info.map {|c| c[:phone]}.compact.uniq
+    phone_number_array = members.map {|m| m.primary_phone}.compact.uniq
     phone_numbers = phone_number_array.join(',')
     assemble_sms()
 #puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
@@ -245,8 +250,7 @@ raise "send_email with nil email produced" if outgoing.nil?
         msg_status = MessagesHelper::MsgError
       end
       # Mark the message to this member as being sent
-      self.sent_messages[0].update_attributes(:gateway_message_id => gtw_msg_id, 
-          :msg_status => msg_status)
+      self.sent_messages[0].update_attributes(:gateway_message_id => gtw_msg_id, :msg_status => msg_status)
     else
       # MULTIPLE PHONE NUMBERS
       # Get the Clickatell reply and parse into array of hash like {:id=>'asebi9xxke...', :phone => '2345552228372'}
@@ -258,6 +262,10 @@ raise "send_email with nil email produced" if outgoing.nil?
           {:id => nil, :phone => nil, :error => s}
         end
       end
+#      successful_numbers = msg_statuses.map{|ms| ms.phone}.compact   # just a list of the successful numbers
+#      failed_numbers = phone_number_array - successful_numbers
+#      sent_messages.select {|sm| successful_numbers.include?(sm.member.phone_1) || successful_numbers.include?(sm.member.phone_2)}.
+#        update_attributes(:gateway_message_id => s[:id], :msg_status=> MessagesHelper::MsgSentToGateway)
       # Make array to associate members with their numbers
       @member_phones = self.members.map {|m| {:phone => m.primary_phone, :member => m} }
       # Update the sent_message records to indicate which have been accepted at Gateway  

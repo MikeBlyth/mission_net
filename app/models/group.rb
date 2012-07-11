@@ -61,7 +61,7 @@ class Group < ActiveRecord::Base
       members << group.members_with_subgroups if group
     end
     member_records = Member.where(:id=>members.flatten.uniq.sort)
-    return member_records.joins(:contacts).where(:contacts=>{:is_primary => true}).all
+    return member_records.all
   end
 
   def abbrev_ok

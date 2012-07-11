@@ -4,7 +4,6 @@ describe SentMessage do
   pending "add some examples to (or delete) #{__FILE__}"
 end
 # == Schema Information
-# Schema version: 20120710102112
 #
 # Table name: sent_messages
 #
@@ -20,5 +19,7 @@ end
 #  gateway_message_id   :string(255)
 #  created_at           :datetime        not null
 #  updated_at           :datetime        not null
+#  phone                :string(255)
+#  email                :string(255)
 #
 
