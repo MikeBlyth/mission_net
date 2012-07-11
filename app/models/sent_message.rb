@@ -17,9 +17,10 @@
 #  phone                :string(255)
 #  email                :string(255)
 #
+require 'mail'
 
 class SentMessage < ActiveRecord::Base
-  require 'mail'
+  attr_accessible :msg_status, :confirmed_time, :delivery_modes, :confirmed_mode, :confirmation_message, :attempts, :gateway_message_id
   belongs_to :message
   belongs_to :member
   before_save :add_contacts
