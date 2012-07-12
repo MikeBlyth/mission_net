@@ -6,7 +6,7 @@ class MembersController < ApplicationController
 
 #  include AuthenticationHelper
   include ApplicationHelper
-  include ExportHelper
+#  include ExportHelper
 
 #  before_filter :authenticate #, :only => [:edit, :update]
 
@@ -24,12 +24,14 @@ class MembersController < ApplicationController
 #    config.config_list.default_columns = [:name, :country, :phone_1, :email_1, :location, :arrival_date, :departure_date] 
     config.columns[:name].sort_by :sql
     config.list.sorting = {:name => 'ASC'}
-    show.columns = update.columns = [:name, 
+    create.columns = show.columns = update.columns = [:name, 
           :last_name, :first_name, :middle_name,
           :country,
         :phone_1, :phone_2, :email_1, :email_2, 
         :location, :location_detail, 
-        :arrival_date, :departure_date, :groups,
+        :arrival_date, 
+        :departure_date, 
+        :groups,
         :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
         :blood_donor, :bloodtype,
           ]
@@ -72,23 +74,16 @@ class MembersController < ApplicationController
   end
 
   def attach_groups
-    @head.update_attributes(:group_ids=>params[:head][:group_ids]) if params[:head] && params[:head][:group_ids]
+    @record.update_attributes(:group_ids=>params[:record][:group_ids]) if params[:record] && params[:record][:group_ids]
   end
 
-        
-  # Export CSV file. Exports ALL records, so will have to be modified if a subset is desired
-  # No params currently in effect
+#   Export CSV file. Exports ALL records, so will have to be modified if a subset is desired
+#   No params currently in effect
   def export(params={})
      columns = delimited_string_to_array(Settings.export.member_fields)
      columns = ['name'] if columns.empty?  # to prevent any bad behavior with empty criteria
      pers_fields = delimited_string_to_array(Settings.export.pers_fields)
      columns += pers_fields if can?(:read, PersonnelData) 
-     # Uncomment next 2 lines to allow exportation of health data, but
-     # (a) be aware of legal and ethical implications of making the data available this way and
-     # (b) methods must be added to Member model to access the associated models (e.g. add a 
-     #     Member#bloodtype method to access member.health_data.bloodtype
-     # health_fields = delimited_string_to_array(Settings.export.health_fields)
-     # columns += health_fields if can?(:read, HealthData) 
      send_data Member.export(columns), :filename => "members.csv"
   end
 

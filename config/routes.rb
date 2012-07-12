@@ -13,6 +13,9 @@ Joslink::Application.routes.draw do
     match "messages/:id/followup_send", :to => "messages#followup_send"
   resources :messages do as_routes end
   resources :sent_messages do as_routes end
+  resources :sms
+  match ':controller/export', :action => 'export'
+
 #  resources :users do
 #    member do
 #      get 'edit_roles'

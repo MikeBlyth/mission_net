@@ -2,6 +2,7 @@
 #require Rails.root.join('spec/spec_helper')
 puts "**** INCLUDING MESSAGESTESTHELPER ***"
 module MessagesTestHelper
+require 'mock_clickatell_gateway'
 
   def rand_string(n=10)
     s = rand(36**n).to_s(36)

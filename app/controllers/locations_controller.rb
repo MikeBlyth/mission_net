@@ -1,8 +1,8 @@
-require 'authentication_helper'
+#require 'authentication_helper'
 
 class LocationsController < ApplicationController
   before_filter :authenticate #, :only => [:edit, :update]
-  include AuthenticationHelper
+#  include AuthenticationHelper
   
   active_scaffold :location do |config|
     config.columns  = [:code, :description, :city]

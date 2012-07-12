@@ -26,7 +26,6 @@ class SmsController < ApplicationController
     params.delete 'SmsMessageSid'
     @possible_senders = from_members(from)  # all members from this database with matching phone number
     @sender = @possible_senders.first # choose one of them
-#puts "**** @possible_senders=#{@possible_senders}, @sender=#{@sender}"
     if @sender  # We only accept SMS from registered phone numbers of members
       begin
         AppLog.create(:code => "SMS.received", :description=>"from #{from} (#{@sender.shorter_name}): #{body}")
@@ -46,20 +45,6 @@ class SmsController < ApplicationController
   end 
   
 
-#  def send_twilio(number, body='')  ### NOT FINISHED -- JUST TAKEN FROM AN ONLINE EXAMPLE!
-#      account = Twilio::RestAccount.new(ACCOUNT_SID, ACCOUNT_TOKEN)
-
-#      outgoing = {
-#          'From' => CALLER_ID,
-#          'To' => number,
-#          'Body' => "Test response"
-#      }
-
-#     resp = account.request("/#{API_VERSION}/Accounts/#{ACCOUNT_SID}/SMS/Messages",
-#                               'POST', outgoing)
-#     puts "#### code: %s\nbody: %s" % [resp.code, resp.body]
-#   end
-
 private
 
   # Parse the message received from mobile
@@ -70,7 +55,7 @@ private
            when 'd' then group_deliver(text)
            when 'group', 'groups' then do_list_groups
            when 'info' then do_info(text)  
-           when 'location' then do_location(text)  
+#           when 'location' then do_location(text)  
            when '?', 'help' then do_help(text)
            when /\A!/ then process_response(command, text)
            # More commands go here ...
@@ -85,7 +70,7 @@ private
     command_summary = [ ['d <group>', 'deliver msg to grp'], 
                         ['groups', 'list main grps'],
                         ['info <name>', 'get contact info'],
-                        ['location <place>', 'set current loc'],
+#                        ['location <place>', 'set current loc'],
                         ['!21 <reply>', 'reply to msg 21']
                       ]
     command_summary.map {|c| "#{c[0]} = #{c[1]}"}.join("\n")
@@ -97,46 +82,40 @@ private
     "Some groups: " + Group.primary_group_abbrevs
   end                    
   
-  def do_location(text)
-#puts "****do_location text=#{text}, @sender=#@sender"
-    if text
-      if text =~ /( for|next|for next)?\s([\d]+)/
-        duration = $2.to_i  # the number of hours
-        location = $`.strip  # part preceding the match, i.e. the location itself
-#puts "****location=#{location}, duration=#{duration}"
-      else
-        duration = DefaultReportedLocDuration
-        location = text.strip
-      end
-      location.sub!(/\A(in |at )/, '')
-#puts "**** location after sub=#{location}"
-      @sender.update_reported_location(location, Time.now, Time.now + duration*3600) # last is expiration time, now + duration hours
-      return "Your location has been updated to #{location} for the next #{duration} hours."
-    else
-      return "I don't understand. Say something like \"location JETS next 6 hours\" or " +
-             "\"location office\" or even just \"location HQ 6\". "
-    end
-  end  
+#  def do_location(text)
+##puts "****do_location text=#{text}, @sender=#@sender"
+#    if text
+#      if text =~ /( for|next|for next)?\s([\d]+)/
+#        duration = $2.to_i  # the number of hours
+#        location = $`.strip  # part preceding the match, i.e. the location itself
+##puts "****location=#{location}, duration=#{duration}"
+#      else
+#        duration = DefaultReportedLocDuration
+#        location = text.strip
+#      end
+#      location.sub!(/\A(in |at )/, '')
+##puts "**** location after sub=#{location}"
+#      @sender.update_reported_location(location, Time.now, Time.now + duration*3600) # last is expiration time, now + duration hours
+#      return "Your location has been updated to #{location} for the next #{duration} hours."
+#    else
+#      return "I don't understand. Say something like \"location JETS next 6 hours\" or " +
+#             "\"location office\" or even just \"location HQ 6\". "
+#    end
+#  end  
 
   # Return info about an individual named in text  
   def do_info(text)
     member = Member.find_with_name(text).first  
     if member
-      return (member.last_name_first(:initial=>true) + ' ' + contact_info(member) + '. ' +
-        member.current_location)
+      return (member.last_name_first(:initial=>true) + ' ' + contact_info(member) + '. ')
     else
       return "#{text} not found in database"
     end
   end    
   
   def contact_info(member)
-    contact = member.primary_contact
-    if contact
-      email = contact.summary['Email'].split(',')[0] # use only the first email address
-      return "#{contact.summary['Phone']} #{email}" 
-    else
-      return "**no contact info found**"
-    end
+      email = member.contact_summary['Email'].split(',')[0] # use only the first email address
+      return "#{member.contact_summary['Phone']} #{email}" 
   end
 
   def group_deliver(text)

@@ -1,7 +1,7 @@
 require 'spec_helper'
 include SimTestHelper
 #include ApplicationHelper
-#require '~/sim5/spec/support/messages_test_helper.rb' 
+require 'messages_test_helper.rb' 
 include MessagesTestHelper  
 
 describe SmsController do
@@ -15,8 +15,8 @@ describe SmsController do
     ClickatellGateway.stub(:new).and_return(@gateway)
 #    silence_warnings {AppLog = double('AppLog').as_null_object}
     # Target -- the person being inquired about in info command
-    @target = Factory.stub(:member, :last_name=>'Target')  # Request is going to be for this person's info
-    @sender = Factory.stub(:member)
+    @target = FactoryGirl.build_stubbed(:member, :last_name=>'Target')  # Request is going to be for this person's info
+    @sender = FactoryGirl.build_stubbed(:member)
     @sender.stub(:shorter_name).and_return('V Anderson')
 #    Member.stub(:find_by_phone).and_return([@sender])
     @from = '+2348030000000'  # This is the number of incoming SMS
@@ -88,20 +88,12 @@ describe SmsController do
         end
       end
 
-      describe 'when name found and' do  # record for requested name is found
+      describe 'when name found' do  # record for requested name is found
         before(:each) do
           @last_name = "Abcde"
-          residence_location = Factory.stub(:location, :description=>'Rayfield')
-          work_location = Factory.stub(:location, :description=>'Spring of Life')
-          @target = Factory.stub(:member_without_family, :last_name=>@last_name,
-                       :birth_date => Date.new(1980,6,15),
-                       :work_location=>work_location,
-                       :temporary_location => 'Miango Resort Hotel',
-                       :temporary_location_from_date => Date.today - 10.days,
-                       :temporary_location_until_date => Date.today + 2.days,
+          @target = FactoryGirl.build_stubbed(:member, :last_name=>@last_name,
+          :phone_2=>"+2348079999999", :email_2 => 'something@example.com'
                        )
-          @contact=Factory.stub(:contact, :member=>@target, :phone_2=>"+2348079999999", :email_2 => 'something@example.com')
-          @target.stub(:primary_contact).and_return(@contact)
           @params[:Body] = "info #{@last_name}"
           Member.stub(:find_with_name).and_return([@target])
         end
@@ -113,46 +105,31 @@ describe SmsController do
           response.body.should =~ /unknown .*xxxx/i
         end
         
-        describe 'no contact record found' do
-          it "sends basic info" do
-            @target.stub(:primary_contact).and_return(nil)
-            post :create, @params
-            response.body.should =~ Regexp.new(@last_name)
-            response.body.should =~ /no contact/i
-            response.body.should match Regexp.escape(@target.current_location)
-          end
+
+        it "sends contact info and location" do
+          post :create, @params
+          response.body.should match @last_name
+          response.body.should match Regexp.escape(@target.phone_1.phone_format)
+          response.body.should match Regexp.escape(@target.phone_2.phone_format)
+          response.body.should match Regexp.escape(@target.email_1)
+          response.body.should_not match Regexp.escape(@target.email_2)
         end
 
-        describe 'contact record found' do
+        it 'does not send phone number if marked as private' do
+          @target.phone_private=true
+          post :create, @params
+          response.body.should match Regexp.escape(@target.email_1)
+          response.body.should_not match Regexp.escape(@target.phone_1.phone_format)
+          response.body.should_not match Regexp.escape(@target.phone_2.phone_format)
+        end
 
-          it "sends contact info and location" do
-            post :create, @params
-            response.body.should match @last_name
-            response.body.should match Regexp.escape(@contact.phone_1.phone_format)
-            response.body.should match Regexp.escape(@contact.phone_2.phone_format)
-            response.body.should match Regexp.escape(@contact.email_1)
-            response.body.should_not match Regexp.escape(@contact.email_2)
-              # have to escape the parens in the current location string 
-            response.body.should match Regexp.escape(@target.current_location)
-          end
-
-          it 'does not send phone number if marked as private' do
-            @contact.phone_private=true
-            post :create, @params
-            response.body.should match Regexp.escape(@contact.email_1)
-            response.body.should_not match Regexp.escape(@contact.phone_1.phone_format)
-            response.body.should_not match Regexp.escape(@contact.phone_2.phone_format)
-          end
-
-          it 'does not send email if marked as private' do
-            @contact.email_private=true
-            post :create, @params
-            response.body.should match Regexp.escape(@contact.phone_1.phone_format)
-            response.body.should_not match Regexp.escape(@contact.email_1)
-            response.body.should_not match Regexp.escape(@contact.email_2)
-          end
-
-        end # when contact info is available
+        it 'does not send email if marked as private' do
+          @target.email_private=true
+          post :create, @params
+          response.body.should match Regexp.escape(@target.phone_1.phone_format)
+          response.body.should_not match Regexp.escape(@target.email_1)
+          response.body.should_not match Regexp.escape(@target.email_2)
+        end
 
       end # when name and
 
@@ -177,7 +154,7 @@ describe SmsController do
           
           @httyparty = HTTParty
           silence_warnings{HTTParty = mock('HTTParty')}
-          @group = Factory(:group, :group_name=>@group_name)
+          @group = FactoryGirl.create(:group, :group_name=>@group_name)
         end
         after(:each) do       
           silence_warnings{HTTParty = @httyparty}
@@ -193,7 +170,7 @@ describe SmsController do
         end
 
         it 'confirms to sender' do
-          @gateway.should_receive(:deliver).with(@from,  /sent/)
+          AppLog.should_receive(:create).with(hash_including(:code=>"SMS.sent.clickatell")).twice
           post :create, @params   # i.e. sends 'd testgroup test message'
         end
       end # 'when group is found'
@@ -240,35 +217,35 @@ describe SmsController do
       end
     end
   
-    describe 'location' do
-      before(:each) {Time.stub(:now).and_return Time.new(2000,01,01,12,00)}
+#    describe 'location' do
+#      before(:each) {Time.stub(:now).and_return Time.new(2000,01,01,12,00)}
 
-      it 'sets member location' do
-        #  def update_reported_location(text, reported_location_time=Time.now, expires=Time.now+DefaultReportedLocDuration*3600)
-        @sender.should_receive(:update_reported_location).with('Cannes', Time.now, Time.now+DefaultReportedLocDuration*3600)
-        @params['Body'] = 'location Cannes'
-        post :create, @params
-      end
+#      it 'sets member location' do
+#        #  def update_reported_location(text, reported_location_time=Time.now, expires=Time.now+DefaultReportedLocDuration*3600)
+#        @sender.should_receive(:update_reported_location).with('Cannes', Time.now, Time.now+DefaultReportedLocDuration*3600)
+#        @params['Body'] = 'location Cannes'
+#        post :create, @params
+#      end
 
-      it 'sets member location w duration' do
-        @sender.should_receive(:update_reported_location).with('Cannes', Time.now, Time.now+6.hours)
-        @params['Body'] = 'location Cannes 6'
-        post :create, @params
-      end
+#      it 'sets member location w duration' do
+#        @sender.should_receive(:update_reported_location).with('Cannes', Time.now, Time.now+6.hours)
+#        @params['Body'] = 'location Cannes 6'
+#        post :create, @params
+#      end
 
-      it 'sets member location w duration long format' do
-        @sender.should_receive(:update_reported_location).with('Cannes', Time.now, Time.now+6.hours)
-        @params['Body'] = 'location Cannes for 6 hours'
-        post :create, @params
-      end
+#      it 'sets member location w duration long format' do
+#        @sender.should_receive(:update_reported_location).with('Cannes', Time.now, Time.now+6.hours)
+#        @params['Body'] = 'location Cannes for 6 hours'
+#        post :create, @params
+#      end
 
-      it 'sets member location "location at Cannes for 6"' do
-        @sender.should_receive(:update_reported_location).with('Cannes', Time.now, Time.now+6.hours)
-        @params['Body'] = 'location at Cannes for 6'
-        post :create, @params
-      end
+#      it 'sets member location "location at Cannes for 6"' do
+#        @sender.should_receive(:update_reported_location).with('Cannes', Time.now, Time.now+6.hours)
+#        @params['Body'] = 'location at Cannes for 6'
+#        post :create, @params
+#      end
 
-    end  
+#    end  
 
   end # 'handles these commands:'
 
@@ -279,7 +256,7 @@ describe SmsController do
 
     it 'updates status of sent_message record' do
       # We have to set up a message that the incoming SMS is responding to
-      @message = Factory.stub(:message, :send_email => true)
+      @message = FactoryGirl.build_stubbed(:message, :send_email => true)
       Message.stub(:find_by_id).and_return(@message)
       Member.stub(:find_by_phone).and_return([@sender])
       # When a response is received, the sent_message corresponding to the message & user
@@ -291,8 +268,8 @@ describe SmsController do
 
     it 'for all members having same phone number' do
       @message = Message.create(:send_email=>true, :to_groups => '1', :body => 'test')
-      @member_1 = Factory(:contact).member  # handy if not most efficient way to make a member with a contact
-      @member_2 = Factory(:contact).member
+      @member_1 = FactoryGirl.create(:member)  # handy if not most efficient way to make a member with a contact
+      @member_2 = FactoryGirl.create(:member)
       @message.members << [@member_1, @member_2]
       @params['Body'] = "!#{@message.id}"  # e.g. #24 if @message.id is 24
       @params['From'] = @member_1.primary_phone

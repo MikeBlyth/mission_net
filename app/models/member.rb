@@ -48,9 +48,9 @@ class Member < ActiveRecord::Base
   
 # *************** Class methods *************
 
-  def self.authorized_for_create?
-    false # or some test for current user
-  end
+#  def self.authorized_for_create?
+#    false # or some test for current user
+#  end
 
   def self.find_with_name(name, conditions="true")
 #puts "Find_with_name #{name}"
@@ -78,6 +78,12 @@ class Member < ActiveRecord::Base
   def short_name
     nil
   end
+  
+  # This stub helps bridge from the larger program that uses separate contact records. It would be best for clarity to change 
+  # all "member.primary_contact." to "member" but this accomplishes the same thing.
+  def primary_contact
+    self
+  end
 
   def self.find_by_phone(phone_number)
     Member.where("phone_1 = ? OR phone_2 = ?", phone_number, phone_number).readonly(false).all
@@ -87,14 +93,36 @@ class Member < ActiveRecord::Base
     Member.where("email_1 = ? OR email_2 = ?", email, email).readonly(false).all
   end
 
+  # Generate hash of contact info ready for display;
+  # * join multiple phones and emails
+  # * add "private" notice if needed
+  def contact_summary(params={})
+    phones = smart_join([phone_1, phone_2].map {|p| p.phone_format if p}, ", ")
+    emails = smart_join([email_1, email_2], ', ')
+    override_private = params[:override_private]    
+    return {'Phone' => filter_private(phones, phone_private, override_private),
+            'Email' => filter_private(emails, email_private, override_private)
+#            'Skype' => filter_private(skype, skype_private, override_private),
+#            'Photos' => "#{photos}",
+#            'Blog' => "#{blog}",
+#            'Other website' => "#{other_website}",
+#            'Facebook' => "#{facebook}",
+            }
+  end
 
+  def filter_private(field, marked_as_private, override_private)
+    return field unless marked_as_private
+    return '*private*' unless override_private
+    return "#{field} (private)"
+  end 
+  
   def country_name
     Country.find(country_id).name if country_id
   end
 
   def primary_phone(options={:with_plus => false})
     phone = phone_1 || phone_2
-    phone = phone[1..20] if phone && !options[:with_plus] && phone[0]='+'
+    phone = phone[1..20] if phone && !options[:with_plus] && phone[0]=='+'
     return phone
   end
 
