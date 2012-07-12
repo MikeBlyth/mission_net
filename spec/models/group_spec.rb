@@ -74,10 +74,7 @@ describe Group do
     # have multiple levels of mocks. Also, this is quite coupled with the actual method,
     # since it only works with the 'where' method with :id=>[array of members].
 
-      Member.stub(:where).and_return(
-                    mock('Relation',:joins=>
-                       mock('Relation2', :where=>
-                          mock('Relation3', :all=>true))))
+      Member.stub(:where => Member)
       Group.stub(:find_by_id) do |id|
         if id == 1           
           @mid_2
@@ -86,7 +83,7 @@ describe Group do
         end
       end
       Member.should_receive(:where).with(:id=>[1,2,4,6,7,8])
-      Group.members_in_multiple_groups([1,2])#.should == 'Success!' # all branch 2 plus 1b
+      Group.members_in_multiple_groups([1,2]) # all branch 2 plus 1b
     end
   end # members_with_subgroups 
   
