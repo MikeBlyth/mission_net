@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120711214043) do
+ActiveRecord::Schema.define(:version => 20120712101934) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -133,5 +133,14 @@ ActiveRecord::Schema.define(:version => 20120711214043) do
     t.string   "phone"
     t.string   "email"
   end
+
+  create_table "site_settings", :force => true do |t|
+    t.string   "name"
+    t.string   "value"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "site_settings", ["name"], :name => "index_site_settings_on_name"
 
 end

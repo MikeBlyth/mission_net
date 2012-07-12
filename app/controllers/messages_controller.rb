@@ -19,12 +19,10 @@ class MessagesController < ApplicationController
   end
 
   def before_create_save(record)
-    super
-#    record.user = current_user if current_user
+    record.user = current_user if current_user
   end
 
   def after_create_save(record)
-    super
     deliver_message(record)
   end
   

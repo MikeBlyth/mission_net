@@ -11,6 +11,8 @@ gem 'twiliolib'
 gem 'httparty'
 gem 'active_scaffold'
 gem 'settingslogic'
+gem 'configurable_engine'
+
 #gem 'active_scaffold_config_list_vho'
 
 # Gems used only for assets and not required
@@ -27,12 +29,17 @@ end
 
 gem 'jquery-rails'
 
+gem 'pry', :group => :development
+
 group :development, :test do
   gem 'annotate', '~> 2.4.1.beta' 
   gem "rspec-rails"#, "2.5.0"
   gem "capybara", "= 0.4.1.2"
 #  gem "rcov"
 #  gem "launchy"
+  gem 'debugger'
+  gem 'pry'
+  gem 'pry-rails'
   gem "factory_girl"
   gem "factory_girl_rails"
   # To use debugger

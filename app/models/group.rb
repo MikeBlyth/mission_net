@@ -12,7 +12,7 @@
 #
 class Group < ActiveRecord::Base
   extend ExportHelper
-  attr_accessible :description, :name, :parent_group_id, :primary, :members, :member_ids
+  attr_accessible :group_name, :parent_group_id, :primary, :members, :member_ids, :abbrev
   
   has_and_belongs_to_many :members
   belongs_to :parent_group, :class_name => "Group", :foreign_key => "parent_group_id"

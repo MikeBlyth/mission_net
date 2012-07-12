@@ -57,7 +57,7 @@ class Message < ActiveRecord::Base
   end 
 
   def to_s
-    "#{timestamp}: #{(body || sms_only)[0..50]}"
+    "[#{id || 'new'}] #{timestamp || '--' }: #{(body || sms_only)[0..50]}"
   end
 
   # (1) Add any Group members to the addressees (self.members) when groups are specified
@@ -118,6 +118,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   end    
     
   def timestamp
+    return nil if created_at.nil?
     t = created_at.in_time_zone(Joslink::Application.config.time_zone)
     hour = t.hour
     if (0..9).include?(hour) || (13..21).include?(hour)
