@@ -72,6 +72,15 @@ class Member < ActiveRecord::Base
     return result.uniq.compact
   end
 
+  def self.find_by_phone(phone_number)
+    Member.where("phone_1 = ? OR phone_2 = ?", phone_number, phone_number).readonly(false).all
+  end
+
+  def self.find_by_email(email)
+    Member.where("email_1 = ? OR email_2 = ?", email, email).readonly(false).all
+  end
+
+
   def country_name
     Country.find(country_id).name if country_id
   end

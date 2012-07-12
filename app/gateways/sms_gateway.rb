@@ -64,7 +64,7 @@ class SmsGateway
     else
       num_array = @numbers
     end 
-    return num_array.join(',').gsub('+', '') # Clickatell may not like '+' prefix
+    return num_array.join(',')
   end
     
   def deliver(numbers=@numbers, body=@body)

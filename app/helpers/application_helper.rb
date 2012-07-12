@@ -201,8 +201,13 @@ class String
   def phone_std(options={})
     return nil if self.blank?
       raw = self
-#    raw = (self =~ /\A[0+]/  ? '' : '0') + self  # Add zero if leading plus or zero not present
+    # Replace initial 0 with country code (configurable, but probably includes +) and remove punctuation and spaces
     return raw.gsub(/\A0/,Settings.contacts.local_country_code).gsub(/-|\.| /,'')
+  end
+
+  def phone_bare(options={})
+    return nil if self.blank?
+    return self[0] == '+' ? self[1..99] : self
   end
 
   def trunc(len=15)
