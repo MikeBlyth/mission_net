@@ -61,7 +61,6 @@ describe Group do
     end
   
     it 'members_with_subgroups finds members in group and subgroups' do
-
       @low_1a.members_with_subgroups.should == [5]
       @mid_1.members_with_subgroups.sort.should == [1,3,5,7]
       @mid_2.members_with_subgroups.sort.should == [2,4,6,8]
