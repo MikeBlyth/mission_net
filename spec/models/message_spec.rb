@@ -126,7 +126,7 @@ describe Message do
         silence_warnings { AppLog = mock('AppLog').as_null_object }
       # *** Message ***
         @created_at = Time.new(2000,06,07,14,20)
-        @message = FactoryGirl.stub(:message, :created_at=>@created_at, :subject=>'Subject line',
+        @message = FactoryGirl.build(:message, :created_at=>@created_at, :subject=>'Subject line',
             :sms_only => "#"*40)
     end
 
@@ -142,7 +142,7 @@ describe Message do
         # records that tie the message to the members.
         # Note that you can't access sent_message records unless they *are* created.
         @resp_time_limit = 5
-        @message = FactoryGirl.build(:message, :send_email=>true)
+        @message.send_email=true
         @members = members_w_contacts(1, false)
         @gateway = MockClickatellGateway.new(nil,@members)
       end
@@ -155,18 +155,17 @@ describe Message do
       it "Sends an email only" do
         @message.send_email = true
         Notifier.should_receive(:send_group_message).
-          with(:recipients => [@members[0].email_1], :content => @message.body, 
-          :subject => @message.subject, :id => anything(), 
-          :response_time_limit => @resp_time_limit, #@message.response_time_limit,
-          :bcc => true,
-          :following_up => nil)
+          with(hash_including(:recipients => [@members[0].email_1], :content => @message.body, 
+          :subject => @message.subject,
+          :following_up => nil))
         @gateway.should_not_receive(:deliver)
         @message.save
         @message.deliver
       end
 
       it "Sends an SMS" do
-        select_media(:sms=>true)
+        @message.send_sms = true
+        @message.send_email = false
         @message.sms_only = "#"*50
         Notifier.should_not_receive(:send_group_message)
         @gateway.should_receive(:deliver).with(nominal_phone_number_string, Regexp.new(@message.sms_only))
@@ -175,6 +174,8 @@ describe Message do
       
       it "Inserts response tag" do
         select_media(:sms=>true)
+        @message.send_sms = true
+        @message.send_email = false
         @message.response_time_limit = 15
         @message.deliver(:sms_gateway=>@gateway)
         @message.sms_only.should match Regexp.new("!"+@message.id.to_s)
@@ -189,21 +190,21 @@ describe Message do
       end
       
       it "Sends an email" do
-        select_media(:email=>true)
+        @message.send_email = true
         Notifier.should_receive(:send_group_message) do |params|
           params[:recipients].should =~ nominal_email_array 
           params[:content].should == @message.body
           params[:subject].should == @message.subject
           params[:response_time_limit].should == @message.response_time_limit
           params[:bcc].should == true
-        end
+        end.and_return(@email)  # Why is it necessary to specify the and_return here but not above? It is defined in the before_all but without and_return here, the mock returns "true" rather than @email!
         @message.deliver
       end
 
       it "Sends an SMS" do
-        select_media(:sms=>true)
+        @message.send_sms = true
         @message.sms_only = "#"*50
-        @gateway.stub(:deliver).and_return('ID: AAAAAAAA') # return is not used in this test but is needed
+        @message.stub(:mark_status_of_multiple_messages)
         @gateway.should_receive(:deliver) do |phone_numbers, body|
           phone_numbers.split(',').should =~ @members.map {|m| m.primary_phone}
           body.should =~ Regexp.new(@message.sms_only)
@@ -216,6 +217,7 @@ describe Message do
       describe 'with single phone number' do
         before(:each) do
           select_media(:sms=>true)
+          @message.send_sms = true
           @members = members_w_contacts(1, false)
           @message.save
           @gateway = MockClickatellGateway.new(nil,@members)
@@ -275,7 +277,7 @@ describe Message do
         it "inserts error status into sent_message" do
           @gateway.mock_response = @gateway.error_response
           @message.deliver(:sms_gateway=>@gateway)
-          @sent_message = @message.sent_messages.first
+          @sent_message = @message.sent_messages.first.reload
           @sent_message.msg_status.should == MessagesHelper::MsgError
         end
     
@@ -341,7 +343,7 @@ describe Message do
       @sent_messages.each do |m| 
         m.stub(:member).and_return(mock_model(Member, :shorter_name=>"Name #{m.id+1}"))
       end
-      @message = FactoryGirl.stub(:message)
+      @message = FactoryGirl.build_stubbed(:message)
       @message.stub(:sent_messages).and_return @sent_messages
     end
     
@@ -423,8 +425,8 @@ describe Message do
   describe 'lists members not yet having responded' do
     before(:each) do
       @message = FactoryGirl.create(:message, :send_email=>true)
-      @fast_responder = build_member_without_family
-      @slow_responder = build_member_without_family
+      @fast_responder = FactoryGirl.build(:member)
+      @slow_responder = FactoryGirl.build(:member)
       @message.members << [@fast_responder, @slow_responder]
       @sent_messages = @message.sent_messages
     end

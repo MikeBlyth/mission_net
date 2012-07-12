@@ -66,10 +66,11 @@ class Message < ActiveRecord::Base
   #     errors in delivery and subject to automatic follow up.
   # This method is run automatically after save but also must be run if the addressees or sending methods
   # (email or SMS) are changed after the initial creation and before calling deliver.
-  def create_sent_messages  
-    target_members = self.members +
+  def create_sent_messages 
+#puts "**** create_sent_messages"     
+    target_members = (self.members +
                      (Group.members_in_multiple_groups(to_groups_array) & # an array of users
-                      Member.those_in_country)
+                      Member.those_in_country)).uniq.compact
     # Remove members from @contact_info if they do not have the needed contact info (phone or email)
     # We may want to keep track of those people since they _should_ get the message but we don't have
     # the necessary info to get it to them by the specified routes (phone or email).
@@ -81,7 +82,9 @@ class Message < ActiveRecord::Base
     when self.send_sms && self.send_email
       target_members.delete_if {|c| c.primary_email.nil? && c.primary_phone.nil?}
     end
+self.members.destroy_all # force recreate the join table entries, to be sure contact info is fresh
     self.members = target_members
+#target_members.each {|m| puts "**** #{m.name}\t#{m.phone_1}\t#{m.email_1}"}
   end
   
   # Send the messages -- done by creating the sent_message objects, one for each member
@@ -200,7 +203,7 @@ class Message < ActiveRecord::Base
     outgoing = Notifier.send_group_message(:recipients=>emails, :content=>self.body, 
         :subject => subject, :id => id_for_reply , :response_time_limit => response_time_limit, 
         :bcc => true, :following_up => following_up) # send using bcc:, not to:
-raise "send_email with nil email produced" if outgoing.nil?
+#puts "**** Message#deliver_email outgoing=#{outgoing}"
     outgoing.deliver
     # Mark all as being sent, but only if they have an email address
     # This is terribly inefficient ... need to find a way to use a single SQL statement
@@ -247,8 +250,7 @@ raise "send_email with nil email produced" if outgoing.nil?
       end        
     end
     # Any sent_messages not now marked with gateway_message_id and msg_status must have errors
-    sent_messages.where("msg_status = ?", nil). 
-        update_all(:msg_status=> MessagesHelper::MsgError)
+    sent_messages.where("msg_status IS NULL").update_all(:msg_status=> MessagesHelper::MsgError)
   end
  
   # Deliver text messages to an array of phone members, recording their acceptance at the gateway
@@ -262,6 +264,7 @@ raise "send_email with nil email produced" if outgoing.nil?
 #puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
     gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
+#puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
     if phone_number_array.size == 1
