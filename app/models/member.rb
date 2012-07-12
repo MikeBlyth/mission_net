@@ -72,6 +72,13 @@ class Member < ActiveRecord::Base
     return result.uniq.compact
   end
 
+  # This stub satisfies the various name methods that assume a short_name may exist. If you want to actually
+  # include a model column for the short name, just define it and remove this stub. (Non-automatic views
+  # may have to be adjusted as well)
+  def short_name
+    nil
+  end
+
   def self.find_by_phone(phone_number)
     Member.where("phone_1 = ? OR phone_2 = ?", phone_number, phone_number).readonly(false).all
   end

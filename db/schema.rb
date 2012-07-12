@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120712101934) do
+ActiveRecord::Schema.define(:version => 20120712183948) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -93,6 +93,8 @@ ActiveRecord::Schema.define(:version => 20120712101934) do
     t.integer  "blood_type_id"
     t.datetime "created_at",              :null => false
     t.datetime "updated_at",              :null => false
+    t.boolean  "phone_private"
+    t.boolean  "email_private"
   end
 
   add_index "members", ["name"], :name => "index_members_on_name"

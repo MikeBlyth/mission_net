@@ -68,10 +68,6 @@ class IncomingMailsController < ApplicationController
   # (look for a contact record having an email_1 or email_2 matching the message From: header)
   def from_member
     Member.find_by_email(@from_address)
-#    from = params['from']
-#    matching_contact = Contact.where('email_1 = ? OR email_2 = ?', from, from).first 
-#puts "**** matching_contact=#{matching_contact}, from=#{params['from']}"
-#    @from_member = matching_contact ? matching_contact.member : nil
   end  
 
 private
@@ -97,26 +93,26 @@ private
              "You sent 'test' with parameter string (#{command[1]})").deliver
         when 'info'
           do_info(from, @from_member, command[1])
-        when 'directory'
-          @families = Family.those_on_field_or_active.includes(:members, :residence_location).order("name ASC")
-          @visitors = Travel.current_visitors
-          output = WhereIsTable.new(:page_size=>Settings.reports.page_size).to_pdf(@families, @visitors, params)
-#puts "IncomingMailsController mailing report, params=#{params}"
-          Notifier.send_report(from, 
-                              Settings.reports.filename_prefix + 'directory.pdf', 
-                              output).deliver
-        when 'travel'
-          selected = Travel.where("date >= ?", Date.today).order("date ASC")
-          output = TravelScheduleTable.new(:page_size=>Settings.reports.page_size).to_pdf(selected)
-          Notifier.send_report(from, 
-                              Settings.reports.filename_prefix + 'travel_schedule.pdf', 
-                              output).deliver
-        when 'birthdays'
-          selected = Member.those_active_sim
-          output = BirthdayReport.new(:page_size=>Settings.reports.page_size).to_pdf(selected)
-          Notifier.send_report(from, 
-                              Settings.reports.filename_prefix + 'birthdays.pdf', 
-                              output).deliver
+#        when 'directory'
+#          @families = Family.those_on_field_or_active.includes(:members, :residence_location).order("name ASC")
+#          @visitors = Travel.current_visitors
+#          output = WhereIsTable.new(:page_size=>Settings.reports.page_size).to_pdf(@families, @visitors, params)
+##puts "IncomingMailsController mailing report, params=#{params}"
+#          Notifier.send_report(from, 
+#                              Settings.reports.filename_prefix + 'directory.pdf', 
+#                              output).deliver
+#        when 'travel'
+#          selected = Travel.where("date >= ?", Date.today).order("date ASC")
+#          output = TravelScheduleTable.new(:page_size=>Settings.reports.page_size).to_pdf(selected)
+#          Notifier.send_report(from, 
+#                              Settings.reports.filename_prefix + 'travel_schedule.pdf', 
+#                              output).deliver
+#        when 'birthdays'
+#          selected = Member.those_active_sim
+#          output = BirthdayReport.new(:page_size=>Settings.reports.page_size).to_pdf(selected)
+#          Notifier.send_report(from, 
+#                              Settings.reports.filename_prefix + 'birthdays.pdf', 
+#                              output).deliver
       else
       end # case
     end # commands.each
@@ -128,10 +124,10 @@ private
     Notifier.send_info(from, from_member, name, members).deliver
   end
 
-  def do_location(text)
-    @sender.update_reported_location(text)
-    Notifier.send_generic(from, 'Your location has been updated to ' + text).deliver
-  end  
+#  def do_location(text)
+#    @sender.update_reported_location(text)
+#    Notifier.send_generic(from, 'Your location has been updated to ' + text).deliver
+#  end  
 
   def group_deliver(text, command)
     unless text =~ /\A\s*\S+\s+(.*?):\s*(.*)/m  # "d <groups>: <body>..."  (body is multi-line)
@@ -148,7 +144,7 @@ private
     valid_group_names = valid_group_ids.map{|g| Group.find(g).group_name}
     invalid_group_names = group_ids - valid_group_ids   # This will be names of any groups not found
     if valid_group_ids.empty?
-      return("You sent the \"d\" command which means to forward the message to groups, but " +
+      return("You sent the \"d\" command, which means to forward the message to groups, but " +
           "no valid group names or abbreviations found in \"#{group_names_string}.\" ")
     end
     sender_name = @from_member.full_name_short

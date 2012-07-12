@@ -15,7 +15,8 @@ class MembersController < ApplicationController
 
     config.label = "Members"
     list_columns = [:name, :last_name, :first_name, :middle_name, :country,
-        :phone_1, :phone_2, :email_1, :email_2, 
+        :phone_1, :phone_2, :phone_private, 
+        :email_1, :email_2, :email_private, 
         :location, :location_detail, 
         :arrival_date, :departure_date, :groups]
     list.columns = list_columns

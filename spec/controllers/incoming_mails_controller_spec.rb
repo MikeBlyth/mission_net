@@ -25,26 +25,14 @@ describe IncomingMailsController do
 
   describe 'filters based on member status' do
 
-    it 'accepts mail from SIM member (using email_1)' do
-      @contact = Factory(:contact, :email_1 => @params['from'])  # have a contact record that matches from line
-      post :create, @params
-      response.status.should == 200
-    end
-    
-    it 'accepts mail from SIM member (using email_2)' do
-      @contact = Factory(:contact, :email_2 => @params['from'])  # have a contact record that matches from line
-      post :create, @params
-      response.status.should == 200
-    end
-    
-    it 'accepts mail from SIM member (stubbed)' do
-      controller.stub(:from_member).and_return([Member.new])  # have a contact record that matches from line
+    it 'accepts mail from SIM member (using email address)' do
+      Member.stub(:find_by_email).and_return([FactoryGirl.create(:member)])
       post :create, @params
       response.status.should == 200
     end
     
     it 'rejects mail from strangers' do
-      @contact = Factory(:contact, :email_1=> 'stranger@example.com')  # have a contact record that matches from line
+      Member.stub(:find_by_email).and_return([])
       post :create, @params
       response.status.should == 403
       response.body.should =~ /refused/i
@@ -104,7 +92,6 @@ describe IncomingMailsController do
   describe 'handles these commands:' do
     before(:each) do
       controller.stub(:from_member).and_return([Member.new])   # have a contact record that matches from line
-      contact_type = Factory(:contact_type)
     end      
     
     describe 'info sends contact info' do
@@ -122,156 +109,24 @@ describe IncomingMailsController do
         mail.should =~ /no.*found/i      
       end
 
-      it "sends basic info if contact record not found" do
-        member = Factory(:member, :last_name=>'Jehu')
-        @params['plain'] = "info Jehu"
-        post :create, @params
-        mail = ActionMailer::Base.deliveries.last.to_s
-        mail.should =~ /Jehu/
-        mail.should =~ /no contact/i
-      end
+    end
 
-      it "includes all relevant info for couple" do
-        member = create_couple
-        residence_location = Factory(:location, :description=>'Rayfield')
-        work_location = Factory(:location, :description=>'Spring of Life')
-        member.update_attributes(:birth_date => Date.new(1980,6,15),
-#*                     :residence_location=>residence_location,
-                     :work_location=>work_location,
-                     :temporary_location => 'Miango Resort Hotel',
-                     :temporary_location_from_date => Date.today - 10.days,
-                     :temporary_location_until_date => Date.today + 2.days,
-                     )
-                     
-        contact = Factory :contact, :member => member
-        contact_spouse = Factory :contact, :member => member.spouse, 
-                    :email_1 => 'spouse@example.com',
-                    :email_2 => 'josette@gmail.com',
-                    :phone_2 => '0707-777-7777',
-                    :skype => 'Josette', :skype_private => false,
-                    :blog => 'http://josette.blogspot.com',
-                    :photos => 'http://myphotos.photos.com'
-        other = Factory :family, :last_name => 'Finklestein'
-        @params['plain'] = "info #{member.last_name}"
-        post :create, @params
-        mail = ActionMailer::Base.deliveries.last.to_s
-        required_contents = [member.residence_location, member.work_location, member.temporary_location,
-             member.last_name, member.first_name, member.primary_contact.email_1, member.birth_date.to_s(:short),
-             contact_spouse.email_1, contact_spouse.email_2, 
-             format_phone(contact_spouse.phone_1), format_phone(contact_spouse.phone_2),
-             contact_spouse.skype,  contact_spouse.blog, contact_spouse.photos,
-             ]
-        required_contents.each do |target|
-          mail.should =~ Regexp.new(target.to_s)
-        end
-        mail.should_not match 'Finklestein'
-      end    # example
 
-      describe 'info marked as private' do
+#    describe 'directory' do
+#      before(:each) {@params['plain'] = "directory"}
+#      
+#      it 'sends the email' do
+#        lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
+#        ActionMailer::Base.deliveries.last.to.should == [@params['from']]
+#      end  
 
-        it 'is hidden to 3rd party' do
-     #     requestor = Factory(:family).head  # This is the person mailing in the request
-     #     requestor_contact = Factory(:contact, :member=>requestor) # must have contact info in DB or will not recieve reply
-          member = Factory(:member)     # This is the person for whom info is being requested
-          contact = Factory(:contact, :member => member, 
-                      :email_1 => 'member2@example.com',
-                      :email_2 => 'secondary@gmail.com',
-                      :phone_2 => '0707-777-7777',
-                      :phone_1 => '0807-777-7777',
-                      :skype => 'MySkype',
-                      :skype_private => true, # phone, email and skype are all marked as private
-                      :email_private => true,
-                      :phone_private => true,
-                      :blog => 'http://josette.blogspot.com',
-                      :photos => 'http://myphotos.photos.com')
-     #     @params['from'] = requestor_contact.email_1 # set up @params with requestor email and the request itself
-          @params['plain'] = "info #{member.last_name}"
-          post :create, @params
-          mail = ActionMailer::Base.deliveries.last.to_s
-          # None of these should be found as they're all marked private
-          [:email_1, :email_2, :skype].each do |field|
-            mail.should_not match(contact[field])
-          end 
-          [:phone_1, :phone_2].each do |field|
-            mail.should_not match Regexp.new("#{contact[field].phone_format}.*private")
-          end
-          mail.should match(contact[:photos])          
-        end # hides contact info marked as private     
-      
-        it 'is shown when requested by same member' do
-          member = Factory(:member)
-          controller.stub(:from_member).and_return([member])   # indicate that mail originates from same member as being requested
-          contact = Factory(:contact, :member => member, 
-                      :email_2 => 'secondary@gmail.com',
-                      :phone_2 => '0707-777-7777'.phone_format,
-                      :phone_1 => '0807-777-7777'.phone_format,
-                      :skype => 'MySkype',
-                      :skype_private => true,
-                      :email_private => true,
-                      :phone_private => true,
-                      :blog => 'http://josette.blogspot.com',
-                      :photos => 'http://myphotos.photos.com')
-          @params['plain'] = "info #{member.last_name}"
-          post :create, @params
-          mail = ActionMailer::Base.deliveries.last.to_s
-          [:email_1, :email_2, :skype].each do |field|
-            mail.should =~ Regexp.new("#{contact[field]}.*private")
-          end
-          [:phone_1, :phone_2].each do |field|
-            mail.should =~ Regexp.new("#{contact[field].phone_format}.*private")
-          end
-          mail.should match(contact[:photos])          
-        end # is shown when requested by same member 
-
-      end # info marked as private
-      
-    end # info
-    
-    describe 'directory' do
-      before(:each) {@params['plain'] = "directory"}
-      
-      it 'sends the email' do
-        lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-        ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-      end  
-
-      it 'sends Where Is report as attachment' do
-        post :create, @params
-        mail = ActionMailer::Base.deliveries.last
-        attachment = ActionMailer::Base.deliveries.last.attachments.first
-        attachment.filename.should == Settings.reports.filename_prefix + 'directory.pdf'
-      end
-    end #directory
-    
-    describe 'travel' do
-      before(:each) {@params['plain'] = "travel"}
-      
-      it 'sends the email' do
-        post :create, @params
-        ActionMailer::Base.deliveries.length.should == 1
-        ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-      end  
-
-      it 'sends travel schedule as attachment' do
-        post :create, @params
-        ActionMailer::Base.deliveries.length.should == 1
-        mail = ActionMailer::Base.deliveries.last
-        attachment = ActionMailer::Base.deliveries.last.attachments.first
-        attachment.filename.should == Settings.reports.filename_prefix + 'travel_schedule.pdf'
-      end
-    end #directory
-    
-    describe 'birthday list' do
-      before(:each) {@params['plain'] = "birthdays"}
-      
-      it 'sends birthday list as attachment' do
-        post :create, @params
-        ActionMailer::Base.deliveries.length.should == 1
-        ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-        attachment = ActionMailer::Base.deliveries.last.attachments.first
-        attachment.filename.should == Settings.reports.filename_prefix + 'birthdays.pdf'
-      end
-    end #birthdays
+#      it 'sends Where Is report as attachment' do
+#        post :create, @params
+#        mail = ActionMailer::Base.deliveries.last
+#        attachment = ActionMailer::Base.deliveries.last.attachments.first
+#        attachment.filename.should == Settings.reports.filename_prefix + 'directory.pdf'
+#      end
+#    end #directory
     
     describe 'help command' do
       before(:each) {@params['plain'] = "help"}
@@ -301,10 +156,10 @@ describe IncomingMailsController do
     before(:each) do
       @mock_message = mock_model(Message, :deliver=>true)
       Message.stub(:create).and_return(@mock_message)
-      @member = Factory.stub(:member)
+      @member = FactoryGirl.build_stubbed(:member)
       controller.stub(:from_member).and_return([@member])   # have a contact record that matches from line
-      @group_1 = Factory(:group)
-      @group_2 = Factory(:group)
+      @group_1 = FactoryGirl.create(:group)
+      @group_2 = FactoryGirl.create(:group)
       @body = 'Test message'
       @params[:from] = 'test@test.com'
     end
@@ -388,10 +243,8 @@ describe IncomingMailsController do
         @responding_to = 25  # This is the id of the message being responded to
         @message = mock_model(Message, :deliver=>true, :process_response => nil)
         Message.stub(:find_by_id).with(@responding_to).and_return(@message)
-        @member = Factory.stub(:member)
+        @member = FactoryGirl.build_stubbed(:member)
         Member.stub(:find_by_email).and_return([@member]) # Just says that this message is from a member
-        contact = mock('contact', :member => @member)
-        Contact.stub(:where).and_return([contact])   # have a contact record that matches from line
         @subject_with_tag = 'Re: Important ' + 
           message_id_tag(:id=>@responding_to, :location => :subject, :action=>:generate)
         @user_reply = "I'm in Kafanchan"
@@ -426,8 +279,8 @@ describe IncomingMailsController do
 
       it 'for all members having same email' do
         @message = Message.create(:send_email=>true, :to_groups => '1', :body => 'test')
-        @member_1 = Factory(:contact).member  # handy if not most efficient way to make a member with a contact
-        @member_2 = Factory(:contact).member
+        @member_1 = FactoryGirl.create(:member)  # handy if not most efficient way to make a member with a contact
+        @member_2 = FactoryGirl.create(:member) 
         @message.members << [@member_1, @member_2]
         @params['plain'] = "!#{@message.id}"  # e.g. #24 if @message.id is 24
         @params['from'] = @member_1.primary_email

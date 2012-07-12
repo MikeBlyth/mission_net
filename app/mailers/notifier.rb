@@ -104,24 +104,19 @@ class Notifier < ActionMailer::Base
                   "Names must be properly capitalized like 'Jones' not 'jones' or 'JONES'."
     else
       members.each do |m|
-        contact = m.primary_contact
         @content << "#{m.indexed_name}:\n" 
-        @content << "  location:  #{m.current_location}\n" if m.current_location(:missing => :nil)
-        @content << "  birthday:  #{m.birth_date.to_s(:short)}\n" if m.birth_date
-        if contact
-          phones = smart_join([format_phone(contact.phone_1), format_phone(contact.phone_2)])
-          emails = smart_join([format_phone(contact.email_1), format_phone(contact.email_2)])
-          @content << "  phone:  #{phones}\n" unless phones.blank? || contact.phone_private
-          @content << "  email:  #{emails}\n" unless phones.blank? || contact.email_private
-          @content << "  Skype:  #{contact.skype}\n" unless contact.skype.blank? || contact.skype_private
-          @content << "  phone:  #{phones} (private!)\n" if (m == from_member) && contact.phone_private
-          @content << "  email:  #{emails} (private!)\n" if (m == from_member) && contact.email_private
-          @content << "  Skype:  #{contact.skype} (private!)\n" if (m == from_member) && contact.skype_private
-          @content << "  blog:  #{contact.blog}\n" if contact.blog
-          @content << "  photos:  #{contact.photos}\n" if contact.photos
-        else
-          @content << "  ** No contact information available **"
-        end 
+#        @content << "  location:  #{m.current_location}\n" if m.current_location(:missing => :nil)
+#        @content << "  birthday:  #{m.birth_date.to_s(:short)}\n" if m.birth_date
+        phones = smart_join([format_phone(m.phone_1), format_phone(m.phone_2)])
+        emails = smart_join([format_phone(m.email_1), format_phone(m.email_2)])
+        @content << "  phone:  #{phones}\n" unless phones.blank? || m.phone_private
+        @content << "  email:  #{emails}\n" unless phones.blank? || m.email_private
+#        @content << "  Skype:  #{m.skype}\n" unless m.skype.blank? || m.skype_private
+        @content << "  phone:  #{phones} (private!)\n" if (m == from_member) && m.phone_private
+        @content << "  email:  #{emails} (private!)\n" if (m == from_member) && m.email_private
+#        @content << "  Skype:  #{m.skype} (private!)\n" if (m == from_member) && m.skype_private
+#        @content << "  blog:  #{m.blog}\n" if m.blog
+#        @content << "  photos:  #{m.photos}\n" if m.photos
         @content << "\n"
       end
     end
@@ -132,7 +127,6 @@ class Notifier < ActionMailer::Base
   end
 
   def contact_updates(recipients, contacts)
-    @content = "--Content--"  # This is not used -- take it out?
     @contacts = contacts
     @email = true # Same template used for screen display (check) & actual mailing, so @email is
                   # used to flag that we are emailing msg. So we don't include the "Send" button.

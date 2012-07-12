@@ -124,6 +124,56 @@ describe Member do
      
   end # finds members by name
 
+  describe 'finds members by email' do
+    it 'using email_1' do
+      email = 'sample@test.com'
+      member = FactoryGirl.create(:member, :email_1 => email)
+      Member.find_by_email(email).should == [member]
+    end
+
+    it 'using email_2' do
+      email = 'sample@test.com'
+      member = FactoryGirl.create(:member, :email_2 => email)
+      Member.find_by_email(email).should == [member]
+    end
+    
+    it 'when two share same address' do
+      email = 'sample@test.com'
+      member = FactoryGirl.create(:member, :email_1 => 'something else', :email_2 => email)
+      member2 = FactoryGirl.create(:member, :email_1 => email)
+      unrelated = FactoryGirl.create(:member, :email_1 => 'watermelon')
+      Member.find_by_email(email).should include member
+      Member.find_by_email(email).should include member2
+      Member.find_by_email(email).should_not include unrelated
+    end
+      
+  end
+  
+  describe 'finds members by phone' do
+    it 'using phone_1' do
+      phone = 'sample@test.com'
+      member = FactoryGirl.create(:member, :phone_1 => phone)
+      Member.find_by_phone(phone).should == [member]
+    end
+
+    it 'using phone_2' do
+      phone = 'sample@test.com'
+      member = FactoryGirl.create(:member, :phone_2 => phone)
+      Member.find_by_phone(phone).should == [member]
+    end
+    
+    it 'when two share same number' do
+      phone = 'sample@test.com'
+      member = FactoryGirl.create(:member, :phone_1 => 'something else', :phone_2 => phone)
+      member2 = FactoryGirl.create(:member, :phone_1 => phone)
+      unrelated = FactoryGirl.create(:member, :phone_1 => 'watermelon')
+      Member.find_by_phone(phone).should include member
+      Member.find_by_phone(phone).should include member2
+      Member.find_by_phone(phone).should_not include unrelated
+    end
+      
+  end
+  
   describe 'export' do
     before(:each) do
       @member = FactoryGirl.build(:member)
