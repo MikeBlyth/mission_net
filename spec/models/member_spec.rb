@@ -174,6 +174,58 @@ describe Member do
       
   end
   
+  describe 'contact information' do
+    before(:each) do
+      @member = FactoryGirl.build(:member)
+    end
+  
+    describe 'contact_summary hash' do
+
+      it 'includes phone and email' do
+        summary = @member.contact_summary
+        summary['Phone'].should match @member.phone_1
+        summary['Phone'].should match @member.phone_2
+        summary['Email'].should match @member.email_1
+        summary['Email'].should match @member.email_2
+      end  
+
+      it 'hides private phone number' do
+        @member.phone_private = true
+        @member.contact_summary['Phone'].should_not match @member.phone_1
+        @member.contact_summary['Phone'].should_not match @member.phone_2
+      end
+
+      it 'hides private email address' do
+        @member.email_private = true
+        @member.contact_summary['Email'].should_not match @member.email_1
+        @member.contact_summary['Email'].should_not match @member.email_2
+      end
+
+      it 'shows private phone number if override_private is selected' do
+        @member.phone_private = true
+        @member.contact_summary(:override_private=>true)['Phone'].should match @member.phone_1
+        @member.contact_summary(:override_private=>true)['Phone'].should match @member.phone_2
+        @member.contact_summary(:override_private=>true)['Phone'].should match 'private'
+      end
+
+      it 'shows private email if override_private is selected' do
+        @member.email_private = true
+        @member.contact_summary(:override_private=>true)['Email'].should match @member.email_1
+        @member.contact_summary(:override_private=>true)['Email'].should match @member.email_2
+        @member.contact_summary(:override_private=>true)['Email'].should match 'private'
+      end
+
+    end # 'contact_summary hash'
+
+    describe 'contact_summary_text' do
+      it 'includes phone and email' do
+        summary = @member.contact_summary_text
+        summary.should match @member.phone_1
+        summary.should match @member.email_1
+      end
+    end # 'contact_summary_text'
+  end   # contact information 
+
   describe 'export' do
     before(:each) do
       @member = FactoryGirl.build(:member)

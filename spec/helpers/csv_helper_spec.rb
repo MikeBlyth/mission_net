@@ -3,10 +3,10 @@ extend ExportHelper
   
   describe 'export_csv' do
     it 'builds a export csv string' do
-      @member = Factory.build(:member, :birth_date => Date.new(1980,1,1))
-      csv = export_csv([@member],%w{last_name birth_date})
+      @member = FactoryGirl.build(:member)
+      csv = export_csv([@member],%w{last_name phone_1})
       csv.should match(@member.last_name)
-      csv.should match(@member.birth_date.to_s(:long))
+      csv.should match(@member.phone_1)
     end
   end
   

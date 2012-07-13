@@ -6,8 +6,4 @@ module MembersHelper
                   column != :health_data 
   end
 
-#  def self.authorized_for_create?
-#    false # or some test for current user
-#  end
-
 end
