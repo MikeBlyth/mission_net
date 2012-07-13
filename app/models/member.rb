@@ -96,20 +96,30 @@ class Member < ActiveRecord::Base
   # Generate hash of contact info ready for display;
   # * join multiple phones and emails
   # * add "private" notice if needed
+  # e.g. {'Phone' => '0803-385-4175, 0816-297-4144 (private)', 'Email' => 'me@lemon.com'}
+  #      {'Phone' => '*private*', 'Email' => 'me@dog.org'}
   def contact_summary(params={})
     phones = smart_join([phone_1, phone_2].map {|p| p.phone_format if p}, ", ")
     emails = smart_join([email_1, email_2], ', ')
     override_private = params[:override_private]    
     return {'Phone' => filter_private(phones, phone_private, override_private),
             'Email' => filter_private(emails, email_private, override_private)
-#            'Skype' => filter_private(skype, skype_private, override_private),
-#            'Photos' => "#{photos}",
-#            'Blog' => "#{blog}",
-#            'Other website' => "#{other_website}",
-#            'Facebook' => "#{facebook}",
             }
   end
 
+  def contact_summary_text(params={})
+    prefix = params[:prefix] || ''
+    separator = params[:separator] || "\n"
+    include_blanks = params[:include_blanks]
+    fields = ['Phone', 'Email']
+    summary_hash = self.contact_summary
+    summary = fields.map do |f|
+      content = summary_hash[f]
+      "#{f}: #{content}" if (!content.blank? || include_blanks)
+    end
+    return prefix + summary.compact.join("#{separator}#{prefix}")
+  end
+  
   def filter_private(field, marked_as_private, override_private)
     return field unless marked_as_private
     return '*private*' unless override_private

@@ -37,11 +37,16 @@ base_url:
   default: https://simjos.heroku.com/
   type: string
 
-birthday_prefix: 
-  name: Prefix to show on calendar for birthdays
-  default: BD 
+base_email_address:
+  name: Base email address for this site
   type: string
-    
+  default: database@joslink.org
+
+organization:
+  name: Name of organization or database
+  default: Joslink
+  type: string
+      
 outgoing_sms:
   name: SMS gateway for outgoing messages
   default: Clickatell
@@ -50,14 +55,17 @@ outgoing_sms:
 clickatell_user_name:
   name: Clickatell User Name
   type: string
+  default: BigBird
       
 clickatell_password:
   name: Clickatell Password
   type: password
+  default: catapiller
   
 clickatell_api_id:
   name: Clickatell HTTP API number
   type: string
+  default: BM2071
 
 twilio_api_version:
   name: Twilio API Version

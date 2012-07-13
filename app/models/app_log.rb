@@ -11,7 +11,7 @@
 #
 
 class AppLog < ActiveRecord::Base
-  # attr_accessible :title, :body
+   attr_accessible :severity, :code, :description
   before_save :control_description_length
   def self.tail(lines=10)
     reply = ''

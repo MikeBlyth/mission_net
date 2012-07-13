@@ -41,11 +41,6 @@ defaults: &defaults
     personnel: jos.perasst@sim.org
   pers_task_types: [:pipeline, :orientation, :start_of_term, :end_of_term, :end_of_service]
   export: 
-    # **** NOTE ****
-    # Be careful what you put in these lists of fields for export, to avoid privileged information 'leaking'
-    # If, for example, you allow health information to be exported, you will have to be sure you have controlled
-    # the circumstances so that the exported data remains secure and is accessible only by those authorized.
-    # 
     member_fields: id last_name first_name middle_name country phone_1 phone_2 phone_private email_1 email_2 email_private location location_detail arrival_date departure_date groups
     group_fields: group_name abbrev primary members parent_group subgroups
   messages:

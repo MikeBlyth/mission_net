@@ -71,11 +71,12 @@ puts "**** SPORK LOADING PREFORK"
   load 'sim_test_helper.rb'
 #  load 'messages_test_helper.rb'
 #  load 'secret_credentials.rb'
-#  load 'mock_clickatell_gateway.rb'
+  load 'mock_clickatell_gateway.rb'
 end  
 
 Spork.each_run do
   puts "**** SPORK LOADING EACH RUN"
+  load 'mock_clickatell_gateway.rb'
 # This code will be run each time you run your specs.
 end
 

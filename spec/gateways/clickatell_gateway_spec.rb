@@ -4,17 +4,17 @@ require 'sms_gateway.rb'
 
 describe ClickatellGateway do
 
-def gateway_session
-   @gateway.instance_variable_get(:@session)
-end
+  def gateway_session
+     @gateway.instance_variable_get(:@session)
+  end
 
-def gateway_session_set(session)
-   @gateway.instance_variable_set(:@session, session)
-end
+  def gateway_session_set(session)
+     @gateway.instance_variable_set(:@session, session)
+  end
 
-def gateway_uri_set(uri)
-   @gateway.instance_variable_set(:@uri, uri)
-end
+  def gateway_uri_set(uri)
+     @gateway.instance_variable_set(:@uri, uri)
+  end
 
   before(:each) do
     @phones = ['+2347777777777']
@@ -37,7 +37,8 @@ end
 
     it 'initializes successfully' do
       if @gateway.errors
-        puts "*** Errors in gateway initialization may be caused by 'cleaned' initialization"
+        puts "*** Maybe the settings database has not been initialized."
+        puts "*** Errors in gateway initialization may also be caused by 'cleaned' initialization"
         puts "*** parameters. Try restarting Spork before looking for other errors."
       end
       @gateway.errors.should be_nil
