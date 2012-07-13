@@ -30,6 +30,7 @@ end
 gem 'jquery-rails'
 
 gem 'pry', :group => :development
+gem 'simplecov', :group => :test
 
 group :development, :test do
   gem 'annotate', '~> 2.4.1.beta' 

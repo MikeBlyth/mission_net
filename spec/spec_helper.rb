@@ -11,6 +11,12 @@ Spork.prefork do
   # need to restart spork for it take effect.
 puts "**** SPORK LOADING PREFORK"
 
+####  Load simplecov here if *not* running under spork
+  unless ENV['DRB']
+    require 'simplecov'
+    SimpleCov.start 'rails'
+  end
+
   # This file is copied to spec/ when you run 'rails generate rspec:install'
   ENV["RAILS_ENV"] ||= 'test'
   require File.expand_path("../../config/environment", __FILE__)
@@ -71,12 +77,16 @@ puts "**** SPORK LOADING PREFORK"
   load 'sim_test_helper.rb'
 #  load 'messages_test_helper.rb'
 #  load 'secret_credentials.rb'
-  load 'mock_clickatell_gateway.rb'
 end  
 
 Spork.each_run do
   puts "**** SPORK LOADING EACH RUN"
-  load 'mock_clickatell_gateway.rb'
+  # Run simplecov here if we *are* running under spork (ENV['DRB'])
+#  if ENV['DRB']
+#    require 'simplecov'
+#    SimpleCov.start 'rails'
+#  end
+
 # This code will be run each time you run your specs.
 end
 
