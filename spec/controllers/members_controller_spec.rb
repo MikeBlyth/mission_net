@@ -42,19 +42,6 @@ describe MembersController do
 
   end # describe "authentication before controller access"
 
-  # These should probably be put into the member MODEL spec
-  describe 'Group assignment' do
-    it 'assigns groups from multi-select' do
-#      test_sign_in(FactoryGirl.build_stubbed(:user, :admin=>true))
-      test_sign_in_fast
-      @member = FactoryGirl.create(:member)
-      @a = FactoryGirl.create(:group)
-      @b = FactoryGirl.create(:group)
-      put :update, :id=>@member.id, :record=>{:group_ids=>[@a.id.to_s, @b.id.to_s]}
-      @member.reload.group_ids.sort.should == [@a.id, @b.id].sort
-    end
-  end    
-
   describe 'Export' do
       before(:each) do
 #        @user = FactoryGirl.create(:user, :admin=>true)

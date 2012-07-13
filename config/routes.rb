@@ -16,6 +16,10 @@ Joslink::Application.routes.draw do
   resources :sms
   match ':controller/export', :action => 'export'
 
+  match '/signin',  :to =>  "home#index" # 'sessions#new'
+  match '/signout', :to =>  "home#index" # 'sessions#destroy'
+
+
 #  resources :users do
 #    member do
 #      get 'edit_roles'

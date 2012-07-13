@@ -16,8 +16,8 @@ describe GroupsController do
     # I can't figure out how to do this with mocks, given the HABTM relationship
     it 'assigns members from multi-select' do
       @group = Group.create(:group_name=>'new group', :abbrev=>'newgroup')
-      @a = Factory.create(:member)
-      @b = Factory.create(:member)
+      @a = FactoryGirl.create(:member)
+      @b = FactoryGirl.create(:member)
       put :update, :id=>@group.id, :record => {:member_ids=>[@a.id.to_s, @b.id.to_s]}
       @group.member_ids.sort.should == [@a.id, @b.id].sort
     end

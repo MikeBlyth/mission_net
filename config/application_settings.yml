@@ -46,13 +46,8 @@ defaults: &defaults
     # If, for example, you allow health information to be exported, you will have to be sure you have controlled
     # the circumstances so that the exported data remains secure and is accessible only by those authorized.
     # 
-    family_fields: id head_id name head spouse status residence_location
-    member_fields: id family_id name last_name first_name middle_name country ministry work_location school school_grade residence_location status
-    pers_fields: education qualifications employment_status date_active est_end_of_service
-    contact_fields: id member_id member phone_1 phone_2 email_1 email_2 address contact_name contact_type is_primary skype other_website blog facebook email_private phone_private skype_private
-    field_term_fields: id family_id member_id member start_date end_date ministry employment_status primary_work_location                  
-    group_fields: group_name abbrev primary type_of_group members parent_group subgroups
-    travel_fields: id family_id member_id member date return_date flight origin destination total_passengers other_travelers with_spouse with_children arrival time return_time term_passage personal ministry_related own_arrangements        
+    member_fields: id last_name first_name middle_name country phone_1 phone_2 phone_private email_1 email_2 email_private location location_detail arrival_date departure_date groups
+    group_fields: group_name abbrev primary members parent_group subgroups
   messages:
     confirm_time_limit: 15 # minutes
     retries: 0

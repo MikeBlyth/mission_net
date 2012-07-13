@@ -82,8 +82,6 @@ class MembersController < ApplicationController
   def export(params={})
      columns = delimited_string_to_array(Settings.export.member_fields)
      columns = ['name'] if columns.empty?  # to prevent any bad behavior with empty criteria
-     pers_fields = delimited_string_to_array(Settings.export.pers_fields)
-     columns += pers_fields if can?(:read, PersonnelData) 
      send_data Member.export(columns), :filename => "members.csv"
   end
 
