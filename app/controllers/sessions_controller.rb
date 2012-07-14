@@ -3,6 +3,7 @@ class SessionsController < ApplicationController
   skip_before_filter :authorize, :only => [:new, :create, :update]
 
   def new
+    redirect_to(initialize_path) if Member.count == 0
   end
 
 # Unlike many applications, this one authorizes only users who are already members in the list. That is, we do not
@@ -52,7 +53,7 @@ end
   
   def destroy
     session[:user_id] = nil
-    render :text => "You've logged out!"
+    redirect_to sign_in_path
   end
   
 end

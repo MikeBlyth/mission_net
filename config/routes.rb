@@ -24,6 +24,8 @@ Joslink::Application.routes.draw do
   get '/signout', :to => 'sessions#destroy'
   match '/auth/:provider/callback', :to => 'sessions#create'
   match '/auth/failure', :to => 'sessions#failure'
+  get '/setup', :to => 'setup#initialize', :as => :initialize
+  post '/setup', :to => 'setup#initialize_save'
 
 #  resources :users do
 #    member do
@@ -32,7 +34,7 @@ Joslink::Application.routes.draw do
 #    end
 #  end
 
-  get "/home", :to => "members#list"
+  get "/home", :to => "members#list", :as => :home
   root :to => "members#list"
   
   # The priority is based upon order of creation:

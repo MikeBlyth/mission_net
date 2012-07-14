@@ -34,9 +34,10 @@ class Member < ActiveRecord::Base
   include NameHelper
   extend ExportHelper
 
-  attr_accessible :arrival_date, :departure_date, :email_1, :email_2, :first_name, :last_name, :location_detail, :location_id, :middle_name, :phone_1, :phone_2, 
+  attr_accessible :arrival_date, :departure_date, :email_1, :email_2, :name, :first_name, :last_name, :middle_name, 
+      :location_detail, :location_id, :phone_1, :phone_2, 
       :receive_email, :receive_sms, :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
-      :country_id, :blood_donor, :bloodtype_id
+      :country_id, :blood_donor, :bloodtype_id, :groups, :group_ids
   has_and_belongs_to_many :groups
   has_many :sent_messages
   has_many :messages, :through => :sent_messages
