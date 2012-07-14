@@ -12,6 +12,8 @@ gem 'httparty'
 gem 'active_scaffold'
 gem 'settingslogic'
 gem 'configurable_engine'
+gem 'omniauth'
+gem 'omniauth-facebook'
 
 #gem 'active_scaffold_config_list_vho'
 

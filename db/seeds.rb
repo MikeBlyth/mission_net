@@ -12,50 +12,50 @@
 # coding: utf-8
 
 #puts "**** Seeding tables ****"
-BloodType.delete_all
-x = BloodType.new(:abo => 'A', :rh => 'neg', :comment => '', :full => 'A neg')
+Bloodtype.delete_all
+x = Bloodtype.new(:abo => 'A', :rh => 'neg', :comment => '', :full => 'A neg')
 x.id = 1
 x.save
-x = BloodType.new(:abo => 'A', :rh => '+', :comment => '', :full => 'A+')
+x = Bloodtype.new(:abo => 'A', :rh => '+', :comment => '', :full => 'A+')
 x.id = 2
 x.save
-x = BloodType.new(:abo => 'A', :rh => ' Rh?', :comment => 'type A, unknown Rh', :full => 'A')
+x = Bloodtype.new(:abo => 'A', :rh => ' Rh?', :comment => 'type A, unknown Rh', :full => 'A')
 x.id = 3
 x.save
-x = BloodType.new(:abo => 'B', :rh => 'neg', :comment => '', :full => 'B neg')
+x = Bloodtype.new(:abo => 'B', :rh => 'neg', :comment => '', :full => 'B neg')
 x.id = 4
 x.save
-x = BloodType.new(:abo => 'B', :rh => '+', :comment => '', :full => 'B+')
+x = Bloodtype.new(:abo => 'B', :rh => '+', :comment => '', :full => 'B+')
 x.id = 5
 x.save
-x = BloodType.new(:abo => 'B', :rh => ' Rh?', :comment => 'type B, unknown Rh', :full => 'B')
+x = Bloodtype.new(:abo => 'B', :rh => ' Rh?', :comment => 'type B, unknown Rh', :full => 'B')
 x.id = 6
 x.save
-x = BloodType.new(:abo => 'O', :rh => 'neg', :comment => '', :full => 'O neg')
+x = Bloodtype.new(:abo => 'O', :rh => 'neg', :comment => '', :full => 'O neg')
 x.id = 7
 x.save
-x = BloodType.new(:abo => 'O', :rh => '+', :comment => '', :full => 'O+')
+x = Bloodtype.new(:abo => 'O', :rh => '+', :comment => '', :full => 'O+')
 x.id = 8
 x.save
-x = BloodType.new(:abo => 'O', :rh => ' Rh?', :comment => 'type O, unknown Rh', :full => 'O')
+x = Bloodtype.new(:abo => 'O', :rh => ' Rh?', :comment => 'type O, unknown Rh', :full => 'O')
 x.id = 9
 x.save
-x = BloodType.new(:abo => '?ABO', :rh => '+', :comment => 'unknown ABO; Rh+', :full => 'something +')
+x = Bloodtype.new(:abo => '?ABO', :rh => '+', :comment => 'unknown ABO; Rh+', :full => 'something +')
 x.id = 10
 x.save
-x = BloodType.new(:abo => '?ABO', :rh => 'neg', :comment => 'unknown ABO; Rh neg', :full => 'something neg')
+x = Bloodtype.new(:abo => '?ABO', :rh => 'neg', :comment => 'unknown ABO; Rh neg', :full => 'something neg')
 x.id = 11
 x.save
-x = BloodType.new(:abo => 'AB', :rh => ' Rh?', :comment => 'type AB, unknown Rh', :full => 'AB')
+x = Bloodtype.new(:abo => 'AB', :rh => ' Rh?', :comment => 'type AB, unknown Rh', :full => 'AB')
 x.id = 12
 x.save
-x = BloodType.new(:abo => 'AB', :rh => '+', :comment => '', :full => 'AB+')
+x = Bloodtype.new(:abo => 'AB', :rh => '+', :comment => '', :full => 'AB+')
 x.id = 13
 x.save
-x = BloodType.new(:abo => 'AB', :rh => 'neg', :comment => '', :full => 'AB neg')
+x = Bloodtype.new(:abo => 'AB', :rh => 'neg', :comment => '', :full => 'AB neg')
 x.id = 14
 x.save
-x = BloodType.new(:abo => '', :rh => '', :comment => 'unknown', :full => 'unknown')
+x = Bloodtype.new(:abo => '', :rh => '', :comment => 'unknown', :full => 'unknown')
 x.id = 999999
 x.save
 
@@ -799,6 +799,22 @@ x.save
 x = Country.new(:code => '??', :name => 'Not known', :nationality => 'Not known', :include_in_selection => 1)
 x.id = 999999
 x.save
+
+# Seeding Groups
+Group.delete_all
+x = Group.new(:group_name => 'All', :abbrev => 'all', :primary => true)
+x.id = 1
+x.save
+x = Group.new(:group_name => 'Administrators', :abbrev => 'admin', :parent_group_id => 3, :primary => true)
+x.id = 2
+x.save
+x = Group.new(:group_name => 'Moderators', :abbrev => 'mod', :parent_group_id => 4, :primary => true)
+x.id = 3
+x.save
+x = Group.new(:group_name => 'Members', :abbrev => 'members', :parent_group_id => 1, :primary => true)
+x.id = 4
+x.save
+
 
 
 #puts "**** Seeding locations table"

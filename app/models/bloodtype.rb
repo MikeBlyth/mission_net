@@ -12,7 +12,8 @@
 #
 
 class Bloodtype < ActiveRecord::Base
-  attr_reader :abo, :full, :rh, :comment
+
+  attr_accessible :abo, :full, :rh, :comment
   has_many :members
   def to_label
     "#{full}"

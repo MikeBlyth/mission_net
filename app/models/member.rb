@@ -40,6 +40,7 @@ class Member < ActiveRecord::Base
   has_and_belongs_to_many :groups
   has_many :sent_messages
   has_many :messages, :through => :sent_messages
+  has_many :authorizations
   belongs_to :country
   belongs_to :location
   belongs_to :bloodtype
@@ -145,6 +146,13 @@ class Member < ActiveRecord::Base
 
   def primary_email(options={})
     return email_1 || email_2
+  end
+
+  def add_authorization_provider(auth_hash)
+    # Check if the provider already exists, so we don't add it twice
+    unless authorizations.find_by_provider_and_uid(auth_hash["provider"], auth_hash["uid"])
+      Authorization.create :user => self, :provider => auth_hash["provider"], :uid => auth_hash["uid"]
+    end
   end
 
  end

@@ -1,21 +1,10 @@
 module SessionsHelper
-
-  def sign_in(user)
-    cookies.permanent.signed[:remember_token] = [user.id, user.salt]
-    self.current_user = user
-  end
-
-  def current_user=(user)
-    @current_user = user
-  end
-
   def current_user
-    return Member.new(:name => 'Dummy User') # ****************** Remove as we decide how to do authentication!
-    @current_user ||= user_from_remember_token
+    @current_user ||= (Member.find(session[:user_id]) if session[:user_id])
   end
 
   def current_user_admin?
-    current_user.admin?
+    current_user.groups.find_by_group_name("Administrator")
   end
 
   # Is user (the parameter) the currently logged in user?
@@ -28,22 +17,12 @@ module SessionsHelper
   end
 
   def sign_out
-    cookies.delete(:remember_token)
+    session[:user_id] = nil
+    render :text => "You've logged out!"
     self.current_user = nil
   end
 
   def deny_access
     redirect_to signin_path, :notice => "Please sign in."
   end
-
-  private
-
-    def user_from_remember_token
-      User.authenticate_with_salt(*remember_token)
-    end
-
-    def remember_token
-      cookies.signed[:remember_token] || [nil, nil]
-    end
-
 end

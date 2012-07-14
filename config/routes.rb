@@ -1,5 +1,7 @@
 Joslink::Application.routes.draw do
 
+  get "sessions/new"
+
   resources :app_logs do as_routes end
   resources :bloodtypes do as_routes end
   resources :incoming_mails do as_routes end
@@ -16,9 +18,12 @@ Joslink::Application.routes.draw do
   resources :sms
   match ':controller/export', :action => 'export'
 
-  match '/signin',  :to =>  "home#index" # 'sessions#new'
-  match '/signout', :to =>  "home#index" # 'sessions#destroy'
-
+  get   '/login', :to => 'sessions#new', :as => :sign_in
+  get '/logout', :to => 'sessions#destroy'
+  get   '/signin', :to => 'sessions#new', :as => :sign_in
+  get '/signout', :to => 'sessions#destroy'
+  match '/auth/:provider/callback', :to => 'sessions#create'
+  match '/auth/failure', :to => 'sessions#failure'
 
 #  resources :users do
 #    member do
@@ -27,8 +32,8 @@ Joslink::Application.routes.draw do
 #    end
 #  end
 
-  get "home/index"
-  root :to => "home#index"
+  get "/home", :to => "members#list"
+  root :to => "members#list"
   
   # The priority is based upon order of creation:
   # first created -> highest priority.
