@@ -94,6 +94,7 @@ class MembersController < ApplicationController
     if request.post? && params[:file].present? 
       infile = params[:file].read 
       n, errs = 0, [] 
+      alerts_group = Group.find_by_group_name('Security alerts')
 #      alerts_group = Group.find_or_create_by_group_name(:group_name => 'Security alerts',
 #          :abbrev => 'alerts', 
 #          :parent_group => Group.find_by_group_name('All'))

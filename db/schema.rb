@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120715133626) do
+ActiveRecord::Schema.define(:version => 20120715172840) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -98,7 +98,7 @@ ActiveRecord::Schema.define(:version => 20120715133626) do
     t.boolean  "receive_sms"
     t.boolean  "receive_email"
     t.boolean  "blood_donor"
-    t.integer  "blood_type_id"
+    t.integer  "bloodtype_id"
     t.datetime "created_at",              :null => false
     t.datetime "updated_at",              :null => false
     t.boolean  "phone_private"
