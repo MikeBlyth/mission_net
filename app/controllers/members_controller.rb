@@ -94,27 +94,30 @@ class MembersController < ApplicationController
     if request.post? && params[:file].present? 
       infile = params[:file].read 
       n, errs = 0, [] 
-      alerts_group = Group.find_or_create_by_group_name(:group_name => 'Security alerts',
-          :abbrev => 'alerts', 
-          :parent_group => Group.find_by_group_name('All'))
-      security_group = Group.find_or_create_by_group_name(:group_name => 'Security leaders', 
-          :abbrev => 'sec', 
-          :parent_group => Group.find_by_group_name('All'))
+#      alerts_group = Group.find_or_create_by_group_name(:group_name => 'Security alerts',
+#          :abbrev => 'alerts', 
+#          :parent_group => Group.find_by_group_name('All'))
+#      security_group = Group.find_or_create_by_group_name(:group_name => 'Security leaders', 
+#          :abbrev => 'sec', 
+#          :parent_group => Group.find_by_group_name('All'))
       CSV.parse(infile, :headers=>true, :header_converters=>:symbol, :converters => :all) do |row| 
-        if row[:name] =~ /\A(.*),\s*(.*)/
-          first_name = $2
-          last_name = $1
-        elsif row[:name] =~ /\A(.*)\s*(\S+)/
-          last_name = $2
-          first_name = $1
-        end
-puts "**** row=#{row}"
-        member = Member.create!(:name=>row[:name], :last_name=>last_name, :first_name=>first_name,
-             :phone_1 => row[:phone_1], :phone_2 => row[:phone_2], :email_1 => row[:email_1],
-             :in_country => row[:in_country] == 'true',
-             :comments => row[:comments])
-        member.groups << [alerts_group] if row[:groups] =~ /(General security)|JosTwitr/
-        member.groups << security_group if row[:groups] =~ /Security leaders/i
+#        if row[:name] =~ /\A(.*),\s*(.*)/
+#          first_name = $2
+#          last_name = $1
+#        elsif row[:name] =~ /\A(.*)\s*(\S+)/
+#          last_name = $2
+#          first_name = $1
+#        end
+#        member = Member.create!(:name=>row[:name], :last_name=>last_name, :first_name=>first_name,
+#             :phone_1 => row[:phone_1], :phone_2 => row[:phone_2], :email_1 => row[:email_1],
+#             :in_country => row[:in_country] == 'true',
+#             :comments => row[:comments])
+if row[:groups] =~ /General Security/i
+  member = Member.find_by_name('row[:name]')
+  member.groups << alerts_group if member
+end
+#        member.groups << [alerts_group] if row[:groups] =~ /(General security)|JosTwitr/
+#        member.groups << security_group if row[:groups] =~ /Security leaders/i
       end
     end
     redirect_to members_path if request.post?  # Finished with importing, so go to members list
