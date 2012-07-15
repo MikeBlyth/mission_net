@@ -18,7 +18,6 @@ module SessionsHelper
 
   def sign_out
     session[:user_id] = nil
-    render :text => "You've logged out!"
     self.current_user = nil
   end
 

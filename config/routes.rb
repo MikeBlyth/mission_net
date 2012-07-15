@@ -1,6 +1,8 @@
 Joslink::Application.routes.draw do
 
   get "sessions/new"
+  get '/:controller/export', :action => 'export'
+  match '/:controller/import', :action => 'import'
 
   resources :app_logs do as_routes end
   resources :bloodtypes do as_routes end
@@ -16,7 +18,6 @@ Joslink::Application.routes.draw do
   resources :messages do as_routes end
   resources :sent_messages do as_routes end
   resources :sms
-  match ':controller/export', :action => 'export'
 
   get   '/login', :to => 'sessions#new', :as => :sign_in
   get '/logout', :to => 'sessions#destroy'

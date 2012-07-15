@@ -85,6 +85,19 @@ class MembersController < ApplicationController
      send_data Member.export(columns), :filename => "members.csv"
   end
 
+  def import(options={})
+binding.pry
+    if request.post? && params[:file].present? 
+      infile = params[:file].read 
+binding.pry
+      n, errs = 0, [] 
+      CSV.parse(infile) do |row| 
+        n += 1 # SKIP: header i.e. first row OR blank row 
+#binding.pry
+      end
+    end
+  end
+   
   def set_full_names
     Member.find(:all).each do |m| 
       if m.name.blank? || (m.first_name == m.short_name)

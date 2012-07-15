@@ -40,15 +40,13 @@ def create
  
     # Insert the user into the session
     session[:user_id] = user.id
-#    render :text => "Welcome #{user.first_name}!"
-puts "**** root_path=#{home_path}"
     redirect_to home_path
   end
 end
 
   # This gets called by the auth provider (e.g. Facebook) when the signin with the provider didn't work
   def failure
-    render :text => "Sorry, but you didn't allow access to our app!"
+    render :text => "Sorry, but that didn't work!"
   end
   
   def destroy
