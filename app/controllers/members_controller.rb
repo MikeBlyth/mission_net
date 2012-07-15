@@ -18,6 +18,7 @@ class MembersController < ApplicationController
         :phone_1, :phone_2, :phone_private, 
         :email_1, :email_2, :email_private, 
         :location, :location_detail, 
+        :in_country, :comments,
         :arrival_date, :departure_date, :groups]
     list.columns = list_columns
 #    config.actions << :config_list
@@ -86,14 +87,30 @@ class MembersController < ApplicationController
   end
 
   def import(options={})
-binding.pry
     if request.post? && params[:file].present? 
       infile = params[:file].read 
-binding.pry
       n, errs = 0, [] 
-      CSV.parse(infile) do |row| 
-        n += 1 # SKIP: header i.e. first row OR blank row 
-#binding.pry
+      alerts_group = Group.find_or_create_by_group_name(:group_name => 'Security alerts',
+          :abbrev => 'alerts', 
+          :parent_group => Group.find_by_group_name('All'))
+      security_group = Group.find_or_create_by_group_name(:group_name => 'Security leaders', 
+          :abbrev => 'sec', 
+          :parent_group => Group.find_by_group_name('All'))
+      CSV.parse(infile, :headers=>true, :header_converters=>:symbol, :converters => :all) do |row| 
+        if row[:name] =~ /\A(.*),\s*(.*)/
+          first_name = $2
+          last_name = $1
+        elsif row[:name] =~ /\A(.*)\s*(\S+)/
+          last_name = $2
+          first_name = $1
+        end
+puts "**** row=#{row}"
+        member = Member.create!(:name=>row[:name], :last_name=>last_name, :first_name=>first_name,
+             :phone_1 => row[:phone_1], :phone_2 => row[:phone_2], :email_1 => row[:email_1],
+             :in_country => row[:in_country] == 'true',
+             :comments => row[:comments])
+        member.groups << [alerts_group] if row[:groups] =~ /(General security)|JosTwitr/
+        member.groups << security_group if row[:groups] =~ /Security leaders/i
       end
     end
   end

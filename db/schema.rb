@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120714110043) do
+ActiveRecord::Schema.define(:version => 20120715133626) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -103,6 +103,8 @@ ActiveRecord::Schema.define(:version => 20120714110043) do
     t.datetime "updated_at",              :null => false
     t.boolean  "phone_private"
     t.boolean  "email_private"
+    t.boolean  "in_country"
+    t.string   "comments"
   end
 
   add_index "members", ["name"], :name => "index_members_on_name"
