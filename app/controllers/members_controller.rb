@@ -37,6 +37,12 @@ class MembersController < ApplicationController
         :blood_donor, :bloodtype,
           ]
     config.columns[:country].actions_for_association_links = []
+    config.columns[:country].inplace_edit = true
+    config.columns[:country].form_ui = :select 
+    config.columns[:name].inplace_edit = true
+    config.columns[:last_name].inplace_edit = true
+    config.columns[:first_name].inplace_edit = true
+    config.columns[:middle_name].inplace_edit = true
     config.columns[:phone_1].inplace_edit = true
     config.columns[:email_1].inplace_edit = true
     config.columns[:phone_2].inplace_edit = true
@@ -45,15 +51,13 @@ class MembersController < ApplicationController
     config.columns[:emergency_contact_email].inplace_edit = true
     config.columns[:emergency_contact_name].inplace_edit = true
     config.columns[:arrival_date].inplace_edit = true
-    config.columns[:blood_donor].inplace_edit = true
     config.columns[:departure_date].inplace_edit = true
     config.columns[:location].inplace_edit = true
     config.columns[:location].form_ui = :select 
     config.columns[:location_detail].inplace_edit = true
-    config.columns[:country].inplace_edit = true
-    config.columns[:country].form_ui = :select 
     config.columns[:bloodtype].inplace_edit = true
     config.columns[:bloodtype].form_ui = :select 
+    config.columns[:blood_donor].inplace_edit = true
     
    config.actions.exclude :search
    config.actions.add :field_search
