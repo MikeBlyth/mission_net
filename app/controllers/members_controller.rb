@@ -113,6 +113,7 @@ puts "**** row=#{row}"
         member.groups << security_group if row[:groups] =~ /Security leaders/i
       end
     end
+    redirect_to members_path if request.post?  # Finished with importing, so go to members list
   end
    
   def set_full_names
