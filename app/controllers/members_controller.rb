@@ -113,7 +113,7 @@ class MembersController < ApplicationController
 #             :in_country => row[:in_country] == 'true',
 #             :comments => row[:comments])
 if row[:groups] =~ /General Security/i
-  member = Member.find_by_name('row[:name]')
+  member = Member.find_by_name(row[:name])
   member.groups << alerts_group if member
 end
 #        member.groups << [alerts_group] if row[:groups] =~ /(General security)|JosTwitr/
