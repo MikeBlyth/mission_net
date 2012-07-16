@@ -1,0 +1,421 @@
+/* NB: This file does not include the color information. That is found in the theme_builder.scss
+   file. 
+   This file is for positioning, sizing, etc. */
+
+body {margin: 0}
+
+.active-scaffold .as_content {
+  margin-top: 4px; }
+
+h1 {
+  letter-spacing: 1px; }
+
+.active-scaffold h3 {
+  font-size: 140%; }
+
+h4, .active-scaffold h4 {
+  font-size: 120%;
+  letter-spacing: 0;
+  margin-top: 8px;
+  padding-left: 0; }
+
+h5, .active-scaffold h5 {
+  font-size: 100%; }
+
+.active-scaffold {
+  input.text-input, select {
+    font-size: 1em;
+    font-family: Verdana, Arial;
+    font-weight: normal; } }
+
+/******* Sizing *********** */
+
+$top_bar_height: 19px;
+$menu_width: 140px;
+
+div#menu {
+  min-height: 800px;
+  width: $menu_width;
+  position: absolute;
+  top: $top_bar_height;
+  left: 0px;
+}
+
+div#content {
+  position: absolute;
+  top: $top_bar_height;
+  left: $menu_width+11;
+  min-width: 800px;
+  min-height: 800px;
+  padding: 0px 5px 5px 8px;
+   }
+
+div.countries-view,
+div.cities-view {
+  width: 600px; }
+
+div.states-view,
+div.bloodtypes-view,
+div.contact_types-view,
+div.educations-view,
+div.employment_statuses-view,
+div.locations-view,
+div.ministries-view,
+div.statuses-view {
+  width: 450px; }
+
+.longitude-input, .latitude-input, .code-input, .flight-input,
+.total_passengers-input, .baggage-input, .time-input {
+  width: 50px; }
+
+.state-input, .date-input, .datepicker, .date_picker, .birth_date-input, .date_active-input,
+.start_date-input, .end_date-input, .est_start_date-input, .sex-input,
+.est_end_date-input, .return_date-input, .confirmed-input,
+.origin-input, .destination-input, .guesthouse-input,
+.driver_accom-input {
+  width: 100px; }
+
+.date_picker_smaller {
+  width: 80px; }
+
+.first_name-input, .last_name-input, .middle_name-input, .phone-input,
+.short_name-input, .qualifications-input, .employment_status-input, .medium-input {
+  width: 120px; }
+
+.name-input, .family-input, .spouse-input, .wide-input, .ministry-input, .country-input,
+.ministry_location-input {
+  width: 180px; }
+
+#tabs-wife.wife_hidden, #wife-tab.wife_hidden {
+  display: none; }
+
+.status-input,
+.ministry_comment-input, .temporary_location-input, .location-input,
+.education-input, .ministry_comments {
+  width: 270px; }
+
+/******************* GENERAL *************** */
+
+a, a:visited {
+  text-decoration: none; }
+
+#menu {
+  padding: 0px 5px 10px 5px;
+  h5 {margin: 0 0 2px 0;}
+  p.user {
+    font-size: smaller; }
+  a {
+    text-decoration: none; }
+  ul {
+    list-style-position: outside;
+    margin-left: -1.5em; }
+  li {
+    font-size: 80%; } 
+  form select, form input {
+    font-size: 80%;}
+     }
+
+/*
+a.show_menu {
+  font-size: smaller;
+  background-image: url("images/arrows-4-icon.png");
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+    }     
+*/
+
+#menu_toggle {
+  margin-bottom: -7px;
+  margin-top: -2px;
+    }
+
+#signed_in {
+  font-size: smaller;
+  float: right;
+  }
+
+a.show_menu {
+  font-size: smaller;
+  &:hover {
+  background: yellow;
+  color: inherit;
+  }
+  img {
+    position: relative;
+    left: 2px;
+    top: 4px;
+    }     
+  }
+
+p.filtered-message:before {
+  content:"List is filtered for";
+  }
+
+p.filtered-message {
+  font-weight: bold;
+  }
+
+ul.links {
+  margin-top: 0px; }
+
+#notice {
+  padding: 0.5em;
+  margin: 10px;
+  font-style: bold;
+  font-size: 1.2em; }
+
+.contact_form {
+  max-width: 700px; }
+
+.family_info {
+  p {
+    padding-top: 0.3em; } }
+
+.family_members h5, .add_family_members h5 {
+  margin-top: 1em; }
+
+.sim_id-input {
+  width: 60px; }
+
+.test {
+  color: red;
+  background: blue; }
+
+td.label {
+  text-align: right; }
+
+.hidden {
+  display: none; }
+
+table.new_family {
+  width: 600px;
+  tbody {
+    vertical-align: top; }
+  td {
+    width: 25%;
+    padding-right: 20px;
+    .date-input, .date_active-input, .date_picker {
+      width: 120px; } } }
+
+.family_summary table, .travel_reminders table {
+  tbody {
+    vertical-align: top; }
+  td.name {
+    font-weight: bold; } }
+
+.travel_reminders {
+  table {
+    width: 600px; }
+  span.name {
+    font-weight: bold; }
+  p {
+    width: 600px;
+    padding: 0.5em; } }
+
+a.big-link {
+  font: bold 14px arial, sans-serif; }
+
+div.new_travel, div.member_form {
+  position: relative;
+  $height: 470px;
+  height: $height;
+  padding: 20px;
+  div.col_1 {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 300px;
+    padding: 5px;
+    height: $height - 30px; }
+  div.col_2 {
+    position: absolute;
+    top: 0px;
+    left: 310px;
+    width: 300px;
+    padding: 5px;
+    height: $height - 30px; }
+  div.col_3 {
+    position: absolute;
+    top: 0px;
+    left: 621px;
+    width: 300px;
+    padding: 5px;
+    height: $height - 30px; }
+  div.form-footer {
+    position: absolute;
+    top: $height - 20px;
+    left: 0px; }
+  table, td {
+    border-collapse: collapse;
+    border: 0px solid red;
+    border-bottom: 0px solid red;
+    border-left: 0px solid red; } }
+
+div.member_form {
+  $height2: 340px;
+  padding: 5px;
+  height: $height2;
+  div.col_1 {
+    height: $height2; }
+  div.col_2 {
+    height: $height2; }
+  div.col_3 {
+    height: $height2; } }
+
+.active-scaffold .active-scaffold td {
+  border-bottom: 0px;
+  border-left: 0px;
+  background-color: transparent; }
+
+div.passengers {
+  padding-left: 10px; }
+
+div.travel_category, div.spouse_kids, div.total_passengers,
+div.other_travelers {
+  margin-top: 0.8em; }
+
+div.traveler_names {
+  select.multiple {
+    height: 180px; } }
+
+div.spouse_kids {
+  table {
+    width: 80%; } }
+
+div.with_children {
+  padding-left: 10px; }
+
+div.with_spouse {
+  padding-left: 10px; }
+
+div.travel_date {
+  padding: 0px;
+  margin: 0px; }
+
+div.temporary_location_dates {
+  padding-left: 1em; }
+
+#as_calendar_events-tbody .date-column {
+  width: 20%; }
+
+.whereis, .status_mismatch {
+  th {
+    text-align: left; }
+  td {
+    padding: 0.1em 0.7em 0.1em 0.4em; } }
+
+.whereis .new_location td {
+  padding-top: 0.5em; }
+
+div.list_field_terms,
+div.status_mismatch {
+  width: 600px; }
+
+div.contact_updates {
+  p.name {
+    font-weight: bold;
+    margin-top: 0.6em; }
+  .contact_type, .contact_info {
+    margin-left: 1em; }
+  .contact_type {
+    font-style: italic; }
+  .footer {
+    font-style: italic;
+    margin-top: 0.6em; } }
+
+div.crosstab {
+  p.title {
+    font-weight: bold;
+    font-size: 1.3em; }
+  th {
+    text-align: left;
+    padding: 0px 10px 0px 10px; }
+  td {
+    padding: 0px 30px 0px 10px;
+    text-align: right; }
+  td.row_label {
+    text-align: left; } }
+
+.school-input {
+  width: 70px; }
+
+.grade-input {
+  width: 50px; }
+
+#tabs p.form-footer {margin: 0.5em; }
+
+table.children {
+  table-layout: fixed;
+  width: 500px;
+  .first_name-input {
+    width: 90px; }
+  .employment_status-input {
+    width: 100px; }
+  th.idx {
+    width: 30px; }
+  th.name {
+    width: 100px; }
+  th.birth_date {
+    width: 90px; }
+  th.sex {
+    width: 80px; }
+  th.school {
+    width: 80px; }
+  th.grade {
+    width: 60px; }
+  th.status {
+    width: 100px; } }
+
+.active-scaffold-header div.actions a.export {
+  background-image: url(images/export.png);
+  padding: 5px 5px 5px 25px; }
+
+#msg-form #msg-bottom {
+  position: relative; }
+
+#msg-followup, #msg-form {
+  width: 400px;
+  padding: 0.5em;
+  #msg-top {
+    width: 400px;
+    padding: 0;
+    margin-top: 0.5em; }
+  .note {
+    width: 380px;
+    padding: 0.5em;
+    margin-bottom: 1em;
+    font-size: smaller; }
+  .msg-quote {
+    padding: 0.5em;
+    margin: 0.5em 1em 0.5em 1em; }
+    }
+
+.view .msg-caveat { border: 1px solid red; padding: 0.5em; margin-bottom: 1em; width: 400px}
+
+#advanced {
+  position: absolute;
+  top: 0px;  background-attachment: fixed;
+  background-repeat: no-repeat;
+
+  left: 200px;
+  width: 200px;
+  padding: 5px; }
+
+.groups-view {
+  #record_abbrev {
+    width: 80px; }
+  #record_type_of_group {
+    width: 200px; } }
+
+.not-implemented {
+  display: none; }
+
+#main .active-scaffold > table {
+  width: auto;
+  width: 100%;
+  }
+  
+/************* WORKAROUNDS ETC. ******************/
+
+/* this is needed b/o bug in jquery-ui, to get tabs widget to work next to the floated menu */
+.ui-helper-clearfix { display:block; min-width: 0; overflow: hidden; }  
