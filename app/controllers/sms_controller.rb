@@ -7,7 +7,7 @@ require 'sms_gateway'
 
 class SmsController < ApplicationController
   include HTTParty
-  skip_before_filter :verify_authenticity_token
+  skip_before_filter :verify_authenticity_token, :authorize
 
   # Create - handle incoming SMS message from Twilio
   #

@@ -56,6 +56,72 @@ x = Bloodtype.new(:abo => 'AB', :rh => 'neg', :comment => '', :full => 'AB neg')
 x.id = 14
 x.save
 x = Bloodtype.new(:abo => '', :rh => '', :comment => 'unknown', :full => 'unknown')
+#puts "**** Seeding cities table"
+City.delete_all
+x = City.new(:name => 'Jos', :state => 'Plateau', :country => 'NG', :latitude => 9.917, :longitude => 8.9)
+x.id = 1
+x.save
+x = City.new(:name => 'Enugu', :state => 'Abia', :country => 'NG', :latitude => 6.43333, :longitude => 7.48333)
+x.id = 2
+x.save
+x = City.new(:name => 'Aba', :state => 'Abia', :country => 'NG', :latitude => 5.11667, :longitude => 7.36667)
+x.id = 9
+x.save
+x = City.new(:name => 'Egbe', :state => 'Kogi', :country => 'NG', :latitude => 8.21667, :longitude => 5.51667)
+x.id = 10
+x.save
+x = City.new(:name => 'Igbaja', :state => 'Kwara', :country => 'NG', :latitude => 8.38333, :longitude => 4.88333)
+x.id = 11
+x.save
+x = City.new(:name => 'Ilorin', :state => 'Kwara', :country => 'NG', :latitude => 8.48, :longitude => 4.55)
+x.id = 12
+x.save
+x = City.new(:name => 'Kaiama', :state => 'Kwara', :country => 'NG', :latitude => 9.6225, :longitude => 6.3)
+x.id = 13
+x.save
+x = City.new(:name => 'Abuja', :state => 'Federal Capital Territory', :country => 'NG', :latitude => 9.25, :longitude => 7)
+x.id = 14
+x.save
+x = City.new(:name => 'Gure', :state => 'Kaduna', :country => 'NG', :latitude => 10.2369, :longitude => 8.4)
+x.id = 16
+x.save
+x = City.new(:name => 'Kagoro', :state => 'Kaduna', :country => 'NG', :latitude => 9.6, :longitude => 8.3833)
+x.id = 18
+x.save
+x = City.new(:name => 'Adunu', :state => 'Kaduna', :country => 'NG', :latitude => 9.58333, :longitude => 7.15)
+x.id = 19
+x.save
+x = City.new(:name => 'Samaru', :state => 'Kaduna', :country => 'NG', :latitude => 9.72, :longitude => 8.4)
+x.id = 20
+x.save
+x = City.new(:name => 'Minna', :state => 'Niger', :country => 'NG', :latitude => 9.6139, :longitude => 6.5569)
+x.id = 21
+x.save
+x = City.new(:name => 'Ningi', :state => 'Bauchi', :country => 'NG', :latitude => 9.56968, :longitude => 11.077)
+x.id = 22
+x.save
+x = City.new(:name => 'Billiri', :state => 'Gombe', :country => 'NG', :latitude => 9.86472, :longitude => 11.2253)
+x.id = 23
+x.save
+x = City.new(:name => 'Kano', :state => 'Kano', :country => 'NG', :latitude => 11.9964, :longitude => 8.51667)
+x.id = 24
+x.save
+x = City.new(:name => 'Tofa', :state => 'Kano', :country => 'NG', :latitude => 12.0133, :longitude => 8.75)
+x.id = 25
+x.save
+x = City.new(:name => 'Karu', :state => 'Federal Capital Territory', :country => 'NG')
+x.id = 26
+x.save
+x = City.new(:name => 'Miango', :state => 'Plateau', :country => 'NG', :latitude => 9.853, :longitude => 8.696)
+x.id = 45
+x.save
+x = City.new(:name => 'Gyero', :state => 'Plateau', :country => 'NG', :latitude => 9.8162, :longitude => 8.8184)
+x.id = 46
+x.save
+x = City.new(:name => 'unspecified', :state => '', :country => '??')
+x.id = 999999
+x.save
+unspecified_city_id = x.id   # We save this to use in the unspecified location record (see below)
 x.id = 999999
 x.save
 

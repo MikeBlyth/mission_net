@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120715185530) do
+ActiveRecord::Schema.define(:version => 20120717090234) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -36,6 +36,15 @@ ActiveRecord::Schema.define(:version => 20120715185530) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.string   "comment"
+  end
+
+  create_table "cities", :force => true do |t|
+    t.string   "name"
+    t.string   "state"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "countries", :force => true do |t|
@@ -68,15 +77,15 @@ ActiveRecord::Schema.define(:version => 20120715185530) do
   end
 
   create_table "locations", :force => true do |t|
-    t.string   "name"
-    t.string   "state"
-    t.string   "city"
-    t.string   "lga"
-    t.float    "gps_latitude"
-    t.float    "gps_longitude"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.string   "description"
+    t.integer  "city_id",     :default => 999999
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "code"
   end
+
+  add_index "locations", ["code"], :name => "index_locations_on_code", :unique => true
+  add_index "locations", ["description"], :name => "index_locations_on_description", :unique => true
 
   create_table "members", :force => true do |t|
     t.string   "last_name"
@@ -129,6 +138,31 @@ ActiveRecord::Schema.define(:version => 20120715185530) do
     t.integer  "following_up"
     t.datetime "created_at",          :null => false
     t.datetime "updated_at",          :null => false
+  end
+
+  create_table "people", :force => true do |t|
+    t.integer  "family_id"
+    t.string   "last_name"
+    t.string   "first_name"
+    t.string   "middle_name"
+    t.integer  "country_id"
+    t.string   "emergency_contact_phone"
+    t.string   "emergency_contact_email"
+    t.string   "emergency_contact_name"
+    t.string   "phone_1"
+    t.string   "phone_2"
+    t.string   "email_1"
+    t.string   "email_2"
+    t.integer  "location_id"
+    t.string   "location_detail"
+    t.date     "arrival_date"
+    t.date     "departure_date"
+    t.boolean  "receive_sms"
+    t.boolean  "receive_email"
+    t.boolean  "blood_donor"
+    t.integer  "blood_type_id"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
   end
 
   create_table "sent_messages", :force => true do |t|

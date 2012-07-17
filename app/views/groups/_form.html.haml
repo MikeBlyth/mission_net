@@ -1,0 +1,26 @@
+-# Called by frontends/default/views/_base_form.html.erb
+= fields_for :record do |form| 
+  %table.contact_form
+    %tr
+      %td
+        = form.label :group_name
+        %br
+        = form.text_field :group_name    
+      %td
+        = form.label :abbrev, "Abbreviation"
+        %br
+        = form.text_field :abbrev    
+      %td
+        = form.label :parent_group_id
+        %br
+        = form.collection_select :parent_group_id, Group.order('group_name'), :id, :group_name, :include_blank=>"--none--"
+    %tr
+      %td
+        = form.label :member_ids, "Members"
+        %br
+        = form.select :member_ids, Member.where(:in_country=>true).order('name').collect {|x| [x.name, x.id]}, {:include_blank=>"--none--"}, 
+          :multiple => true, :size=>15
+      %td(colspan=3)
+        %p 
+          If this new group is to be a container for sub-groups, you should just add members to the sub-groups.
+          They will automatically be included in this parent group.

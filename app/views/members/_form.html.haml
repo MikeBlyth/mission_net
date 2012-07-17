@@ -1,0 +1,83 @@
+- @member = @record
+= form_for :head do |member|
+  %table.new_family
+    %tr
+      %td
+        = member.label :last_name,"", :class=>'required'
+        %br
+        = member.text_field :last_name, :class=> "last_name-input"
+      %td
+        = member.label :first_name,"", :class=>'required'
+        %br
+        = member.text_field :first_name, :class=> "first_name-input"
+      %td
+        = member.label :middle_name
+        %br
+        = member.text_field :middle_name, :class=> "middle_name-input"
+      %td
+        = member.label :short_name
+        %br
+        = member.text_field :short_name, :class=> "short_name-input"
+    %tr
+      %td
+        = member.label :name, "Full name of individual", :class=>'required'
+        %br
+        = member.text_field :name, :class=> "name-input"
+        %br
+        %p.description Must be unique
+      %td
+        .country
+          = member.label :country_id
+          %br
+          - choices = options_from_collection_for_select(Country.where('include_in_selection').select('id, name').order('name'), :id, :name, @member[:country_id])
+          = member.select(:country_id, choices, {:include_blank => true }, :class=>'wide-input')    
+    %tr
+      %td
+        = member.label :phone_1
+        %br
+        = member.text_field :phone_1, :class=>'phone-input'
+      %td
+        = member.label :phone_2
+        %br
+        = member.text_field :phone_2, :class=>'phone-input'
+      %td
+        = member.label :phone_private, 'Phone number is private?'
+        %br
+        = member.check_box :phone_private
+    %tr
+      %td
+        = member.label :email_1
+        %br
+        = member.text_field :email_1
+      %td
+        = member.label :email_2
+        %br
+        = member.text_field :email_2
+      %td
+        = member.label :email_private, 'Email is private?'
+        %br
+        = member.check_box :email_private
+    %tr{:style=>"borders-bottom: 1px solid black; background: #AFA"}
+      %td <h5>Emergency Contact Information </h5>
+    %tr
+      %td
+        = member.label :emergency_contact_name        
+        %br
+        = member.text_field :emergency_contact_name, :class=>'name-input'
+      %td
+        = member.label :emergency_contact_phone        
+        %br
+        = member.text_field :emergency_contact_phone, :class=>'phone-input'
+      %td
+        = member.label :emergency_contact_email        
+        %br
+        = member.text_field :emergency_contact_email, :class=>'email-input'
+      %tr
+        %td <h5>Location</h5>
+      %tr
+        %td
+          = member.label :location_id, "Location"
+          %br
+          = member.select(:location_id, location_choices(@member[:location_id]), {:include_blank => true })    
+                        
+
