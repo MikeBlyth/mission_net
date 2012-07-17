@@ -31,7 +31,7 @@ class SmsController < ApplicationController
         resp = process_sms(body)[0..159]    # generate response
         render :text => resp, :status => 200, :content_type => Mime::TEXT.to_s  # Confirm w incoming gateway that msg received
         AppLog.create(:code => "SMS.reply", :description=>"to #{from}: #{resp}")
-        default_gateway.deliver(from, resp) #default_gateway in messages_helper creates an instance of gateway specified 
+        default_sms_gateway.deliver(from, resp) #default_gateway in messages_helper creates an instance of gateway specified 
                                             #  in SiteSettings default_outgoing_sms_gateway
       rescue
         AppLog.create(:code => "SMS.system_error", :description=>"on create: #{$!}")
