@@ -17,7 +17,7 @@ class TwilioGateway < SmsGateway
   def initialize
     @gateway_name = 'twilio'
     @required_params = [:account_sid, :auth_token, :phone_number]  # "twilio_" is automatically prefixed to these for looking in the site settings
-    @client = Twilio::REST::Client.new account_sid, auth_token
+    @client = Twilio::REST::Client.new @account_sid, @auth_token
     super
   end
 
