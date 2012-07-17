@@ -19,7 +19,7 @@ module MessagesHelper
     if record.sms_only && record.sms_only.size > 40
       record.sms_only
     else
-      record.body[0..140]
+      record.body[0..140] if record.body
     end
   end
  
