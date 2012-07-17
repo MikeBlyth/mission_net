@@ -9,7 +9,7 @@ class SmsController < ApplicationController
   include HTTParty
   skip_before_filter :verify_authenticity_token, :authorize
 
-  # Create - handle incoming SMS message from Twilio
+  # Create - handle incoming SMS message from TWILIO (Will need adjustment if other gateway is used)
   #
   # Twilio sends the message to create just as if it were a web HTTP request
   # The create method should handle the incoming message by determining any actions
@@ -32,10 +32,11 @@ class SmsController < ApplicationController
         resp = process_sms(body)[0..159]    # generate response
         render :text => resp, :status => 200, :content_type => Mime::TEXT.to_s  # Confirm w incoming gateway that msg received
         AppLog.create(:code => "SMS.reply", :description=>"to #{from}: #{resp}")
-        ClickatellGateway.new.deliver(from, resp)
-#      rescue
-#        AppLog.create(:code => "SMS.system_error", :description=>"on create: #{$!}")
-#        render :text => "Internal", :status => 500, :content_type => Mime::TEXT.to_s
+        default_gateway.deliver(from, resp) #default_gateway in messages_helper creates an instance of gateway specified 
+                                            #  in SiteSettings default_outgoing_sms_gateway
+      rescue
+        AppLog.create(:code => "SMS.system_error", :description=>"on create: #{$!}")
+        render :text => "Internal", :status => 500, :content_type => Mime::TEXT.to_s
 #        ClickatellGateway.new.deliver(from, "Sorry, there is a bug in my system and I crashed :-(" )
       end
     else  

@@ -7,7 +7,7 @@ gem 'rails', '3.2.5'
 
 gem 'pg'
 gem 'haml'
-gem 'twiliolib'
+gem 'twilio-ruby'
 gem 'httparty'
 gem 'active_scaffold'
 gem 'settingslogic'

@@ -1,4 +1,3 @@
-require 'twiliolib'
 require 'application_helper'
 include ApplicationHelper
 require 'httparty'
@@ -34,6 +33,11 @@ class SmsGateway
     @gateway_name ||= 'SmsGateway'
   end
 
+  # Given the gateway name and a list of required params, e.g. [:account, :password, :phone_number],
+  # use SiteSettingsto return the right instance variables for this Gateway. For example, if
+  # @gateway_name = 'twilio', then find SiteSetting[:twilio_account], ... and create
+  # @account, @password, and @phone_number. Requires get_site_setting method which gets a single
+  # one of these settings (like password)
   def get_required_params
     missing = []
     @required_params.each do |param|

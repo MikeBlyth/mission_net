@@ -32,7 +32,7 @@ module MessagesHelper
   #   in testing and development, a new instance of MockMysenderGateway is returned if it's a defined class,
   #     otherwise a new instance of MockClickatellGateway is returned
   def default_sms_gateway
-    gateway_name = SiteSetting.outgoing_sms
+    gateway_name = SiteSetting.default_outgoing_sms_gateway
     raise "Trying to send SMS but no gateway defined in site settings" unless gateway_name
     gateway_name = gateway_name.capitalize + "Gateway"
     if Rails.env == 'production'

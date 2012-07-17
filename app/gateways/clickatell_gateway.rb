@@ -100,7 +100,8 @@ class ClickatellGateway < SmsGateway
     if @uri =~ /password=/   # If we're using user_name and password, no need for session
       @gateway_reply = HTTParty::get @uri
     else
-      get_session if @session.nil?  # 
+      resp = get_session if @session.nil?  # 
+      raise "Failed to get Clickatell session, got '#{resp}'" if @session.nil?
       @gateway_reply = HTTParty::get uri_with_session 
       # If we have used a session to call, and there is no valid session, then get one
       if session_expired

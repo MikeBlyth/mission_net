@@ -47,9 +47,9 @@ organization:
   default: Joslink
   type: string
       
-outgoing_sms:
+default_outgoing_sms_gateway:
   name: SMS gateway for outgoing messages
-  default: Clickatell
+  default: Twilio
   type: string
 
 clickatell_user_name:
@@ -76,8 +76,8 @@ twilio_account_sid:
   name: Twilio Account SID
   type: string
   
-twilio_account_token:
-  name: Twilio Account Token
+twilio_auth_token:
+  name: Twilio Authorization Token
   type: string
   
 twilio_phone_number:
