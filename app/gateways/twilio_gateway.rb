@@ -25,10 +25,16 @@ class TwilioGateway < SmsGateway
   # No error checking done in this method. Should eventually be added.
   #   See http://www.twilio.com/docs/api/rest/sending-sms for how to do status callbacks
   def deliver(numbers=@numbers, body=@body)
-    @numbers = numbers  # Update instance variables (matters only if they were not included as arguments)
+    # NB: message#deliver_sms currently sends numbers as a string, not an array.
+    if numbers.is_a? String
+      @numbers = numbers.gsub("+","").split(/,\s*/)    # Convert to array so we can do "each"
+    else
+      @numbers = numbers
+    end
     @body = body        #  ...
     outgoing_numbers = numbers_to_string_list
     @numbers.each do |number|
+      number = '+' + number unless number[0]=='+'
       @client.account.sms.messages.create(
         :from => @phone_number,
         :to => number.to_s,
