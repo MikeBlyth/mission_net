@@ -3,6 +3,7 @@ include ApplicationHelper
 require 'httparty'
 require 'uri'
 require 'sms_gateway'
+include SmsGatewaysHelper
 
 class SmsController < ApplicationController
   include HTTParty
@@ -18,6 +19,7 @@ class SmsController < ApplicationController
   def create  # need the name 'create' to conform with REST defaults, or change routes
  #puts "**** IncomingController create: params=#{params}"
     from = params[:From]  # The phone number of the sender
+#debugger
     body = params[:Body]  # This is the body of the incoming message
     AppLog.create(:code => "SMS.incoming", :description=>"from=#{from}; body=#{body[0..50]}")
     params.delete 'SmsSid'
@@ -29,10 +31,10 @@ class SmsController < ApplicationController
       begin
         AppLog.create(:code => "SMS.received", :description=>"from #{from} (#{@sender.shorter_name}): #{body}")
         resp = process_sms(body)[0..159]    # generate response
-        render :text => resp, :status => 200, :content_type => Mime::TEXT.to_s  # Confirm w incoming gateway that msg received
         AppLog.create(:code => "SMS.reply", :description=>"to #{from}: #{resp}")
         default_sms_gateway.deliver(from, resp) #default_gateway in messages_helper creates an instance of gateway specified 
                                             #  in SiteSettings default_outgoing_sms_gateway
+        render :text => resp, :status => 200, :content_type => Mime::TEXT.to_s  # Confirm w incoming gateway that msg received
       rescue
         AppLog.create(:code => "SMS.system_error", :description=>"on create: #{$!}")
         render :text => "Internal", :status => 500, :content_type => Mime::TEXT.to_s
