@@ -17,11 +17,11 @@ class TwilioGateway < SmsGateway
   def initialize
     @gateway_name = 'twilio'
     @required_params = [:account_sid, :auth_token, :phone_number]  # "twilio_" is automatically prefixed to these for looking in the site settings
+    super
 AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_sid=#{@account_sid[0..6]}..., @auth_token=#{@auth_token[0..4]}...")
 puts "**** Create Twilio Client:"
     @client = Twilio::REST::Client.new @account_sid, @auth_token
 puts "****   Client = #{@client}.attributes"    
-    super
   end
 
   # send an sms using Twilio-ruby interface
