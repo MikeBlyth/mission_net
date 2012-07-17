@@ -15,7 +15,7 @@
     = settings_field(:clickatell_api_id, :label=>'Clickatell API ID')
     %h4 Twilio
     = settings_field(:twilio_account_sid, :label=>'Twilio account SID')
-    = settings_field(:twilio_account_token, :password=>true)
+    = settings_field(:twilio_auth_token, :password=>true, :label=>'Twilio authorization token')
     = settings_field(:twilio_api_version, :label=>'Twilio API version')
     = settings_field(:twilio_phone_number)
     %h3 Notifications
