@@ -19,7 +19,7 @@ class MembersController < ApplicationController
         :email_1, :email_2, :email_private, 
         :location, :location_detail, 
         :in_country, :comments,
-        :arrival_date, :departure_date, :groups]
+        :arrival_date, :departure_date, :groups, :blood_donor, :bloodtype]
     list.columns = list_columns
 #    config.actions << :config_list
 #    config.config_list.default_columns = [:name, :country, :phone_1, :email_1, :location, :arrival_date, :departure_date] 
@@ -39,6 +39,7 @@ class MembersController < ApplicationController
     config.columns[:country].actions_for_association_links = []
     config.columns[:country].inplace_edit = true
     config.columns[:country].form_ui = :select 
+    config.columns[:in_country].inplace_edit = true
     config.columns[:name].inplace_edit = true
     config.columns[:last_name].inplace_edit = true
     config.columns[:first_name].inplace_edit = true
@@ -47,6 +48,8 @@ class MembersController < ApplicationController
     config.columns[:email_1].inplace_edit = true
     config.columns[:phone_2].inplace_edit = true
     config.columns[:email_2].inplace_edit = true
+    config.columns[:phone_private].inplace_edit = true
+    config.columns[:email_private].inplace_edit = true
     config.columns[:emergency_contact_phone].inplace_edit = true
     config.columns[:emergency_contact_email].inplace_edit = true
     config.columns[:emergency_contact_name].inplace_edit = true
@@ -58,6 +61,7 @@ class MembersController < ApplicationController
     config.columns[:bloodtype].inplace_edit = true
     config.columns[:bloodtype].form_ui = :select 
     config.columns[:blood_donor].inplace_edit = true
+    config.columns[:comments].inplace_edit = true
     
    config.actions.exclude :search
    config.actions.add :field_search
