@@ -83,5 +83,6 @@
         %td
           = member.label :group_ids, "Groups"
           %br
-          = member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>15          
+          -#= member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>10         
+          = member.select :group_ids, group_choices(@member), {},  :multiple => true, :size=>10   
 

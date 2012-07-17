@@ -7,6 +7,12 @@ module SessionsHelper
     current_user.groups.find_by_group_name("Administrators")
   end
 
+  def current_user_moderator?
+    current_user.groups.find_by_group_name("Administrators") ||
+      current_user.groups.find_by_group_name("Moderators") || 
+      current_user.groups.find_by_group_name("Security leaders") 
+  end
+
   # Is user (the parameter) the currently logged in user?
   def current_user?(user)
     user == current_user

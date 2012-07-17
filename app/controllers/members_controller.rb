@@ -37,6 +37,7 @@ class MembersController < ApplicationController
         :blood_donor, :bloodtype,
           ]
     config.columns[:country].actions_for_association_links = []
+    config.columns[:groups].clear_link
     config.columns[:country].inplace_edit = true
     config.columns[:country].form_ui = :select 
     config.columns[:in_country].inplace_edit = true

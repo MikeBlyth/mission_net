@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120717090234) do
+ActiveRecord::Schema.define(:version => 20120717205139) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -69,6 +69,7 @@ ActiveRecord::Schema.define(:version => 20120717090234) do
     t.boolean  "primary"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+    t.boolean  "user_selectable"
   end
 
   create_table "groups_members", :id => false, :force => true do |t|
