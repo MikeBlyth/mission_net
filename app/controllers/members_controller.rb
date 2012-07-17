@@ -78,8 +78,17 @@ class MembersController < ApplicationController
     params
   end
 
-  def attach_groups
-    @record.update_attributes(:group_ids=>params[:record][:group_ids]) if params[:record] && params[:record][:group_ids]
+  def after_update_save(record)
+    attach_groups(record)
+  end 
+
+  def after_create_save(record)
+    attach_groups(record)
+  end 
+
+  def attach_groups(record)
+    groups = params[:record][:group_ids] if params[:record]
+    record.update_attributes(:group_ids=>groups) 
   end
 
 #   Export CSV file. Exports ALL records, so will have to be modified if a subset is desired

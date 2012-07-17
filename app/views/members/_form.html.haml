@@ -1,13 +1,13 @@
 - @member = @record
-= form_for :head do |member|
+= fields_for :record do |member|
   %table.new_family
     %tr
       %td
-        = member.label :last_name,"", :class=>'required'
+        = member.label :last_name, "", :class=>'required'
         %br
         = member.text_field :last_name, :class=> "last_name-input"
       %td
-        = member.label :first_name,"", :class=>'required'
+        = member.label :first_name, "", :class=>'required'
         %br
         = member.text_field :first_name, :class=> "first_name-input"
       %td
@@ -79,5 +79,9 @@
           = member.label :location_id, "Location"
           %br
           = member.select(:location_id, location_choices(@member[:location_id]), {:include_blank => true })    
-                        
+      %tr
+        %td
+          = member.label :group_ids, "Groups"
+          %br
+          = member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>15          
 
