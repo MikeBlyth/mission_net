@@ -11,7 +11,8 @@ class MessagesController < ApplicationController
     config.actions.exclude :update
     config.actions.exclude :create  # TEMPORARY!
     list.sorting = {:created_at => 'DESC'}
-    config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
+# NOT READY TO ADD "FOLLOW UP" ACTION
+#    config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
   end
 
   def do_new
