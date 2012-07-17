@@ -5,9 +5,11 @@ class MessagesController < ApplicationController
     config.create.link.page = true 
 #    config.columns[:sent_messages].label = 'Sent to'
     config.columns[:importance].label = 'Imp'
+    config.columns[:user].clear_link
     config.create.link.inline = false 
     config.update.link = false
     config.actions.exclude :update
+    config.actions.exclude :create  # TEMPORARY!
     list.sorting = {:created_at => 'DESC'}
     config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
   end
