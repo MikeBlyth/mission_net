@@ -1,4 +1,3 @@
-require 'twiliolib'
 require 'application_helper'
 include ApplicationHelper
 require 'httparty'
