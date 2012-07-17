@@ -36,7 +36,7 @@ class SmsController < ApplicationController
                                             #  in SiteSettings default_outgoing_sms_gateway
         render :text => resp, :status => 200, :content_type => Mime::TEXT.to_s  # Confirm w incoming gateway that msg received
       rescue
-        AppLog.create(:code => "SMS.system_error", :description=>"on create: #{$!}")
+        AppLog.create(:code => "SMS.system_error", :description=>"on SMS#create: #{$!}, #{$!.backtrace[0..2]}")
         render :text => "Internal", :status => 500, :content_type => Mime::TEXT.to_s
 #        ClickatellGateway.new.deliver(from, "Sorry, there is a bug in my system and I crashed :-(" )
       end
