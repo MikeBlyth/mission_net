@@ -17,7 +17,10 @@ class TwilioGateway < SmsGateway
   def initialize
     @gateway_name = 'twilio'
     @required_params = [:account_sid, :auth_token, :phone_number]  # "twilio_" is automatically prefixed to these for looking in the site settings
+AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_sid=#{@account_sid[0..6]}..., @auth_token=#{@auth_token[0..4]}...")
+puts "**** Create Twilio Client:"
     @client = Twilio::REST::Client.new @account_sid, @auth_token
+puts "****   Client = #{@client}.attributes"    
     super
   end
 
@@ -35,6 +38,8 @@ class TwilioGateway < SmsGateway
     outgoing_numbers = numbers_to_string_list
     @numbers.each do |number|
       number = '+' + number unless number[0]=='+'
+AppLog.create(:code => "SMS.sending.#{@gateway_name}", :description=>"from=#{@phone_number}, to=#{number}")
+puts "SMS.sending.#{@gateway_name}--from=#{@phone_number}, to=#{number}"
       @client.account.sms.messages.create(
         :from => @phone_number,
         :to => number.to_s,
