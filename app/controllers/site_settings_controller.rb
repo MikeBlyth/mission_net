@@ -1,7 +1,7 @@
 class SiteSettingsController < ActionController::Base
   protect_from_forgery
 
-  before_filter :authenticate_admin #, :only => [:edit, :update]
+#  before_filter :authenticate_admin #, :only => [:edit, :update]
 #  include AuthenticationHelper
   include ApplicationHelper
   include SessionsHelper

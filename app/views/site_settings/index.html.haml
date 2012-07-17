@@ -1,0 +1,9 @@
+.active-scaffold.site_settings
+  %h2 Site Settings
+  %h3 Configuration file (default)
+  - SiteSetting.defaults.each do |s| 
+    = "#{s[0]} (#{s[1][:default]})<br>".html_safe
+  %h3 Found in database table  
+  - SiteSetting.all.each do |s| 
+    = "#{s.name} => #{s.value}<br>".html_safe
+

@@ -1,0 +1,28 @@
+%h5 
+  Main Menu
+- if signed_in? 
+  %ul.links
+    %li= link_to 'Members', members_path 
+    %li= link_to 'Groups', groups_path
+    %li= link_to 'Messages', messages_path
+    %li= link_to "Edit your user info", edit_member_path(current_user)
+    %li= link_to "Sign out", signout_path, :method => :delete       
+  %h5 Option Tables
+  - if current_user_admin?
+    %ul.links
+      %li= link_to 'Bloodtypes', bloodtypes_path 
+      %li= link_to 'Cities', cities_path 
+      %li= link_to 'Countries', countries_path 
+      %li= link_to 'Locations', locations_path 
+      %hr
+      %h5 Admin tasks
+    %ul.links
+      %li= link_to 'Log', '/app_logs'
+      %li= link_to 'Settings', site_settings_path
+  %hr
+- else 
+  %p Please sign in 
+  = link_to "Sign in", signin_path
+
+
+

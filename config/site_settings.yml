@@ -96,17 +96,4 @@ contact_update_recipients:
   name: Contact Update Recipients
   type: string
   
-travel_update_recipients:
-  name: Travel Update Recipients
-  default: test@test.com
-  type: string
- 
-travel_update_window:
-  name: Travel Update Default Window (Days)
-  default: 10
-  type: integer  
-    
-    
-  
-      
 

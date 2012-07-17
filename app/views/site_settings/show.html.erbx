@@ -1,0 +1,26 @@
+.active-scaffold.site_settings
+  %h2 Site Settings
+  = form_tag(site_settings_path, :method => :put) do
+    %h3 Email connection
+    = label_tag   
+  <%- SiteSetting.keys.each do |key| -%>
+    <%- options = SiteSetting.defaults[key] -%>
+    <div class="configurable">
+      <%= label_tag key, options[:name] %>
+      <%- if options[:type] == 'boolean' %>
+        <%= hidden_field_tag key, "0" %>
+        <%= check_box_tag key, "1", SiteSetting.send(key) %>
+      <%- elsif options[:type] == 'password' -%>
+        <%= password_field_tag key, SiteSetting.send(key) %>
+      <%- elsif options[:type] == 'text' -%>
+        <%= text_area_tag key, SiteSetting.send(key) %>
+      <%- elsif options[:type] == 'list' -%>
+        <%= text_area_tag key, SiteSetting.send(key).collect{ |a| a.join(",")}.join("\n") %>
+      <%- else -%>
+        <%= text_field_tag key, SiteSetting.send(key) %>
+      <%- end -%>
+    </div>
+  <%- end -%>
+  
+  <%= submit_tag 'Save' %>
+<%- end -%>

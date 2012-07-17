@@ -4,7 +4,7 @@ module SessionsHelper
   end
 
   def current_user_admin?
-    current_user.groups.find_by_group_name("Administrator")
+    current_user.groups.find_by_group_name("Administrators")
   end
 
   # Is user (the parameter) the currently logged in user?
