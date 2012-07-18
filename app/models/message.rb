@@ -152,7 +152,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   end                               
   
   def member_names_string(sm_array)
-    sm_array.map{|sm| sm.member.shorter_name}.join(', ')
+    sm_array.map{|sm| sm.member.nil? ? nil : sm.member.shorter_name}.compact.join(', ')
   end
 
   def current_status
