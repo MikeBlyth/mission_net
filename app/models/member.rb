@@ -89,7 +89,8 @@ class Member < ActiveRecord::Base
   end
 
   def self.find_by_phone(phone_number)
-    Member.where("phone_1 = ? OR phone_2 = ?", phone_number, phone_number).readonly(false).all
+    target_phone = (phone_number[0] == '+' ? phone_number[1..20] : phone_number)
+    Member.where("phone_1 = ? OR phone_2 = ?",target_phone, target_phone).readonly(false).all
   end
 
   def self.find_by_email(email)
