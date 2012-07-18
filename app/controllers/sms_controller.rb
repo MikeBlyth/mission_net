@@ -42,7 +42,8 @@ class SmsController < ApplicationController
       end
     else  
       AppLog.create(:code => "SMS.rejected", :description=>"from #{from}: #{body}")
-      render :text => "Refused", :status => 403, :content_type => Mime::TEXT.to_s
+      render :text => "Refused: sender's phone number is not recognized", 
+          :status => 403, :content_type => Mime::TEXT.to_s
     end
   end 
   
