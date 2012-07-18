@@ -25,9 +25,9 @@ Joslink::Application.routes.draw do
   resources :sms
 
   get   '/login', :to => 'sessions#new', :as => :sign_in
-  get '/logout', :to => 'sessions#destroy'
+  get '/logout', :to => 'sessions#destroy', :as => :sign_out
   get   '/signin', :to => 'sessions#new', :as => :sign_in
-  get '/signout', :to => 'sessions#destroy'
+  get '/signout', :to => 'sessions#destroy', :as => :sign_out
   match '/auth/:provider/callback', :to => 'sessions#create'
   match '/auth/failure', :to => 'sessions#failure'
   get '/setup', :to => 'setup#initialize', :as => :initialize
