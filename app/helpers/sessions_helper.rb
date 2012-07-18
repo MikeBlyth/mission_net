@@ -28,6 +28,6 @@ module SessionsHelper
   end
 
   def deny_access
-    redirect_to signin_path, :notice => "Please sign in."
+    redirect_to sign_in_path, :notice => "Please sign in."
   end
 end

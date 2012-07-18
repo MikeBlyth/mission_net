@@ -5,7 +5,7 @@
     %li= link_to 'Members', members_path 
     %li= link_to 'Messages', messages_path
     %li= link_to "Edit your user info", edit_member_path(current_user)
-    %li= link_to "Sign out", signout_path, :method => :delete       
+    %li= link_to "Sign out", sign_out_path, :method => :delete       
     %h5 Moderators
     - if current_user_moderator?
       %li= link_to 'Messages', messages_path
@@ -23,7 +23,7 @@
   %hr
 - else 
   %p Please sign in 
-  = link_to "Sign in", signin_path
+  = link_to "Sign in", sign_in_path
 
 
 
