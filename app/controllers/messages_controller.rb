@@ -1,6 +1,6 @@
 class MessagesController < ApplicationController
   active_scaffold :message do |config|
-    config.list.columns = [:id, :created_at, :user, :body,  :send_sms, :send_email, :to_groups, 
+    config.list.columns = [:id, :created_at, :user, :body, :sms_only, :send_sms, :send_email, :to_groups, 
         :sent_messages, :importance, :status_summary]
     config.create.link.page = true 
 #    config.columns[:sent_messages].label = 'Sent to'
