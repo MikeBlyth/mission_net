@@ -7,6 +7,8 @@ module SessionsHelper
     current_user.groups.find_by_group_name("Administrators")
   end
 
+  # This is set up to automatically make Administrators and Security leaders moderators as well. Might be
+  #   better to do it by using subgroupings.
   def current_user_moderator?
     current_user.groups.find_by_group_name("Administrators") ||
       current_user.groups.find_by_group_name("Moderators") || 

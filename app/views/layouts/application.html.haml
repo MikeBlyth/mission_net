@@ -14,4 +14,10 @@
       = signed_in? ? "Signed in as #{current_user.name}" : "Not signed in" 
     #menu
       = render 'shared/side_menu' 
-    #content= yield 
+    #content  
+      - if flash.any?  
+        #notice
+          - flash.each do |key, value| 
+            %div{:class=>"flash #{key}" }= value
+      #main= yield 
+    

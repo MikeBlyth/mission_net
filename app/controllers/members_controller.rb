@@ -92,8 +92,14 @@ class MembersController < ApplicationController
   end 
 
   def attach_groups(record)
-    groups = params[:record][:group_ids] if params[:record]
-    record.update_attributes(:group_ids=>groups) 
+    if params[:record]
+      groups = params[:record][:group_ids] 
+      if groups 
+        record.update_attributes(:group_ids=>groups)
+      else
+      end
+    end 
+    flash[:notice] = "Warning--#{record.name} is not included in any groups" if record.groups.empty? 
   end
 
 #   Export CSV file. Exports ALL records, so will have to be modified if a subset is desired

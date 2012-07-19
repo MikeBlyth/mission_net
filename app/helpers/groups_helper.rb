@@ -9,7 +9,7 @@ module GroupsHelper
     choices = ''
     Group.order('group_name').each do |group|
       selected = member.groups.include?(group) ? " selected='selected'" : ''
-      if current_user_moderator?
+      if current_user_moderator? 
         disabled = ''
       else
         disabled = group.user_selectable ? '' : " disabled='disabled'"
