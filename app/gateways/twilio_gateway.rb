@@ -36,12 +36,12 @@ puts "****   Client = #{@client}.attributes"
     end
     @body = body        #  ...
     outgoing_numbers = numbers_to_string_list
+reply = [] # To make status array in the same way that Clickatell does. NEEDS REFACTORING so we don't need to fake Clickatell!
+           # (Clickatell gives one line for each number, successful ones looking like "ID: <long id> To: <phone_no>"
     @numbers.each do |number|
       number = '+' + number unless number[0]=='+'
 AppLog.create(:code => "SMS.sending.#{@gateway_name}", :description=>"from=#{@phone_number}, to=#{number}")
 puts "SMS.sending.#{@gateway_name}--from=#{@phone_number}, to=#{number}"
-reply = [] # To make status array in the same way that Clickatell does. NEEDS REFACTORING so we don't need to fake Clickatell!
-           # (Clickatell gives one line for each number, successful ones looking like "ID: <long id> To: <phone_no>"
       begin
         @client.account.sms.messages.create(
           :from => @phone_number,
