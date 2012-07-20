@@ -40,13 +40,21 @@ puts "****   Client = #{@client}.attributes"
       number = '+' + number unless number[0]=='+'
 AppLog.create(:code => "SMS.sending.#{@gateway_name}", :description=>"from=#{@phone_number}, to=#{number}")
 puts "SMS.sending.#{@gateway_name}--from=#{@phone_number}, to=#{number}"
-      @client.account.sms.messages.create(
-        :from => @phone_number,
-        :to => number.to_s,
-        :body => @body
-      )
+reply = [] # To make status array in the same way that Clickatell does. NEEDS REFACTORING so we don't need to fake Clickatell!
+           # (Clickatell gives one line for each number, successful ones looking like "ID: <long id> To: <phone_no>"
+      begin
+        @client.account.sms.messages.create(
+          :from => @phone_number,
+          :to => number.to_s,
+          :body => @body
+         )
+       rescue  # twilio-ruby indicates failed phone number by raising exception Twilio::REST::RequestError
+         AppLog.create(:code => "Twilio.sms_error", :description=>"#{$!}, #{$!.backtrace[0..2]}")  
+       else
+reply << "ID: --- To: #{@phone_number}"  
+       end     
     end
-    @gateway_reply = '' # Since we're not getting one with this interface
+    @gateway_reply = reply.join("\n")
     super
   end
 
