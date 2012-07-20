@@ -243,7 +243,6 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
         {:id => nil, :phone => nil, :error => s}
       end
     end
-AppLog.create :code=>'Debug', :description=> "**** gateway_reply=#{gateway_reply}, success = #{msg_statuses}"
     # Update the sent_message records to indicate which have been accepted at Gateway  
     msg_statuses.each do |s|
       if s[:id] && s[:phone]

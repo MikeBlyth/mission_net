@@ -41,7 +41,6 @@ reply = [] # To make status array in the same way that Clickatell does. NEEDS RE
     @numbers.each do |number|
       number = '+' + number unless number[0]=='+'
 AppLog.create(:code => "SMS.sending.#{@gateway_name}", :description=>"from=#{@phone_number}, to=#{number}")
-puts "SMS.sending.#{@gateway_name}--from=#{@phone_number}, to=#{number}"
       begin
         @client.account.sms.messages.create(
           :from => @phone_number,
@@ -52,11 +51,9 @@ puts "SMS.sending.#{@gateway_name}--from=#{@phone_number}, to=#{number}"
          AppLog.create(:code => "Twilio.sms_error", :description=>"#{$!}, #{$!.backtrace[0..2]}")  
        else
 reply << "ID: none To: #{number.to_s.phone_bare}"
-AppLog.create :code=>'Debug', :description=> "added to reply"
        end     
     end
     @gateway_reply = reply.join("\n")
-AppLog.create :code=>'Debug', :description=> "**** @gateway_reply=#{@gateway_reply}"
     super
   end
 

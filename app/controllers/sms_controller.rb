@@ -63,7 +63,9 @@ private
            when /\A!/ then process_response(command, text)
            # More commands go here ...
            else
-             "unknown '#{command}'. Info=" + (do_info(text) if Member.find_with_name(text))
+             "unknown command '#{command}'. If you want to reply to a msg you received, pls contact " + 
+             "the sender. Don't use this number."
+#             "unknown command '#{command}'. Info=" + (do_info(text) if Member.find_with_name(text))
            end
   end
 
