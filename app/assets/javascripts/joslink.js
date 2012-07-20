@@ -113,6 +113,11 @@ console.log(display);
       });
       
 
+// ******************* MULTISELECT WIDGET 
+$(function(){
+   jQuery(".multiselect").multiselect().multiselectfilter();
+});
+
 // ****************** DATEPICKER **************************************  
 	$(function() {
     $(".datepicker").live("click", function(){
@@ -120,25 +125,6 @@ console.log(display);
       });
    });
   
-// ****************** COUNTRY NAME **************************************  
-    $(function() {
-      $( ".country_name-input" ).live("click", function(){
-        $(this).autocomplete({
-          source: "autocomplete/country.js"
-          });
-      });
-    });
-
-    $(function() {
-      $('#show_wife').live('click', function() {
-        if ($(this).is(':checked')) {
-          $('.wife_hidden').css('display','block')
-          }
-        else {
-          $('.wife_hidden').css('display','none')
-        }  
-      });
-    });
     
       
 /*

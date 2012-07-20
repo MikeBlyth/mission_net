@@ -71,6 +71,7 @@ class MembersController < ApplicationController
    config.action_links.add 'export', :label => 'Export', :page => true, :type => :collection, 
      :confirm=>'This will download all the member data (most fields) for ' + 
        'use in your own spreadsheet or database, and may take a minute or two. Is this what you want to do?'
+   config.update.link.page = true # At present, the jQuery multiselect widget doesn't work when edit is done inline
   end
 
   # Given params hash, change :something_id to :something

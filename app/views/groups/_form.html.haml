@@ -19,7 +19,7 @@
         = form.label :member_ids, "Members"
         %br
         = form.select :member_ids, Member.where(:in_country=>true).order('name').collect {|x| [x.name, x.id]}, {:include_blank=>"--none--"}, 
-          :multiple => true, :size=>15
+          :multiple => true, :size=>15, :class=>'multiselect'
       %td(colspan=3)
         %p 
           If this new group is to be a container for sub-groups, you should just add members to the sub-groups.

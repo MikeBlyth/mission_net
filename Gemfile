@@ -33,6 +33,7 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 
 gem 'pry', :group => :development
 gem 'simplecov', :group => :test

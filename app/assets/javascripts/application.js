@@ -12,6 +12,14 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require_tree .
 //= require active_scaffold
+//= require jquery.ui.position
+//= require jquery.ui.resizable
+//= require jquery.ui.widget
+//= require jquery.ui.tabs
+//= require jquery.ui.datepicker
+//= require jquery.effects.blind
+//= require jquery.multiselect
 //= require joslink
+//= require_tree .
+
