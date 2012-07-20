@@ -244,7 +244,6 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
       end
     end
     # Update the sent_message records to indicate which have been accepted at Gateway  
-binding.pry  
     msg_statuses.each do |s|
       if s[:id] && s[:phone]
         sent_messages.select{|sm| sm.phone == s[:phone]}.first.
