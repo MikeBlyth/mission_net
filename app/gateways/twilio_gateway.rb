@@ -51,7 +51,7 @@ puts "SMS.sending.#{@gateway_name}--from=#{@phone_number}, to=#{number}"
        rescue  # twilio-ruby indicates failed phone number by raising exception Twilio::REST::RequestError
          AppLog.create(:code => "Twilio.sms_error", :description=>"#{$!}, #{$!.backtrace[0..2]}")  
        else
-reply << "ID: --- To: #{@phone_number.phone_bare}"
+reply << "ID: none To: #{@phone_number.phone_bare}"
 AppLog.create :code=>'Debug', :description=> "added to reply"
        end     
     end
