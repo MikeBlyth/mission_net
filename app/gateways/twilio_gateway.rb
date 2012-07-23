@@ -18,14 +18,13 @@ class TwilioGateway < SmsGateway
     @gateway_name = 'twilio'
     @required_params = [:account_sid, :auth_token, :phone_number]  # "twilio_" is automatically prefixed to these for looking in the site settings
     super
-AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_sid=#{@account_sid[0..6]}..., @auth_token=#{@auth_token[0..4]}...")
-puts "**** Create Twilio Client:"
+AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_sid=#{(@account_sid || '')[0..6]}..., @auth_token=#{(@auth_token || '')[0..4]}...")
+#puts "**** Create Twilio Client:"
     @client = Twilio::REST::Client.new @account_sid, @auth_token
-puts "****   Client = #{@client}.attributes"    
+puts "****   Client = #{@client.inspect}"    
   end
 
   # send an sms using Twilio-ruby interface
-  # No error checking done in this method. Should eventually be added.
   #   See http://www.twilio.com/docs/api/rest/sending-sms for how to do status callbacks
   def deliver(numbers=@numbers, body=@body)
     # NB: message#deliver_sms currently sends numbers as a string, not an array.
