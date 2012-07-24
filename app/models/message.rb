@@ -26,16 +26,17 @@
 include MessagesHelper
 
 class Message < ActiveRecord::Base
-  attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, :importance, :response_sime_limit, :retries, :retry, :send_email, :send_sms, :sms_only, :subject, :to_groups, :user_id
+  attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
+      :importance, :response_sime_limit, :retries, :retry, :send_email, :send_sms, :sms_only, 
+      :subject, :to_groups, :user_id, :keywords, :private, :news_update
   has_many :sent_messages
   has_many :members, :through => :sent_messages 
   belongs_to :user, :class_name => 'Member'
   validates_numericality_of :confirm_time_limit, :retries, :retry_interval, 
       :expiration, :response_time_limit, :importance, :allow_nil => true
   validates_presence_of :body, :if => 'send_email', :message=>'You need to write something in your message!'
-  validates :to_groups, :presence => true, :unless => :following_up #:message=>'Select at least one group to receive message.', 
+  validates :to_groups, :presence => true, :if => (:send_email || :send_sms) #:message=>'Select at least one group to receive message.', 
   validate :sending_medium
-#  validate :sms_long_enough
   before_save :convert_groups_to_string
   after_save  :create_sent_messages   # each record represents this message for one recipient
   
@@ -246,14 +247,9 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   end
  
   def sending_medium
-    unless send_sms or send_email
-      errors.add(:base,'Must select a message type (email, SMS, etc.)')
+    unless send_sms or send_email or news_update
+      errors.add(:base,'Must select a message type (email, SMS, etc.) or "news update"')
     end
   end
   
-  def sms_long_enough
-    if send_sms && (sms_only.nil? || sms_only.size < 40 )
-      errors.add(:sms_only, 'too short, maybe you should add a favorite quote :-)')
-    end
-  end
 end

@@ -1,13 +1,13 @@
 = fields_for :record do |form|
   %table{:style=>'width: 300px'}
     %tr
-      %td.for-sms
+      %td
         = form.label :sms_only, "SMS Text Message"
         %br
         = form.text_area :sms_only, :size => "40x2"
     %tr
-      %td.for-email
-        = form.label :subject, "Subject (for email only)"
+      %td
+        = form.label :subject, "Subject"
         %br
         = form.text_field :subject
     %tr
@@ -20,17 +20,19 @@
         %table
           %tr
             %td
-              = form.label :send_email, "Send email"
+              = form.label :send_email
               %br
               = form.check_box :send_email         
             %td
               = form.label  :send_sms, "Send SMS"
               %br
               = form.check_box  :send_sms         
-            %td &nbsp;
-            -unless @record.following_up 
-              %td 
-                = form.label :response_time_limit
-                %br
-                = form.select :response_time_limit, [['no response needed', nil], ['5 minutes', 5], ['10 minutes', 10], ['15 minutes', 15], ['30 minutes', 30], ['1 hour', 60], ['2 hours', 120], ['6 hours', 360], ['12 hours', 720], ['24 hours', 1440]]
+            %td
+              = form.label  :news_update
+              %br
+              = form.check_box  :news_update
+            %td
+              = form.label  :private
+              %br
+              = form.check_box  :private
 
