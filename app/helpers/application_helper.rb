@@ -205,11 +205,19 @@ class String
     return raw.gsub(/\A0/,Settings.contacts.local_country_code).gsub(/-|\.| /,'')
   end
 
-  def phone_bare(options={})
-    return nil if self.blank?
-    return self[0] == '+' ? self[1..99] : self
+#  def phone_bare(options={})
+#    return nil if self.blank?
+#    return self[0] == '+' ? self[1..99] : self
+#  end
+#  
+  def with_plus
+    self[0] == '+' ? self : '+' + self
   end
-
+  
+  def without_plus
+    self[0] == '+' ? self[1..255] : self
+  end
+  
   def trunc(len=15)
     short = self[0..len-1]
     short += '...' if self > short

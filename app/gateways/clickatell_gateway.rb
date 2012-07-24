@@ -49,13 +49,46 @@ class ClickatellGateway < SmsGateway
   def deliver(numbers=@numbers, body=@body)
     @numbers = numbers  # Update instance variables (matters only if they were included in this call)
     @body = body
+    raise('No phone numbers given') unless @numbers
+    raise('No message body') unless @body
     outgoing_numbers = numbers_to_string_list
     @uri = base_uri + "sendmsg?&callback=2" +
             "&to=#{outgoing_numbers}&text=#{URI.escape(body)}"
     call_gateway
+    status_hash = make_status_hash
     super  # Note that it's called AFTER we make the connection to Clickatell, so it can include
            #   the results in the log.
-    return @gateway_reply
+    return status_hash
+  end
+
+  def make_status_hash
+    @numbers.count == 1 ? status_of_single_message : status_of_multiple_messages
+  end
+  
+  def status_of_single_message
+    if @gateway_reply =~ /ID: (\w+)/
+      return {@numbers[0] => {:status => MessagesHelper::MsgSentToGateway, :sms_id => @gateway_reply[4..99]}}
+    else
+      return {@numbers[0] => {:status => MessagesHelper::MsgError, :error => @gateway_reply}}
+    end
+  end
+  
+  def status_of_multiple_messages
+    #  Parse the Clickatell reply into array of hash like {:id=>'asebi9xxke...', :phone => '2345552228372'}
+#puts "**** gateway_reply=#{gateway_reply}"
+    status_hash = {}
+    @gateway_reply.split("\n").each do |s|
+      if s =~ /ID:\s+(\w+)\s+To:\s+([0-9]+)/
+        status_hash[$2] = {:sms_id => $1, :status => MessagesHelper::MsgSentToGateway}
+      end
+    end
+    # Any sent_messages not now marked with gateway_message_id and msg_status must have errors
+    @numbers.each do |number|
+      unless status_hash.has_key? number
+        status_hash[number] = {:status=> MessagesHelper::MsgError}
+      end
+    end
+    return status_hash
   end
 
   # Get the status for message with Clickatell ID = gw_msg_id

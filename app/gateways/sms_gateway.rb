@@ -62,6 +62,7 @@ class SmsGateway
     end      
   end      
 
+  # Using instance variable @numbers, return a string of all phone numbers (without +)
   def numbers_to_string_list
     if @numbers.is_a? String
       num_array = @numbers.split(/,\s*/)

@@ -1,6 +1,8 @@
 require 'spec_helper'
 require 'sms_controller.rb'
 require 'sms_gateway.rb'
+require 'fakeweb.rb'
+
 
 describe ClickatellGateway do
 
@@ -17,9 +19,12 @@ describe ClickatellGateway do
   end
 
   before(:each) do
-    @phones = ['+2347777777777']
+    @phone_1, @phone_2 = '2347777777777', '2348888888888'
+    @phones = [@phone_1]
+    @body = 'Test message'
     @mock_reply = mock('gatewayReply', :body=>'')  # Remember to add stubs for body when something expected
     @gateway = ClickatellGateway.new
+    FakeWeb.allow_net_connect = false
   end
 
   describe 'when needed parameters are missing' do
@@ -132,74 +137,82 @@ describe ClickatellGateway do
       
   describe 'Deliver method sends messages' do
       before(:each) do
+        @reply = 'ID: ABCDEF'
+        FakeWeb.register_uri(:any, %r|http://api\.clickatell\.com/http/|, :body => @reply)
+        FakeWeb.allow_net_connect = false
         @gateway = ClickatellGateway.new
-        @httyparty = HTTParty
+#        @httyparty = HTTParty
         gateway_session_set('abcdef')
-        silence_warnings{HTTParty = mock('HTTParty')}
+#        silence_warnings{HTTParty = mock('HTTParty')}
         @mock_reply.stub(:body).and_return("ID: ABCDEF")
-        HTTParty.stub(:get).and_return @mock_reply
+#        HTTParty.stub(:get).and_return @mock_reply
       end
-      after(:each) do
-        silence_warnings{ HTTParty = @httyparty }  # Restore normal 
-      end
+#      after(:each) do
+#        silence_warnings{ HTTParty = @httyparty }  # Restore normal 
+#      end
 
     describe 'for single phone number' do
       # Maybe this before(:each) should be refactored? It's funny to have the test going on there, but it's not
       # DRY if we put the mock & message expectation in the individual tests ...
 
       it 'forms URI properly' do
-        HTTParty.should_receive(:get).with(/session_id=abcdef/)
-        @gateway.deliver(@phones, 'test message')
+        @gateway.deliver(@phones, @body)
         uri = @gateway.uri
-        uri.should match("to=2347777777777")
-        uri.should match("text=#{URI.escape('test message')}")
+        uri.should match("to=#{phone_1}")
+        uri.should match("text=#{URI.escape(@body)}")
       end
 
       it "forms URI phone number string when number doesn't start with a +" do
-        @gateway.deliver('1234567890', 'test message')
+        @gateway.deliver('1234567890', @body)
         @gateway.uri.should match("to=1234567890")
       end
-
-      it 'sets @gateway_reply variable' do
-        @gateway.deliver(@phones, 'test message')
-        @gateway.gateway_reply.should == @mock_reply
-      end        
-
-      it 'gives @gateway_reply as return value' do
-        @gateway.deliver(@phones, 'test message').should == @mock_reply
-      end        
 
     end # for single phone number
 
     describe 'for multiple phone numbers' do
       before(:each) do
-        @phones = ['+2347777777777', '+2348888888888']
+        @phones = [@phone_1.with_plus, @phone_2.with_plus]
       end
 
       it 'forms URI properly' do
-       HTTParty.should_receive(:get).with(/session_id=abcdef/)
-        @gateway.deliver(@phones, 'test message')
+        @gateway.deliver(@phones, @body)
         uri = @gateway.uri
-        uri.should match("to=2347777777777,2348888888888")
-        uri.should match("text=#{URI.escape('test message')}")
+        uri.should match("to=#{phone_1},#{phone_2}")
+        uri.should match("text=#{URI.escape(@body)}")
       end
 
       it 'forms URI phone list from string' do
-        @gateway.deliver(@phones.join(', '), 'test message')
+        @gateway.deliver(@phones.join(', '), @body)
         uri = @gateway.uri
-        uri.should match("to=2347777777777,2348888888888")
+        uri.should match("to=#{phone_1},#{phone_2}")
       end
 
-      it 'sets @gateway_reply variable' do
-        @gateway.deliver(@phones, 'test message')
-        @gateway.gateway_reply.should == @mock_reply
-      end        
+     end # for multiple phone number
 
-      it 'gives @gateway_reply as return value' do
-        @gateway.deliver(@phones, 'test message').should == @mock_reply
-      end        
+    describe 'returns status list' do
+      before(:each) do
+        @phones = [@phone_1, @phone_2]
+      end
 
-    end # for multiple phone number
+      it 'as hash of statuses' do
+        FakeWeb.register_uri(:any, %r|http://api\.clickatell\.com/http/|, 
+          :body => "ID: XXX To: #{@phone_1}\nID: YYY To: #{@phone_2}")
+        response = @gateway.deliver(@phones, @body)
+puts "**** response=#{response}"
+        response[@phones[0]].should == {:status=> MessagesHelper::MsgSentToGateway, :sms_id => 'XXX'}
+        response[@phones[1]].should == {:status=> MessagesHelper::MsgSentToGateway, :sms_id => 'YYY'}
+      end
 
+      it 'marking errors' do
+        @client.should_receive(:create).and_raise
+        @client.should_receive(:create)
+        response = @gateway.deliver(@phones, @body)
+        response[@phones[0]].should == MessagesHelper::MsgError
+        response[@phones[1]].should == MessagesHelper::MsgSentToGateway
+      end
+    end # returns status list
+              
   end # deliver method
+
+
 end
