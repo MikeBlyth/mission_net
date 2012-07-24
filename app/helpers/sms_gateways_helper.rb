@@ -10,7 +10,6 @@ module SmsGatewaysHelper
   #     otherwise a new instance of MockClickatellGateway is returned
   def default_sms_gateway
     gateway_name = SiteSetting.default_outgoing_sms_gateway
-gateway_name.should == 'something'    
     raise "Trying to send SMS but no gateway defined in site settings" unless gateway_name
     gateway_name = gateway_name.capitalize + "Gateway"
     if Rails.env == 'production'

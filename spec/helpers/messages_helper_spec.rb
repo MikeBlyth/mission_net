@@ -98,7 +98,7 @@ describe 'default_sms_gateway from from SiteSetting.gateway_name' do
   it 'creates instance of user-defined mock gateway' do
     MockUserdefinedGateway = mock('MockUserdefinedGateway')
     Rails.stub(:env => 'test')
-    SiteSetting.stub(:outgoing_sms => 'userdefined')
+    SiteSetting.stub(:default_outgoing_sms_gateway => 'userdefined')
     MockUserdefinedGateway.should_receive(:new)
     MockClickatellGateway.should_not_receive(:new)
     default_sms_gateway
@@ -107,7 +107,6 @@ describe 'default_sms_gateway from from SiteSetting.gateway_name' do
   it 'creates new MockClickatellGateway in test mode if no mock for requested gateway' do
     Rails.stub(:env => 'test')
     SiteSetting.stub(:default_outgoing_sms_gateway => 'something')
-#SiteSetting.default_outgoing_sms_gateway.should == 'something'        
     MockClickatellGateway.should_receive(:new)
     ClickatellGateway.should_not_receive(:new)
     default_sms_gateway
