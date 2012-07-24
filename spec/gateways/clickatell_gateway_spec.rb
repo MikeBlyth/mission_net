@@ -158,12 +158,12 @@ describe ClickatellGateway do
       it 'forms URI properly' do
         @gateway.deliver(@phones, @body)
         uri = @gateway.uri
-        uri.should match("to=#{phone_1}")
+        uri.should match("to=#{@phone_1}")
         uri.should match("text=#{URI.escape(@body)}")
       end
 
       it "forms URI phone number string when number doesn't start with a +" do
-        @gateway.deliver('1234567890', @body)
+        @gateway.deliver(['1234567890'], @body)
         @gateway.uri.should match("to=1234567890")
       end
 
@@ -177,39 +177,56 @@ describe ClickatellGateway do
       it 'forms URI properly' do
         @gateway.deliver(@phones, @body)
         uri = @gateway.uri
-        uri.should match("to=#{phone_1},#{phone_2}")
+        uri.should match("to=#{@phone_1},#{@phone_2}")
         uri.should match("text=#{URI.escape(@body)}")
-      end
-
-      it 'forms URI phone list from string' do
-        @gateway.deliver(@phones.join(', '), @body)
-        uri = @gateway.uri
-        uri.should match("to=#{phone_1},#{phone_2}")
       end
 
      end # for multiple phone number
 
     describe 'returns status list' do
-      before(:each) do
-        @phones = [@phone_1, @phone_2]
-      end
 
-      it 'as hash of statuses' do
-        FakeWeb.register_uri(:any, %r|http://api\.clickatell\.com/http/|, 
-          :body => "ID: XXX To: #{@phone_1}\nID: YYY To: #{@phone_2}")
-        response = @gateway.deliver(@phones, @body)
-puts "**** response=#{response}"
-        response[@phones[0]].should == {:status=> MessagesHelper::MsgSentToGateway, :sms_id => 'XXX'}
-        response[@phones[1]].should == {:status=> MessagesHelper::MsgSentToGateway, :sms_id => 'YYY'}
-      end
+      describe 'with single outgoing number' do
+        before(:each) do
+          @phones = [@phone_1]
+        end
 
-      it 'marking errors' do
-        @client.should_receive(:create).and_raise
-        @client.should_receive(:create)
-        response = @gateway.deliver(@phones, @body)
-        response[@phones[0]].should == MessagesHelper::MsgError
-        response[@phones[1]].should == MessagesHelper::MsgSentToGateway
-      end
+        it 'returns successful status' do
+          FakeWeb.register_uri(:any, %r|http://api\.clickatell\.com/http/|, 
+            :body => "ID: XXX")
+          response = @gateway.deliver(@phones, @body)
+          response[@phones[0]].should == {:status=> MessagesHelper::MsgSentToGateway, :sms_id => 'XXX'}
+        end
+
+        it 'returns failed status' do
+          FakeWeb.register_uri(:any, %r|http://api\.clickatell\.com/http/|, 
+            :body => "ERR: 24, Invalid Phone NUmber")
+          response = @gateway.deliver(@phones, @body)
+          response[@phones[0]].should == {:status=> MessagesHelper::MsgError, :error => "ERR: 24, Invalid Phone NUmber"}
+        end
+      end # with multiple outgoing numbers
+
+      describe 'with multiple outgoing numbers' do
+        before(:each) do
+          @phones = [@phone_1, @phone_2]
+        end
+
+        it 'as hash of statuses' do
+          FakeWeb.register_uri(:any, %r|http://api\.clickatell\.com/http/|, 
+            :body => "ID: XXX To: #{@phone_1}\nID: YYY To: #{@phone_2}")
+          response = @gateway.deliver(@phones, @body)
+          response[@phones[0]].should == {:status=> MessagesHelper::MsgSentToGateway, :sms_id => 'XXX'}
+          response[@phones[1]].should == {:status=> MessagesHelper::MsgSentToGateway, :sms_id => 'YYY'}
+        end
+
+        it 'marking errors' do
+          FakeWeb.register_uri(:any, %r|http://api\.clickatell\.com/http/|, 
+            :body => "ID: XXX To: #{@phone_1}\nERR: 24, Invalid Phone NUmber")
+          response = @gateway.deliver(@phones, @body)
+          response[@phones[0]].should == {:status=> MessagesHelper::MsgSentToGateway, :sms_id => 'XXX'}
+  #        response[@phones[1]].should == {:status=> MessagesHelper::MsgError, :error => "ERR: 24, Invalid Phone NUmber"}
+          response[@phones[1]].should == {:status=> MessagesHelper::MsgError}
+        end
+      end # with multiple outgoing numbers
     end # returns status list
               
   end # deliver method

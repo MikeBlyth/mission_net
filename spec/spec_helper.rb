@@ -81,6 +81,7 @@ end
 
 Spork.each_run do
   puts "**** SPORK LOADING EACH RUN"
+  load 'clickatell_gateway.rb'  # Why does it have to be specified??
   # Run simplecov here if we *are* running under spork (ENV['DRB'])
 #  if ENV['DRB']
 #    require 'simplecov'

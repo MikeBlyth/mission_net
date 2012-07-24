@@ -67,9 +67,9 @@ class ClickatellGateway < SmsGateway
   
   def status_of_single_message
     if @gateway_reply =~ /ID: (\w+)/
-      return {@numbers[0] => {:status => MessagesHelper::MsgSentToGateway, :sms_id => @gateway_reply[4..99]}}
+      return {@numbers[0] => {:status => MessagesHelper::MsgSentToGateway, :sms_id => @gateway_reply.body[4..99]}}
     else
-      return {@numbers[0] => {:status => MessagesHelper::MsgError, :error => @gateway_reply}}
+      return {@numbers[0] => {:status => MessagesHelper::MsgError, :error => @gateway_reply.body}}
     end
   end
   
