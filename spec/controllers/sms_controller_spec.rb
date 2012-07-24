@@ -101,7 +101,6 @@ describe SmsController do
         it 'returns error for unrecognized command' do
           @params['Body'] = "xxxx #{@last_name}"
           post :create, @params
-          response.body.should =~ Regexp.new(@last_name)
           response.body.should =~ /unknown .*xxxx/i
         end
         

@@ -75,14 +75,17 @@ twilio_api_version:
 twilio_account_sid:  
   name: Twilio Account SID
   type: string
+  default: ACCOUNT SID
   
 twilio_auth_token:
   name: Twilio Authorization Token
   type: string
+  default: AUTH TOKEN
   
 twilio_phone_number:
   name: Twilio Phone Number
   type: string
+  default: +19999999999
     
 sendgrid_user_name:
   name: Sendgrid User Name

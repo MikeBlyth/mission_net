@@ -35,8 +35,10 @@ end
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 
-gem 'pry', :group => :development
-gem 'simplecov', :group => :test
+group :test do
+  gem 'fakeweb'
+  gem 'simplecov'
+end
 
 group :development, :test do
   gem 'annotate', '~> 2.4.1.beta' 

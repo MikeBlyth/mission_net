@@ -76,6 +76,7 @@ GEM
     factory_girl_rails (3.5.0)
       factory_girl (~> 3.5.0)
       railties (>= 3.0.0)
+    fakeweb (1.3.0)
     faraday (0.8.1)
       multipart-post (~> 1.1)
     ffi (1.0.11)
@@ -230,6 +231,7 @@ DEPENDENCIES
   debugger
   factory_girl
   factory_girl_rails
+  fakeweb
   haml
   httparty
   jquery-rails

@@ -18,10 +18,12 @@ class TwilioGateway < SmsGateway
     @gateway_name = 'twilio'
     @required_params = [:account_sid, :auth_token, :phone_number]  # "twilio_" is automatically prefixed to these for looking in the site settings
     super
-AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_sid=#{@account_sid[0..6]}..., @auth_token=#{@auth_token[0..4]}...")
-puts "**** Create Twilio Client:"
+#puts "**** @account_sid=#{@account_sid}"
+#puts "**** @auth_token=#{@auth_token}"
+AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_sid=#{(@account_sid || '')[0..6]}..., @auth_token=#{(@auth_token || '')[0..4]}...")
+#puts "**** Create Twilio Client:"
     @client = Twilio::REST::Client.new @account_sid, @auth_token
-puts "****   Client = #{@client}.attributes"    
+#puts "****   Client = #{@client}.attributes"    
   end
 
   # send an sms using Twilio-ruby interface
@@ -35,21 +37,23 @@ puts "****   Client = #{@client}.attributes"
       @numbers = numbers
     end
     @body = body        #  ...
+    raise('No phone numbers given') unless @numbers
+    raise('No message body') unless @body
     outgoing_numbers = numbers_to_string_list
 reply = [] # To make status array in the same way that Clickatell does. NEEDS REFACTORING so we don't need to fake Clickatell!
            # (Clickatell gives one line for each number, successful ones looking like "ID: <long id> To: <phone_no>"
     @numbers.each do |number|
       number = '+' + number unless number[0]=='+'
-AppLog.create(:code => "SMS.sending.#{@gateway_name}", :description=>"from=#{@phone_number}, to=#{number}")
       begin
         @client.account.sms.messages.create(
           :from => @phone_number,
           :to => number.to_s,
           :body => @body
          )
-       rescue  # twilio-ruby indicates failed phone number by raising exception Twilio::REST::RequestError
-         AppLog.create(:code => "Twilio.sms_error", :description=>"#{$!}, #{$!.backtrace[0..2]}")  
-       else
+        rescue  # twilio-ruby indicates failed phone number by raising exception Twilio::REST::RequestError
+          AppLog.create(:code => "SMS.error.twilio", :description=>"#{$!}, #{$!.backtrace[0..2]}", :severity=>'Warning')  
+        else
+          AppLog.create(:code => "SMS.sent.#{@gateway_name}", :description=>"from=#{@phone_number}, to=#{number}, msg=#{@body[0..30]}")
 reply << "ID: none To: #{number.to_s.phone_bare}"
        end     
     end

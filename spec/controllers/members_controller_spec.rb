@@ -19,14 +19,14 @@ describe MembersController do
         # Member.should_receive(:destroy) # Why can't this work ??
         @member = FactoryGirl.create(:member)
         put :destroy, :id => @member.id
-        response.should_not redirect_to(signin_path)
+        response.should_not redirect_to(sign_in_path)
       end
       
       it "should allow access to 'update'" do
         # Member.should_receive(:update)
         @member = FactoryGirl.create(:member)
         put :update, :id => @member.id, :record => @member.attributes, :member => @member.attributes
-        response.should_not redirect_to(signin_path)
+        response.should_not redirect_to(sign_in_path)
       end
       
     end # for signed-in users
