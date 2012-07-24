@@ -221,7 +221,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 
   def update_sent_messages_w_status(gateway_reply)
     gateway_reply.each do |number, result|
-#puts "**** updating number=#{number}, result=#{result}"
+puts "**** updating number=#{number}, result=#{result}"
       sent_messages.find_by_phone(number).
            update_attributes(:gateway_message_id => result[:sms_id] || result[:error], 
               :msg_status=> result[:status] )
