@@ -134,7 +134,7 @@ class MembersController < ApplicationController
 #             :phone_1 => row[:phone_1], :phone_2 => row[:phone_2], :email_1 => row[:email_1],
 #             :in_country => row[:in_country] == 'true',
 #             :comments => row[:comments])
-if row[:groups] =~ /General Security/i
+if row[:groups] =~ /General Security|JosTwitr/i
   member = Member.find_by_name(row[:name])
   member.groups << alerts_group if member
 end
