@@ -55,10 +55,10 @@ class ClickatellGateway < SmsGateway
     @uri = base_uri + "sendmsg?&callback=2" +
             "&to=#{outgoing_numbers}&text=#{URI.escape(body)}"
     call_gateway
-    status_hash = make_status_hash
+    @status = make_status_hash
     super  # Note that it's called AFTER we make the connection to Clickatell, so it can include
            #   the results in the log.
-    return status_hash
+    return @status
   end
 
   def make_status_hash

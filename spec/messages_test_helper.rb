@@ -43,12 +43,28 @@ require 'mock_clickatell_gateway'
     @members.map {|m| m.primary_phone.gsub('+','')}.join(',')
   end
 
+  def nominal_phone_number_array
+    @members.map {|m| m.primary_phone.gsub('+','')}
+  end
+
   def nominal_email_array
     @members.map {|m| m.primary_email}
   end
 
   def nominal_body
     "#{@message.body} #{@message.timestamp}"
+  end
+
+  def successful_gateway_status(numbers)
+    status = {}
+    numbers.each {|num| status[num] = {:status => MessagesHelper::MsgSentToGateway, :sms_id => rand_string(32)}}
+    return status
+  end
+
+  def errors_gateway_status(numbers)
+    status = {}
+    numbers.each {|num| status[num] = {:status => MessagesHelper::MsgError, :error => 'Error...'}}
+    return status
   end
 
 

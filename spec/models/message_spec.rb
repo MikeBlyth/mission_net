@@ -144,7 +144,8 @@ describe Message do
         @resp_time_limit = 5
         @message.send_email=true
         @members = members_w_contacts(1, false)
-        @gateway = MockClickatellGateway.new(nil,@members)
+        @gateway = MockClickatellGateway.new(nil,@members) # but the coded mock is not used if we use message expectations!
+        @gateway.stub(:deliver => successful_gateway_status(nominal_phone_number_array))
       end
       
       it '(check setup)' do
@@ -168,7 +169,7 @@ describe Message do
         @message.send_email = false
         @message.sms_only = "#"*50
         Notifier.should_not_receive(:send_group_message)
-        @gateway.should_receive(:deliver).with(nominal_phone_number_string, Regexp.new(@message.sms_only))
+        @gateway.should_receive(:deliver).with(nominal_phone_number_array, Regexp.new(@message.sms_only))
         @message.deliver(:sms_gateway=>@gateway)
       end
       
@@ -187,6 +188,7 @@ describe Message do
       before(:each) do
         @members = members_w_contacts(2, false)
         @gateway = MockClickatellGateway.new(nil,@members)
+        @gateway.stub(:deliver => successful_gateway_status(nominal_phone_number_array))
       end
       
       it "Sends an email" do
@@ -204,11 +206,12 @@ describe Message do
       it "Sends an SMS" do
         @message.send_sms = true
         @message.sms_only = "#"*50
-        @message.stub(:mark_status_of_multiple_messages)
+        @message.stub(:update_sent_messages_w_status)
         @gateway.should_receive(:deliver) do |phone_numbers, body|
-          phone_numbers.split(',').should =~ @members.map {|m| m.primary_phone}
+          phone_numbers.should =~ @members.map {|m| m.primary_phone}
           body.should =~ Regexp.new(@message.sms_only)
         end
+        @gateway.stub(:deliver => successful_gateway_status(nominal_phone_number_array))
         @message.deliver(:sms_gateway=>@gateway)
       end
     end # with multiple addresses
@@ -221,26 +224,28 @@ describe Message do
           @members = members_w_contacts(1, false)
           @message.save
           @gateway = MockClickatellGateway.new(nil,@members)
+          @mock_statuses = successful_gateway_status(nominal_phone_number_array)
+          @gateway.stub(:deliver => @mock_statuses)
         end
         
         it "inserts gateway_message_id into sent_message" do
           @message.deliver(:sms_gateway=>@gateway)
           @gtw_id = @message.reload.sent_messages.first.gateway_message_id
           @gtw_id.should_not be_nil
-          @gateway.mock_response.should match(@gtw_id)
+          @mock_statuses.first[1][:sms_id].should match(@gtw_id)
         end
         
         it "inserts pending status into sent_message" do
           @message.deliver(:sms_gateway=>@gateway)
-          @message.sent_messages.first.msg_status.should == MessagesHelper::MsgSentToGateway
+          @message.sent_messages.first.reload.msg_status.should == MessagesHelper::MsgSentToGateway
         end
         
         it "inserts error status into sent_message" do
-          @gateway.mock_response = @gateway.error_response
+          @gateway.stub(:deliver => errors_gateway_status(nominal_phone_number_array))
           @message.deliver(:sms_gateway=>@gateway)
-          @sent_message = @message.sent_messages.first
+          @sent_message = @message.sent_messages.first.reload
           @sent_message.msg_status.should == MessagesHelper::MsgError
-          @sent_message.gateway_message_id.should == @gateway.error_response
+          @sent_message.gateway_message_id.should =~ /Error/i
         end
       end # with single phone number
 
@@ -250,6 +255,8 @@ describe Message do
           @members = members_w_contacts(2, false) # false = "Don't use stubs, use real objects"
           @message.save
           @gateway = MockClickatellGateway.new(nil,@members)
+          @mock_statuses = successful_gateway_status(nominal_phone_number_array)
+          @gateway.stub(:deliver => @mock_statuses)
         end
         
         it "inserts gateway_message_id into sent_message" do
@@ -262,76 +269,90 @@ describe Message do
           # gateway_message_id 'Abciciiix'
           @message.deliver(:sms_gateway=>@gateway)
           @message.sent_messages.each do |sent_message|
-            gtw_id = sent_message.gateway_message_id  
+            gtw_id = sent_message.reload.gateway_message_id  
             gtw_id.should_not be_nil
-            phone = sent_message.member.phone_1.gsub("+",'')
-            @gateway.mock_response.should match("ID: #{gtw_id}\s+To: #{phone}")
+            phone = sent_message.phone
+            gtw_id.should == @mock_statuses[phone][:sms_id]
           end
         end
         
         it "inserts pending status into sent_message" do
           @message.deliver(:sms_gateway=>@gateway)
-          @message.sent_messages.first.msg_status.should == MessagesHelper::MsgSentToGateway
+          @message.sent_messages.first.reload.msg_status.should == MessagesHelper::MsgSentToGateway
         end
         
         it "inserts error status into sent_message" do
-          @gateway.mock_response = @gateway.error_response
+          @gateway.stub(:deliver => errors_gateway_status(nominal_phone_number_array))
           @message.deliver(:sms_gateway=>@gateway)
           @sent_message = @message.sent_messages.first.reload
           @sent_message.msg_status.should == MessagesHelper::MsgError
         end
-    
-        it "does not include empty phone numbers" do
-          #NB: The message w contact list is already formed by all the before(:all) blocks. In order to test a message
-          #    going to someone without a phone number, we need to recreate the message after deleting the phone numbers.
-          @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
+      end # with multiple phones
+    end # message id and status
+      
+    describe 'making addressee list' do
+        before(:each) do
+          select_media(:sms=>true)
+          @members = members_w_contacts(2, false) # false = "Don't use stubs, use real objects"
           @message.save
-          @message.deliver(:sms_gateway=>@gateway)
-          @gateway.numbers.should == [@members[0].phone_1.sub('+', '')] # i.e., should only include 1 number
-        end          
+  #        @gateway = MockClickatellGateway.new(nil,@members)
+          @gateway = mock('Gateway')
+  #        @mock_statuses = successful_gateway_status(nominal_phone_number_array)
+  #        @gateway.stub(:deliver => @mock_statuses)
+        end
+  
+      it "does not include empty phone numbers" do
+        #NB: The message w contact list is already formed by all the before(:all) blocks. In order to test a message
+        #    going to someone without a phone number, we need to recreate the message after deleting the phone numbers.
+        @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
+        @message.save
+        @message.stub :update_sent_messages_w_status
+        @gateway.should_receive(:deliver).with([@members[0].phone_1.without_plus], /###/)
+        @message.deliver(:sms_gateway=>@gateway)
+      end          
 
-        it "does not include duplicate phone numbers" do
-          #NB: See above
-          @members[1].update_attributes(:phone_1 => @members[0].phone_1, :phone_2 => nil)
-          @members[1].phone_1.should == @members[0].phone_1
-          @message.create_sent_messages
-          @message.deliver(:sms_gateway=>@gateway)
-          @gateway.numbers.should == [@members[0].phone_1.sub('+', '')] # i.e., should only include 1 number
-        end
-        
-        it 'does not create sent_message record for SMS person without phone' do
-          @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
-          @message.stub(:send_sms => true)
-          @message.stub(:send_email => false)
-          @message.create_sent_messages
-          @message.members.should == [@members[0]]
-        end
-                            
-        it '*does* create sent_message record for emailing person without phone' do
-          @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
-          @message.stub(:send_sms => false)
-          @message.stub(:send_email => true)
-          @message.create_sent_messages
-          @message.members.should == [@members[0], @members[1]]
-        end
-                            
-        it 'does not create sent_message record for email person without address' do
-          @members[1].update_attributes(:email_1 => nil, :email_2 => nil)
-          @message.stub(:send_sms => false)
-          @message.stub(:send_email => true)
-          @message.create_sent_messages
-          @message.members.should == [@members[0]]
-        end
-                            
-        it 'does not create sent_message record someone w no phone or email' do
-          @members[1].update_attributes(:email_1 => nil, :email_2 => nil, :phone_1=>nil, :phone_2=>nil)
-          @message.stub(:send_sms => true)
-          @message.stub(:send_email => true)
-          @message.create_sent_messages
-          @message.members.should == [@members[0]]
-        end
+      it "does not include duplicate phone numbers" do
+        #NB: See above
+        @members[1].update_attributes(:phone_1 => @members[0].phone_1, :phone_2 => nil)
+        @members[1].phone_1.should == @members[0].phone_1
+        @message.create_sent_messages
+        @message.stub :update_sent_messages_w_status
+        @gateway.should_receive(:deliver).with([@members[0].phone_1.without_plus], /###/)
+        @message.deliver(:sms_gateway=>@gateway)
+      end
+      
+      it 'does not create sent_message record for SMS person without phone' do
+        @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
+        @message.stub(:send_sms => true)
+        @message.stub(:send_email => false)
+        @message.create_sent_messages
+        @message.members.should == [@members[0]]
+      end
+                          
+      it '*does* create sent_message record for emailing person without phone' do
+        @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
+        @message.stub(:send_sms => false)
+        @message.stub(:send_email => true)
+        @message.create_sent_messages
+        @message.members.should == [@members[0], @members[1]]
+      end
+                          
+      it 'does not create sent_message record for email person without address' do
+        @members[1].update_attributes(:email_1 => nil, :email_2 => nil)
+        @message.stub(:send_sms => false)
+        @message.stub(:send_email => true)
+        @message.create_sent_messages
+        @message.members.should == [@members[0]]
+      end
+                          
+      it 'does not create sent_message record someone w no phone or email' do
+        @members[1].update_attributes(:email_1 => nil, :email_2 => nil, :phone_1=>nil, :phone_2=>nil)
+        @message.stub(:send_sms => true)
+        @message.stub(:send_email => true)
+        @message.create_sent_messages
+        @message.members.should == [@members[0]]
+      end
 
-      end # with multiple phone numbers
     end # message id and status
 
   end # delivers to gateways
