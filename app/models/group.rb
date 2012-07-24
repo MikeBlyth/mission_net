@@ -31,7 +31,7 @@ class Group < ActiveRecord::Base
     reply = self.members[0..limit-1].map {|m| m.full_name_short}.join(", ")+
         (self.members.count > limit ? ", ..." : '')
     if self.members.count > 3
-      reply << " (#{self.members.count} total)"    
+      reply << " (#{self.members.uniq.count} total)"    
     end
     return reply
   end
