@@ -28,8 +28,12 @@ class Group < ActiveRecord::Base
 
   def group_member_names(limit=10)
     return nil if limit < 1
-    self.members[0..limit-1].map {|m| m.full_name_short}.join(", ")+
+    reply = self.members[0..limit-1].map {|m| m.full_name_short}.join(", ")+
         (self.members.count > limit ? ", ..." : '')
+    if self.members.count > 3
+      reply << " (#{self.members.count} total)"    
+    end
+    return reply
   end
 
   # Return a list of all the members who are in this group *or* its subgroups.
