@@ -219,39 +219,13 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     self.sms_only = sms_only[0..(159-self.timestamp.size-resp_tag.size)] + resp_tag + ' ' + self.timestamp
   end
 
-  def mark_status_of_single_message(gateway_reply)
-    gtw_msg_id = nil
-    if gateway_reply =~ /ID: (\w+)/
-      gtw_msg_id = $1
-      gtw_msg_id = gateway_reply[4..99]        # Temporary workaround as $1 doesn't work on Heroku
-      msg_status = MessagesHelper::MsgSentToGateway
-    else
-      gtw_msg_id = gateway_reply  # Will include error message
-      msg_status = MessagesHelper::MsgError
+  def update_sent_messages_w_status(gateway_reply)
+    gateway_reply.each do |number, result|
+#puts "**** updating number=#{number}, result=#{result}"
+      sent_messages.find_by_phone(number).
+           update_attributes(:gateway_message_id => result[:sms_id] || result[:error], 
+              :msg_status=> result[:status] )
     end
-    # Mark the message to this member as being sent
-    self.sent_messages[0].update_attributes(:gateway_message_id => gtw_msg_id, :msg_status => msg_status)
-  end
-  
-  def mark_status_of_multiple_messages(gateway_reply)
-    # Get the Clickatell reply and parse into array of hash like {:id=>'asebi9xxke...', :phone => '2345552228372'}
-#puts "**** gateway_reply=#{gateway_reply}"
-    msg_statuses = gateway_reply.split("\n").map do |s|
-      if s =~ /ID:\s+(\w+)\s+To:\s+([0-9]+)/
-        {:id => $1, :phone => $2}    
-      else
-        {:id => nil, :phone => nil, :error => s}
-      end
-    end
-    # Update the sent_message records to indicate which have been accepted at Gateway  
-    msg_statuses.each do |s|
-      if s[:id] && s[:phone]
-        sent_messages.select{|sm| sm.phone == s[:phone]}.first.
-           update_attributes(:gateway_message_id => s[:id], :msg_status=> MessagesHelper::MsgSentToGateway )
-      end        
-    end
-    # Any sent_messages not now marked with gateway_message_id and msg_status must have errors
-    sent_messages.where("msg_status IS NULL").update_all(:msg_status=> MessagesHelper::MsgError)
   end
  
   # Deliver text messages to an array of phone members, recording their acceptance at the gateway
@@ -259,8 +233,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   def deliver_sms(params)
 #puts "**** Message#deliver_sms; params=#{params}"
     sms_gateway = params[:sms_gateway]
-    phone_number_array = sent_messages.map {|sm| sm.phone}.compact.uniq
-    phone_numbers = phone_number_array.join(',')
+    phone_numbers = sent_messages.map {|sm| sm.phone}.compact.uniq
     assemble_sms()
 #puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
@@ -268,11 +241,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 #puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
-    if phone_number_array.size == 1
-      mark_status_of_single_message(gateway_reply)
-    else
-      mark_status_of_multiple_messages(gateway_reply)
-    end
+    update_sent_messages_w_status(gateway_reply)
   end
  
   def sending_medium

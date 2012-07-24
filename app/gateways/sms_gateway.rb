@@ -26,7 +26,7 @@ require 'uri'
 #
 class SmsGateway
   attr_accessor :numbers, :body, :required_params
-  attr_reader :uri, :gateway_reply, :gateway_name, :errors
+  attr_reader :uri, :gateway_reply, :gateway_name, :errors, :status
 
   def initialize
     get_required_params if @required_params && !@required_params.empty?
@@ -62,6 +62,7 @@ class SmsGateway
     end      
   end      
 
+  # Using instance variable @numbers, return a string of all phone numbers (without +)
   def numbers_to_string_list
     if @numbers.is_a? String
       num_array = @numbers.split(/,\s*/)

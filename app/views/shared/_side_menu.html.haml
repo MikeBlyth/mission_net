@@ -3,13 +3,13 @@
 - if signed_in? 
   %ul.links
     %li= link_to 'Members', members_path 
-    %li= link_to 'Messages', messages_path
     %li= link_to "Edit your user info", edit_member_path(current_user)
     %li= link_to "Sign out", sign_out_path 
     %h5 Moderators
     - if current_user_moderator?
       %li= link_to 'Groups', groups_path
-      %li= link_to 'Messages', messages_path
+      %li= link_to 'Message list', messages_path
+      %li= link_to 'Create new message', new_message_path
       %li= link_to 'Log', '/app_logs'
     %h5 Option Tables
     - if current_user_admin?
@@ -19,7 +19,7 @@
       %li= link_to 'Locations', locations_path 
       %hr
       %h5 Admin tasks
-      %li= link_to 'Settings', site_settings_path
+      %li= link_to 'Settings (be careful!)', site_settings_path
   %hr
 - else 
   %p Please sign in 

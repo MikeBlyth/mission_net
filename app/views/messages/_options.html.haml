@@ -1,0 +1,30 @@
+= fields_for :record do |form|
+  %label#adv-toggle Show advanced options
+  #options{:style=>'display: none'}
+    %table
+      %tr.not-implemented
+        %td 
+          = form.label :retry_interval, :class=>'for-sms'
+          %br
+          = form.select :retry_interval, [['5 minutes', 5], ['10 minutes', 10], ['15 minutes', 15], ['30 minutes', 30]], {}, :class=>'for-sms'
+      %tr
+        %td{:width => '50%', :align=>'right'}
+          = form.label :retries, :class=>'for-sms', :disabled => 'disabled'
+          %br
+          = form.select :retries, [['none', 0], ['1',1], ['2',2], ['3',3]], {}, :class=>'for-sms', :disabled => 'disabled'
+      %tr.not-implemented
+        %td 
+          = form.label :expiration, "Expiration"
+          %br
+          = form.select :expiration, [['never',0], ['24 hours', 1440] ]
+      %tr.not-implemented
+        %td 
+          = form.label :importance
+          %br
+          = form.select :importance, [['normal',1], ['alert', 2], ['critical', 3]] 
+      %tr.not-implemented
+        %td 
+          = form.label :confirm_time_limit, "Confirmation time limit"
+          %br
+          = form.select :confirm_time_limit, [['not needed', 0], ['5 minutes', 5], ['10 minutes', 10], ['15 minutes', 15], ['30 minutes', 30]]
+

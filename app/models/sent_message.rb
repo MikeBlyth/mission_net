@@ -23,7 +23,7 @@ class SentMessage < ActiveRecord::Base
   attr_accessible :msg_status, :confirmed_time, :delivery_modes, :confirmed_mode, :confirmation_message, :attempts, :gateway_message_id
   belongs_to :message
   belongs_to :member
-  before_save :add_contacts
+  before_create :add_contacts
   
   def add_contacts
     self.phone = member.primary_phone

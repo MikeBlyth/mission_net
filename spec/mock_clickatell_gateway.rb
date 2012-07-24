@@ -13,18 +13,9 @@ class MockClickatellGateway < ClickatellGateway
     @options = options
   end
   
-  # Generate a Clickatell-style response like
-  #    ID: ny4eiyiac4qfy7do4mgrydqyacoen652 To: 2348162522097
-  #    ID: dxvtg2o9jhbqe4edifn026905st8mpz4 To: 2348162522102
   def generate_response
-    if @numbers.size == 1
-      @mock_response = 
-      "ID: #{rand_string(32)}"  # Phone number is not given when it's the only one
-    else
-      @mock_response = 
-         @numbers.map{|number| 
-           "ID: #{rand_string(32)} To: #{number}"}.join("\n")
-    end
+    status = {}
+    @numbers.each {|num| status[num] = {:status => MessagesHelper::MsgSentToGateway, :sms_id => rand_string(32)}}
   end
   
   def error_response
