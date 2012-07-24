@@ -45,17 +45,6 @@ describe Member do
       @member.should be_valid
     end
 
-    it "is not valid without a first name" do
-      @member.first_name = ''
-      @member.should_not be_valid
-      @member.errors[:first_name].should_not be_nil
-    end
-
-    it "is not valid without a last name" do
-      @member.last_name = ''
-      @member.should_not be_valid
-    end
-
   end # basic validation
 
   describe "names: " do
