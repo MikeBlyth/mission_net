@@ -1,0 +1,12 @@
+%p.msg-caveat.ui-corner-all
+  Note: Be sure to follow up any messages you send with this system, and do not
+  assume that they are being delivered reliably (yet).
+#msg-form.ui-corner-all
+  #msg-top
+    = render :partial => 'text_inputs'
+  #msg-bottom
+    #groups
+      = render :partial => 'groups'      
+    #advanced 
+      = render :partial => 'options'
+

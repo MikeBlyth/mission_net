@@ -13,6 +13,7 @@ Joslink::Application.routes.draw do
   resources :bloodtypes do as_routes end
   resources :incoming_mails do as_routes end
   resources :countries do as_routes end
+  match 'groups/member_count'
   resources :groups do as_routes end
   resources :incoming_mails do as_routes end
   resources :locations do as_routes end

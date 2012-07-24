@@ -9,7 +9,7 @@ class MessagesController < ApplicationController
     config.create.link.inline = false 
     config.update.link = false
     config.actions.exclude :update
-    config.actions.exclude :create  # TEMPORARY!
+#    config.actions.exclude :create  # TEMPORARY!
     list.sorting = {:created_at => 'DESC'}
 # NOT READY TO ADD "FOLLOW UP" ACTION
 #    config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
