@@ -49,10 +49,10 @@ AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_s
          )
         rescue  # twilio-ruby indicates failed phone number by raising exception Twilio::REST::RequestError
           AppLog.create(:code => "SMS.error.twilio", :description=>"#{$!}, #{$!.backtrace[0..2]}", :severity=>'Warning')  
-          reply[number] = MessagesHelper::MsgError
+          reply[number] = {:status => MessagesHelper::MsgError}
         else
           AppLog.create(:code => "SMS.sent.#{@gateway_name}", :description=>"from=#{@phone_number}, to=#{number}, msg=#{@body[0..30]}")
-          reply[number] = MessagesHelper::MsgSentToGateway
+          reply[number] = {:status => MessagesHelper::MsgSentToGateway}
        end     
     end
     @gateway_reply = reply
