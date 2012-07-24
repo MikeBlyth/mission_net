@@ -162,16 +162,16 @@ describe TwilioGateway do
 
       it 'as hash of statuses' do
         response = @gateway.deliver(@phones, @body)
-        response[@phones[0]].should == MessagesHelper::MsgSentToGateway
-        response[@phones[1]].should == MessagesHelper::MsgSentToGateway
+        response[@phones[0]].should == {:status => MessagesHelper::MsgSentToGateway}
+        response[@phones[1]].should == {:status => MessagesHelper::MsgSentToGateway}
       end
 
       it 'marking errors' do
         @client.should_receive(:create).and_raise
         @client.should_receive(:create)
         response = @gateway.deliver(@phones, @body)
-        response[@phones[0]].should == MessagesHelper::MsgError
-        response[@phones[1]].should == MessagesHelper::MsgSentToGateway
+        response[@phones[0]].should == {:status => MessagesHelper::MsgError}
+        response[@phones[1]].should == {:status => MessagesHelper::MsgSentToGateway}
       end
     end
               

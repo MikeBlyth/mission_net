@@ -220,9 +220,8 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   end
 
   def update_sent_messages_w_status(gateway_reply)
-puts "**** gateway_reply=#{gateway_reply}"
+#puts "**** gateway_reply=#{gateway_reply}"
     gateway_reply.each do |number, result|
-puts "**** updating number=#{number}, result=#{result}"
       sent_messages.find_by_phone(number).
            update_attributes(:gateway_message_id => result[:sms_id] || result[:error], 
               :msg_status=> result[:status] )
@@ -239,8 +238,8 @@ puts "**** updating number=#{number}, result=#{result}"
 #puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
     gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
-puts "**** sms_gateway=#{sms_gateway}"
-puts "**** gateway_reply=#{gateway_reply}"
+#puts "**** sms_gateway=#{sms_gateway}"
+#puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
     update_sent_messages_w_status(gateway_reply)
   end
