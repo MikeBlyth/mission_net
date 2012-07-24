@@ -2,7 +2,6 @@
 // This file is automatically included by javascript_include_tag :defaults
 
 /* Fix Annoying facebook behavior that appends #_=_ to URL, only right after using FB to log in*/
-
 $(function() {
     if (window.location.href.indexOf('#_=_') > 0) {
         window.location = window.location.href.replace(/#.*/, '');
@@ -37,7 +36,7 @@ $(function() {
         $("#record_sms_only").charCount({
             allowed: 150,	
             warning: 20,
-            counterText: 'Characters left for one SMS message: '	
+            counterText: "Signature not automatically added. \nCharacters left for one SMS message: "	
             });      
         $('<div><p class="msg-info for-sms">About <span id="msg-count">0</span> SMS messages will be sent</p></div>')
         .insertAfter('#record_to_groups');

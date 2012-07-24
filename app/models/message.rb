@@ -213,10 +213,11 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     end
   end
   
+  # Add the message id if needed for reply, the signature and the time stamp
   def assemble_sms
     id_for_reply = self.following_up || id  # a follow-up message uses id of the original msg
     resp_tag = (following_up || response_time_limit) ? " !#{id_for_reply}" : ''
-    self.sms_only = sms_only[0..(159-self.timestamp.size-resp_tag.size)] + resp_tag + ' ' + self.timestamp
+    self.sms_only = sms_only[0..(158-self.timestamp.size-resp_tag.size)] + resp_tag + ' ' + self.timestamp
   end
 
   def update_sent_messages_w_status(gateway_reply)
