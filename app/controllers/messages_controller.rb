@@ -18,14 +18,6 @@ class MessagesController < ApplicationController
 #    config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
   end
 
-  def do_new
-    super
-    @record.expiration = 6
-    @record.subject = "Subject"
-#    @record.body = "(from #{@current_user.name})"
-#    @record.sms_only = "(#{@current_user.name})"
-  end
-
   def before_create_save(record)
     record.user = current_user if current_user
   end
