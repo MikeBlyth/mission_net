@@ -217,15 +217,56 @@ describe SmsController do
     end
  
     describe 'updates' do
-      
+     
       it 'returns the latest news update' do
-        @body = 'News update'
-        @update = mock_model(Message, :body=>@body)
+        @update = mock('Message')
         Message.stub(:news_updates => [@update])
+        @update.should_receive(:send_sms).with(:phone_numbers => @from, :news_update=>true)
         @params['Body'] = "updates"
         post :create, @params   
-        response.body.should match @body
+        response.body.should match /sent .*update/i
       end
+
+      it 'returns all the latest news updates' do  # sends all that are returned by Message#news_updates
+        @update = mock('Message')
+        Message.stub(:news_updates => [@update, @update, @update])
+        @params['Body'] = "updates"
+        @update.should_receive(:send_sms).with(:phone_numbers => @from, :news_update=>true).exactly(3).times
+        post :create, @params   
+        response.body.should match /sent .*update/i
+      end
+      
+      it 'forwards keywords to Message#news_update' do
+        Message.should_receive(:news_updates).with(hash_including(:keyword => 'key')).and_return [mock_model(Message)]
+        @params['Body'] = "updates key"
+        post :create, @params   
+      end         
+
+      it 'forwards limit to Message#news_update' do
+        Message.should_receive(:news_updates).with(hash_including(:limit => 5)).and_return [mock_model(Message)]
+        @params['Body'] = "updates 5"
+        post :create, @params   
+      end         
+
+      it 'forwards limit-keyword mix to Message#news_update' do
+        Message.should_receive(:news_updates).with(hash_including(:limit => 5, :keyword => 'key')).and_return [mock_model(Message)]
+        @params['Body'] = "updates 5 key"
+        post :create, @params   
+      end         
+
+      it 'forwards keyword-limit mix to Message#news_update' do
+        Message.should_receive(:news_updates).with(hash_including(:limit => 5, :keyword => 'key')).and_return [mock_model(Message)]
+        @params['Body'] = "updates key 5"
+        post :create, @params   
+      end         
+
+      it 'sends last update if keyword search fails Message#news_update' do
+        Message.should_receive(:news_updates).with(hash_including(:limit => 5, :keyword => 'key')).and_return []
+        Message.should_receive(:news_updates).with(hash_including(:limit => instance_of(Fixnum))).and_return [mock_model(Message)]
+        @params['Body'] = "updates key 5"
+        post :create, @params   
+      end         
+
     end  
 #    describe 'location' do
 #      before(:each) {Time.stub(:now).and_return Time.new(2000,01,01,12,00)}

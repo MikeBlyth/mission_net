@@ -18,30 +18,30 @@ class SmsController < ApplicationController
   # Remove line for testing; configure for other gateways
   def create  # need the name 'create' to conform with REST defaults, or change routes
  #puts "**** IncomingController create: params=#{params}"
-    from = params[:From]  # The phone number of the sender
+    @from = params[:From]  # The phone number of the sender
 #debugger
     body = params[:Body]  # This is the body of the incoming message
-    AppLog.create(:code => "SMS.incoming", :description=>"from=#{from}; body=#{body[0..50]}")
+    AppLog.create(:code => "SMS.incoming", :description=>"from=#{@from}; body=#{body[0..50]}")
     params.delete 'SmsSid'
     params.delete 'AccountSid'
     params.delete 'SmsMessageSid'
-    @possible_senders = from_members(from)  # all members from this database with matching phone number
+    @possible_senders = from_members  # all members from this database with matching phone number
     @sender = @possible_senders.first # choose one of them
     if @sender  # We only accept SMS from registered phone numbers of members
       begin
-        AppLog.create(:code => "SMS.received", :description=>"from #{from} (#{@sender.shorter_name}): #{body}")
+        AppLog.create(:code => "SMS.received", :description=>"from #{@from} (#{@sender.shorter_name}): #{body}")
         resp = (process_sms(body) || '')[0..159]    # generate response
-        AppLog.create(:code => "SMS.reply", :description=>"to #{from}: #{resp}")
-        default_sms_gateway.deliver(from, resp) #default_gateway in messages_helper creates an instance of gateway specified 
+        AppLog.create(:code => "SMS.reply", :description=>"to #{@from}: #{resp}")
+        default_sms_gateway.deliver(@from, resp) #default_gateway in messages_helper creates an instance of gateway specified 
                                             #  in SiteSettings default_outgoing_sms_gateway
         render :text => resp, :status => 200, :content_type => Mime::TEXT.to_s  # Confirm w incoming gateway that msg received
 #      rescue
 #        AppLog.create(:code => "SMS.system_error", :description=>"on SMS#create: #{$!}, #{$!.backtrace[0..2]}")
 #        render :text => "Internal", :status => 500, :content_type => Mime::TEXT.to_s
-#        ClickatellGateway.new.deliver(from, "Sorry, there is a bug in my system and I crashed :-(" )
+#        ClickatellGateway.new.deliver(@from, "Sorry, there is a bug in my system and I crashed :-(" )
       end
     else  
-      AppLog.create(:code => "SMS.rejected", :description=>"from #{from}: #{body}")
+      AppLog.create(:code => "SMS.rejected", :description=>"from #{@from}: #{body}")
       render :text => "Refused: sender's phone number is not recognized", 
           :status => 403, :content_type => Mime::TEXT.to_s
     end
@@ -55,19 +55,19 @@ private
     return "Nothing found in your message!" if body.blank?
     command, text = extract_commands(body)[0] # parse to first word=command, rest = text
     return case command.downcase
-           when 'd' then group_deliver(text)
-           when 'group', 'groups' then do_list_groups
-           when 'info' then do_info(text)  
+       when 'd' then group_deliver(text)
+       when 'group', 'groups' then do_list_groups
+       when 'info' then do_info(text)  
 #           when 'location' then do_location(text)  
-           when 'updates' then send_updates
-           when '?', 'help' then do_help(text)
-           when /\A!/ then process_response(command, text)
-           # More commands go here ...
-           else
-             "unknown command '#{command}'. If you want to reply to a msg you received, pls contact " + 
-             "the sender. Don't use this number."
+       when 'updates' then send_updates(text)
+       when '?', 'help' then do_help(text)
+       when /\A!/ then process_response(command, text)
+       # More commands go here ...
+       else
+         "unknown command '#{command}'. If you want to reply to a msg you received, pls contact " + 
+         "the sender. Don't use this number."
 #             "unknown command '#{command}'. Info=" + (do_info(text) if Member.find_with_name(text))
-           end
+       end
   end
 
   # Return help
@@ -141,9 +141,27 @@ private
     end
   end
 
-  def send_updates
-    updates = Message.news_updates
-    return updates[0].body
+  def send_updates(text)
+    # The regular expression is to look for keyword(s) and/or limit (integer) in either order
+    if text+' ' =~ /\A\s*(\d+)\W*(.*)/
+      limit, keyword = $1, $2
+    else
+      text+' ' =~ /\s*(\w.*?)[, :\/\(]+(\d*)/
+      limit, keyword = $2, $1 
+    end
+    limit = limit.blank? ? nil : limit.to_i
+    keyword = keyword.blank? ? nil : keyword.strip
+    updates = Message.news_updates(:keyword => keyword, :limit => limit)
+    found_without_keyword = false
+    # If we found no updates *with* the keyword, then try searching without the keyword and send last 2 entries
+    if keyword && updates.empty?
+      updates = Message.news_updates(:limit => 2)  # try again with no keywords
+      found_without_keyword = updates.any?
+    end
+    updates.each {|u| u.send_sms(:phone_numbers => @from, :news_update => true)}
+    return "No new updates with keyword(s) '#{keyword}'. The last one or two updates have been sent." if found_without_keyword
+    return "Sent #{updates.count} updates" if updates.any? 
+    return "No new updates found. Contact your organization if you need more information."
   end
 
   # The user has sent an SMS text confirming response of a previous message
@@ -166,8 +184,8 @@ private
     return ''
   end
 
-  def from_members(from) 
-    Member.find_by_phone(from)
+  def from_members
+    Member.find_by_phone(@from)
   end
 
 end # Class

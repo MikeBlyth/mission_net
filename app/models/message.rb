@@ -49,12 +49,13 @@ class Message < ActiveRecord::Base
   
   # ********** Class Methods ************************
   def self.news_updates(options={})
-    key_search_expr = options[:keyword] ? "%#{options[:keyword]}%" : '%'
+    key_search_expr = options[:keyword].blank? ? "%" : "%#{options[:keyword]}%" 
     updates = self.where(:news_update => true).
       where("created_at + expiration * interval '1 hours' > ?", Time.now ).
       where("keywords LIKE ? OR subject LIKE ? OR body LIKE ? OR sms_only LIKE ?", key_search_expr,key_search_expr, key_search_expr, key_search_expr).
       order('updated_at DESC').limit(options[:limit])
   end
+  # ********** End Class Methods ************************
 
   # Convert :to_groups=>["1", "2", "4"] or [1,2,4] to "1,2,4", as maybe 
   #    simpler than converting with YAML
@@ -240,11 +241,15 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   end
  
   # Deliver text messages to an array of phone members, recording their acceptance at the gateway
+  # If params[:phone_numbers] exists, it overrides the SentMessages records (so can send to a specific member)
+  # If params[:news_update] exists, the SentMessages are not updated with the status 
+  #    (but since we're replying to an incoming number, it should work)
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
   def deliver_sms(params)
 #puts "**** Message#deliver_sms; params=#{params}"
-    sms_gateway = params[:sms_gateway]
-    phone_numbers = sent_messages.map {|sm| sm.phone}.compact.uniq
+    sms_gateway = params[:sms_gateway] || default_sms_gateway
+    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
+    phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
     assemble_sms()
 #puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
@@ -252,7 +257,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 #puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
-    update_sent_messages_w_status(gateway_reply) if gateway_reply # The IF is there just to make testing simpler.
+    update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
                                                                   # In production, a reply will always be present?
   end
   
