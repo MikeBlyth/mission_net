@@ -509,6 +509,61 @@ describe Message do
     
   end   # lists members not yet having responded
 
+  describe 'News updates' do
+    
+    # Question: Any way to test that the retrieved updates are sorted by time, but without accessing DB?
+
+    it 'returns a news update' do
+      update = FactoryGirl.create(:message, :news_update=>true, :expiration => 24)
+      Message.news_updates.should == [update]
+    end
+
+#    it 'returns the last n updates' do
+#      updates = (0..2).map {|n| FactoryGirl.build_stubbed(:message, :news_update=>true)}
+#      Message.stub_chain(:where, :order => updates)
+#      Message.news_updates(:limit=>2).should == [updates[2], updates[1]]
+#    end
+
+    it 'returns the last n updates' do
+      updates = (0..2).map {|n| FactoryGirl.create(:message, :news_update=>true, :expiration => 24)}
+      Message.news_updates(:limit=>2).should == [updates[2], updates[1]]
+    end
+  
+    it 'does not return an expired update' do
+      current = FactoryGirl.create(:message, :news_update=>true, :expiration => 24)
+      expired = FactoryGirl.create(:message, :news_update=>true, :expiration => -1)
+      Message.news_updates(:limit=>2).should == [current]
+    end
+
+    it 'returns updates based on keyword in body' do
+      @keyword = 'fandango'
+      with_key = FactoryGirl.create(:message, :news_update=>true, :expiration => 24, :body => "XXX#{@keyword}ZZZ")
+      without_key = FactoryGirl.create(:message, :news_update=>true, :expiration => 24, :body => "XXXAAAZZZ")
+      Message.news_updates(:limit=>2, :keyword => @keyword).should == [with_key]
+    end
+
+    it 'returns updates based on keyword in sms_only' do
+      @keyword = 'fandango'
+      with_key = FactoryGirl.create(:message, :news_update=>true, :expiration => 24, :sms_only => "XXX#{@keyword}ZZZ")
+      without_key = FactoryGirl.create(:message, :news_update=>true, :expiration => 24, :body => "XXXAAAZZZ")
+      Message.news_updates(:limit=>2, :keyword => @keyword).should == [with_key]
+    end
+
+    it 'returns updates based on keyword in subject' do
+      @keyword = 'fandango'
+      with_key = FactoryGirl.create(:message, :news_update=>true, :expiration => 24, :subject => "XXX#{@keyword}ZZZ")
+      without_key = FactoryGirl.create(:message, :news_update=>true, :expiration => 24, :body => "XXXAAAZZZ")
+      Message.news_updates(:limit=>2, :keyword => @keyword).should == [with_key]
+    end
+
+    it 'returns updates based on keyword in keywords field' do
+      @keyword = 'fandango'
+      with_key = FactoryGirl.create(:message, :news_update=>true, :expiration => 24, :keywords => "XXX#{@keyword}ZZZ")
+      without_key = FactoryGirl.create(:message, :news_update=>true, :expiration => 24, :body => "XXXAAAZZZ")
+      Message.news_updates(:limit=>2, :keyword => @keyword).should == [with_key]
+    end
+
+  end # News updates
 
 
 

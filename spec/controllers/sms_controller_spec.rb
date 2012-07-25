@@ -215,7 +215,18 @@ describe SmsController do
         response.body.should  =~ /cat dog zebrafish/
       end
     end
-  
+ 
+    describe 'updates' do
+      
+      it 'returns the latest news update' do
+        @body = 'News update'
+        @update = mock_model(Message, :body=>@body)
+        Message.stub(:news_updates => [@update])
+        @params['Body'] = "updates"
+        post :create, @params   
+        response.body.should match @body
+      end
+    end  
 #    describe 'location' do
 #      before(:each) {Time.stub(:now).and_return Time.new(2000,01,01,12,00)}
 

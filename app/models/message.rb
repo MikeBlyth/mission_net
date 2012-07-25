@@ -47,6 +47,15 @@ class Message < ActiveRecord::Base
   #  user = current_user 
   end   
   
+  # ********** Class Methods ************************
+  def self.news_updates(options={})
+    key_search_expr = options[:keyword] ? "%#{options[:keyword]}%" : '%'
+    updates = self.where(:news_update => true).
+      where("created_at + expiration * interval '1 hours' > ?", Time.now ).
+      where("keywords LIKE ? OR subject LIKE ? OR body LIKE ? OR sms_only LIKE ?", key_search_expr,key_search_expr, key_search_expr, key_search_expr).
+      order('updated_at DESC').limit(options[:limit])
+  end
+
   # Convert :to_groups=>["1", "2", "4"] or [1,2,4] to "1,2,4", as maybe 
   #    simpler than converting with YAML
   def convert_groups_to_string   

@@ -30,14 +30,14 @@ class SmsController < ApplicationController
     if @sender  # We only accept SMS from registered phone numbers of members
       begin
         AppLog.create(:code => "SMS.received", :description=>"from #{from} (#{@sender.shorter_name}): #{body}")
-        resp = process_sms(body)[0..159]    # generate response
+        resp = (process_sms(body) || '')[0..159]    # generate response
         AppLog.create(:code => "SMS.reply", :description=>"to #{from}: #{resp}")
         default_sms_gateway.deliver(from, resp) #default_gateway in messages_helper creates an instance of gateway specified 
                                             #  in SiteSettings default_outgoing_sms_gateway
         render :text => resp, :status => 200, :content_type => Mime::TEXT.to_s  # Confirm w incoming gateway that msg received
-      rescue
-        AppLog.create(:code => "SMS.system_error", :description=>"on SMS#create: #{$!}, #{$!.backtrace[0..2]}")
-        render :text => "Internal", :status => 500, :content_type => Mime::TEXT.to_s
+#      rescue
+#        AppLog.create(:code => "SMS.system_error", :description=>"on SMS#create: #{$!}, #{$!.backtrace[0..2]}")
+#        render :text => "Internal", :status => 500, :content_type => Mime::TEXT.to_s
 #        ClickatellGateway.new.deliver(from, "Sorry, there is a bug in my system and I crashed :-(" )
       end
     else  
@@ -59,6 +59,7 @@ private
            when 'group', 'groups' then do_list_groups
            when 'info' then do_info(text)  
 #           when 'location' then do_location(text)  
+           when 'updates' then send_updates
            when '?', 'help' then do_help(text)
            when /\A!/ then process_response(command, text)
            # More commands go here ...
@@ -138,6 +139,11 @@ private
       return( ("Error: no group #{target_group}. Send command 'groups' to list the main ones incl " +
                Group.primary_group_abbrevs)[0..160] )
     end
+  end
+
+  def send_updates
+    updates = Message.news_updates
+    return updates[0].body
   end
 
   # The user has sent an SMS text confirming response of a previous message
