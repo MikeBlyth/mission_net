@@ -1,18 +1,18 @@
 = fields_for :record do |form|
-  %label#adv-toggle Show advanced options
-  #options{:style=>'display: none'}
+  %label#adv-toggle Hide advanced options
+  #options{:style=>'display: block'}
     %table
       %tr
         %td 
-          = form.label :keywords
+          = form.label :keywords, "Keywords (useful for searching)"
           %br
           = form.text_field :keywords
       %tr
         %td 
-          = form.label :expiration, "Expiration"
+          = form.label :expiration, "Expiration (only affects news updates)"
           %br
-          = form.select :expiration, [['never',0], ['2 hour', 120], ['4 hours', 240], 
-                  ['8 hours', 480], ['12 hours', 960], ['24 hours', 1440], ['2 days', 2880] ]
+          = form.select :expiration, [['1 hour', 1], ['2 hours', 2], ['4 hours', 4], ['6 hours', 6],
+                  ['8 hours', 8], ['12 hours',12], ['24 hours', 24], ['2 days', 48] ]
           -unless @record.following_up 
             %tr
               %td 

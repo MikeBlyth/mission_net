@@ -20,6 +20,8 @@ class MessagesController < ApplicationController
 
   def do_new
     super
+    @record.expiration = 6
+    @record.subject = "Subject"
 #    @record.body = "(from #{@current_user.name})"
 #    @record.sms_only = "(#{@current_user.name})"
   end

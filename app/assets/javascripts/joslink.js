@@ -34,7 +34,7 @@ $(function() {
 
     $(function() { 
         $("#record_sms_only").charCount({
-            allowed: 150,	
+            allowed: 149,	
             warning: 20,
             counterText: "Signature not automatically added. \nCharacters left for one SMS message: "	
             });      
