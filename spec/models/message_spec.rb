@@ -34,11 +34,12 @@ include MessagesHelper
 
 describe Message do
     before(:each) do
-      @message = Message.new(:body=>'test message', :sms_only => '#'*50)
+      @body = 'test message'
+      @message = Message.new(:body => @body, :sms_only => '#'*50)
       @message.stub(:created_at).and_return(Time.now)
     end
 
-  describe 'initialization and validation' do
+  describe 'initialization' do
     
     it 'sets defaults [NB: adjust tests if you change defaults!]' do
       m = Message.new
@@ -51,13 +52,53 @@ describe Message do
       # The names or actual settings might get changed here, so this test may be modified   
     end     
   
-#    it 'catches SMS messages that are too short' do
-#      @message.send_sms = true
-#      @message.sms_only = 'short'
-#      @message.save
-#      @message.errors[:sms_only].should_not be_blank
-#    end
+  describe 'validation' do
+
+    it 'accepts SMS-only message without a body' do
+      @message.send_sms = true
+      @message.to_groups = ["1", "4"]
+      @message.body = nil
+      @message.should be_valid
+    end
+
+    it 'rejects other messages without a body' do
+      @message.to_groups = ["1", "4"]
+      @message.send_sms = true
+      @message.send_email = true
+      @message.body = nil
+      @message.should_not be_valid
+      @message.errors[:body].should_not be_empty
+    end
+
+    it 'rejects news update without a body' do
+      @message.to_groups = ["1", "4"]
+      @message.news_update = true
+      @message.body = nil
+      @message.should_not be_valid
+      @message.errors[:body].should_not be_empty
+    end
+
+    it 'rejects outgoing sms w/o recipients' do
+      @message.send_sms = true
+      @message.should_not be_valid
+      @message.errors[:to_groups].should_not be_empty
+    end
+    
+    it 'rejects outgoing email w/o recipients' do
+      @message.send_email = true
+      @message.should_not be_valid
+      @message.errors[:to_groups].should_not be_empty
+    end
+    
+    it 'rejects message with neither recipients nor "news update"' do
+      @message.to_groups = ["1", "4"]
+      @message.should_not be_valid
+      @message.errors[:base][0].should match(/select a message type/) # NB this assumes that this one is the FIRST error message!
+    end
       
+  end
+    
+          
   end # initialization
 
   describe 'to_groups field' do

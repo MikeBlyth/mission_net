@@ -34,7 +34,7 @@ class Message < ActiveRecord::Base
   belongs_to :user, :class_name => 'Member'
   validates_numericality_of :confirm_time_limit, :retries, :retry_interval, 
       :expiration, :response_time_limit, :importance, :allow_nil => true
-  validates_presence_of :body, :if => 'send_email', :message=>'You need to write something in your message!'
+  validates_presence_of :body, :if => 'send_email || news_update', :message=>'You need to write something in your message!'
   validate :check_recipients
   validate :sending_medium
   before_save :convert_groups_to_string
