@@ -84,25 +84,6 @@ class MembersController < ApplicationController
     params
   end
 
-  def after_update_save(record)
-    attach_groups(record)
-  end 
-
-  def after_create_save(record)
-    attach_groups(record)
-  end 
-
-  def attach_groups(record)
-    if params[:record]
-      groups = params[:record][:group_ids] 
-      if groups 
-        record.update_attributes(:group_ids=>groups)
-      else
-      end
-    end 
-    flash[:notice] = "Warning--#{record.name} is not included in any groups" if record.groups.empty? 
-  end
-
 #   Export CSV file. Exports ALL records, so will have to be modified if a subset is desired
 #   No params currently in effect
   def export(params={})

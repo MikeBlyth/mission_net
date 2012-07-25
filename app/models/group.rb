@@ -72,7 +72,8 @@ class Group < ActiveRecord::Base
   end
 
   def abbrev_ok
-    abbrev = group_name[0..5].sub(' ','').downcase if abbrev.blank?
+puts "**** abbrev_ok -- abbrev=#{self.abbrev || 'nil'}"
+    abbrev = group_name[0..5].sub(' ','').downcase unless abbrev.blank?
     errors.add(:abbrev,'must not include spaces') if abbrev =~ / /
   end
   
