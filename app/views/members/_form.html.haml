@@ -27,10 +27,10 @@
         %p.description Must be unique
       %td
         .country
-          = member.label :country_id
+          = member.label :country
           %br
           - choices = options_from_collection_for_select(Country.where('include_in_selection').select('id, name').order('name'), :id, :name, @member[:country_id])
-          = member.select(:country_id, choices, {:include_blank => true }, :class=>'wide-input')    
+          = member.select(:country, choices, {:include_blank => true }, :class=>'wide-input')    
     %tr
       %td
         = member.label :phone_1
@@ -76,13 +76,13 @@
         %td <h5>Location</h5>
       %tr
         %td
-          = member.label :location_id, "Location"
+          = member.label :location, "Location"
           %br
-          = member.select(:location_id, location_choices(@member[:location_id]), {:include_blank => true })    
+          = member.select(:location, location_choices(@member[:location_id]), {:include_blank => true })    
       %tr
         %td
-          = member.label :group_ids, "Groups"
+          = member.label :group, "Groups"
           %br
           -#= member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>10         
-          = member.select :group_ids, group_choices(@member), {:include_blank => '(none)' },  :multiple => true, :size=>10, :class=>'multiselect'  
+          = member.select :groups, group_choices(@member), {:include_blank => '(none)' },  :multiple => true, :size=>10, :class=>'multiselect'  
 
