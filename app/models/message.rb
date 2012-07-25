@@ -26,16 +26,17 @@
 include MessagesHelper
 
 class Message < ActiveRecord::Base
-  attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, :importance, :response_sime_limit, :retries, :retry, :send_email, :send_sms, :sms_only, :subject, :to_groups, :user_id
+  attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
+      :importance, :response_sime_limit, :retries, :retry, :send_email, :send_sms, :sms_only, 
+      :subject, :to_groups, :user_id, :keywords, :private, :news_update
   has_many :sent_messages
   has_many :members, :through => :sent_messages 
   belongs_to :user, :class_name => 'Member'
   validates_numericality_of :confirm_time_limit, :retries, :retry_interval, 
       :expiration, :response_time_limit, :importance, :allow_nil => true
-  validates_presence_of :body, :if => 'send_email', :message=>'You need to write something in your message!'
-  validates :to_groups, :presence => true, :unless => :following_up #:message=>'Select at least one group to receive message.', 
+  validates_presence_of :body, :if => 'send_email || news_update', :message=>'You need to write something in your message!'
+  validate :check_recipients
   validate :sending_medium
-#  validate :sms_long_enough
   before_save :convert_groups_to_string
   after_save  :create_sent_messages   # each record represents this message for one recipient
   
@@ -46,6 +47,16 @@ class Message < ActiveRecord::Base
   #  user = current_user 
   end   
   
+  # ********** Class Methods ************************
+  def self.news_updates(options={})
+    key_search_expr = options[:keyword].blank? ? "%" : "%#{options[:keyword]}%" 
+    updates = self.where(:news_update => true).
+      where("created_at + expiration * interval '1 hours' > ?", Time.now ).
+      where("keywords LIKE ? OR subject LIKE ? OR body LIKE ? OR sms_only LIKE ?", key_search_expr,key_search_expr, key_search_expr, key_search_expr).
+      order('updated_at DESC').limit(options[:limit])
+  end
+  # ********** End Class Methods ************************
+
   # Convert :to_groups=>["1", "2", "4"] or [1,2,4] to "1,2,4", as maybe 
   #    simpler than converting with YAML
   def convert_groups_to_string   
@@ -230,11 +241,15 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   end
  
   # Deliver text messages to an array of phone members, recording their acceptance at the gateway
+  # If params[:phone_numbers] exists, it overrides the SentMessages records (so can send to a specific member)
+  # If params[:news_update] exists, the SentMessages are not updated with the status 
+  #    (but since we're replying to an incoming number, it should work)
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
   def deliver_sms(params)
 #puts "**** Message#deliver_sms; params=#{params}"
-    sms_gateway = params[:sms_gateway]
-    phone_numbers = sent_messages.map {|sm| sm.phone}.compact.uniq
+    sms_gateway = params[:sms_gateway] || default_sms_gateway
+    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
+    phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
     assemble_sms()
 #puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
@@ -242,18 +257,20 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 #puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
-    update_sent_messages_w_status(gateway_reply)
+    update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
+                                                                  # In production, a reply will always be present?
+  end
+  
+  def check_recipients
+    unless to_groups || following_up || !(send_sms || send_email)
+      errors.add(:to_groups, 'Please select one or more groups to receive this message')
+    end
   end
  
   def sending_medium
-    unless send_sms or send_email
-      errors.add(:base,'Must select a message type (email, SMS, etc.)')
+    unless send_sms or send_email or news_update
+      errors.add(:base,'Must select a message type (email, SMS, etc.) or "news update"')
     end
   end
   
-  def sms_long_enough
-    if send_sms && (sms_only.nil? || sms_only.size < 40 )
-      errors.add(:sms_only, 'too short, maybe you should add a favorite quote :-)')
-    end
-  end
 end

@@ -47,7 +47,7 @@ defaults: &defaults
     confirm_time_limit: 15 # minutes
     retries: 0
     retry_interval: 10 # minutes
-    expiration: 0 # minutes 
+    expiration: 6 # hours 
     response_time_limit: # nil minutes
     importance: 1 # arbitrary unit
 development:

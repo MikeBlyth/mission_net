@@ -1,3 +1,6 @@
+require 'sms_gateways_helper.rb'
+include SmsGatewaysHelper
+
 class MessagesController < ApplicationController
   active_scaffold :message do |config|
     config.list.columns = [:id, :created_at, :user, :body, :sms_only, :send_sms, :send_email, :to_groups, 
@@ -13,12 +16,6 @@ class MessagesController < ApplicationController
     list.sorting = {:created_at => 'DESC'}
 # NOT READY TO ADD "FOLLOW UP" ACTION
 #    config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
-  end
-
-  def do_new
-    super
-#    @record.body = "(from #{@current_user.name})"
-#    @record.sms_only = "(#{@current_user.name})"
   end
 
   def before_create_save(record)
@@ -41,7 +38,7 @@ class MessagesController < ApplicationController
     @record.following_up = @id 
     @record.subject = "Following up on message #@id, \"#{@original_msg.subject}\"" 
     @record.sms_only = "f/u msg ##@id"
-    @record.body = "This is SIMon, the SIM Nigeria database gopher. I haven't seen a reply from you " +
+    @record.body = "This is Josie, the Joslink database gopher. I haven't seen a reply from you " +
         "showing that you received message ##{@id}. Could it be in your junk mail folder? We really " +
         "do want to be sure that you got this message so please make sure you've read it and then " +
         "just reply to this message or the original one."

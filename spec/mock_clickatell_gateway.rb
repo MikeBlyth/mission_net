@@ -16,6 +16,7 @@ class MockClickatellGateway < ClickatellGateway
   def generate_response
     status = {}
     @numbers.each {|num| status[num] = {:status => MessagesHelper::MsgSentToGateway, :sms_id => rand_string(32)}}
+    return status
   end
   
   def error_response

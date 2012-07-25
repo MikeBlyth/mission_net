@@ -34,7 +34,7 @@ $(function() {
 
     $(function() { 
         $("#record_sms_only").charCount({
-            allowed: 150,	
+            allowed: 149,	
             warning: 20,
             counterText: "Signature not automatically added. \nCharacters left for one SMS message: "	
             });      
@@ -42,7 +42,7 @@ $(function() {
         .insertAfter('#record_to_groups');
      toggle_sms_display();  
      toggle_email_display();  
-     $('#as_messages-create--form .submit').val('Send message');
+     $('#as_messages-create--form .submit').val('Save/Send message');
      });
 
 // Email Selection
@@ -64,22 +64,18 @@ $(function() {
 // SMS Selection
     $('#record_send_sms').live("change", function(){
         if ($(this).is(':checked')) {
-          $('.counter').css('display','block')
           $('.for-sms').css('display','inline')
           }
         else {
-          $('.counter').css('display','none')
           $('.for-sms').css('display','none')
         }  
       });
 
     function toggle_sms_display() {
         if ($('#record_send_sms').is(':checked')) {
-          $('.counter').css('display','block')
           $('.for-sms').css('display','inline')
           }
         else {
-          $('.counter').css('display','none')
           $('.for-sms').css('display','none')
         } 
     } ;

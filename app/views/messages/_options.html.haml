@@ -1,22 +1,34 @@
 = fields_for :record do |form|
-  %label#adv-toggle Show advanced options
-  #options{:style=>'display: none'}
+  %label#adv-toggle Hide advanced options
+  #options{:style=>'display: block'}
     %table
+      %tr
+        %td 
+          = form.label :keywords, "Keywords (useful for searching)"
+          %br
+          = form.text_field :keywords
+      %tr
+        %td 
+          = form.label :expiration, "Expiration (only affects news updates)"
+          %br
+          = form.select :expiration, [['1 hour', 1], ['2 hours', 2], ['4 hours', 4], ['6 hours', 6],
+                  ['8 hours', 8], ['12 hours',12], ['24 hours', 24], ['2 days', 48] ]
+          -unless @record.following_up 
+            %tr
+              %td 
+                = form.label :response_time_limit
+                %br
+                = form.select :response_time_limit, [['no response needed', nil], ['5 minutes', 5], ['10 minutes', 10], ['15 minutes', 15], ['30 minutes', 30], ['1 hour', 60], ['2 hours', 120], ['6 hours', 360], ['12 hours', 720], ['24 hours', 1440]]
       %tr.not-implemented
         %td 
           = form.label :retry_interval, :class=>'for-sms'
           %br
           = form.select :retry_interval, [['5 minutes', 5], ['10 minutes', 10], ['15 minutes', 15], ['30 minutes', 30]], {}, :class=>'for-sms'
-      %tr
+      %tr.not-implemented
         %td{:width => '50%', :align=>'right'}
           = form.label :retries, :class=>'for-sms', :disabled => 'disabled'
           %br
           = form.select :retries, [['none', 0], ['1',1], ['2',2], ['3',3]], {}, :class=>'for-sms', :disabled => 'disabled'
-      %tr.not-implemented
-        %td 
-          = form.label :expiration, "Expiration"
-          %br
-          = form.select :expiration, [['never',0], ['24 hours', 1440] ]
       %tr.not-implemented
         %td 
           = form.label :importance
