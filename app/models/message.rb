@@ -35,7 +35,7 @@ class Message < ActiveRecord::Base
   validates_numericality_of :confirm_time_limit, :retries, :retry_interval, 
       :expiration, :response_time_limit, :importance, :allow_nil => true
   validates_presence_of :body, :if => 'send_email', :message=>'You need to write something in your message!'
-  validates :to_groups, :presence => true, :if => (:send_email || :send_sms) #:message=>'Select at least one group to receive message.', 
+  validate :check_recipients
   validate :sending_medium
   before_save :convert_groups_to_string
   after_save  :create_sent_messages   # each record represents this message for one recipient
@@ -243,7 +243,14 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 #puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
-    update_sent_messages_w_status(gateway_reply)
+    update_sent_messages_w_status(gateway_reply) if gateway_reply # The IF is there just to make testing simpler.
+                                                                  # In production, a reply will always be present?
+  end
+  
+  def check_recipients
+    unless to_groups || following_up || !(send_sms || send_email)
+      errors.add(:to_groups, 'Please select one or more groups to receive this message')
+    end
   end
  
   def sending_medium
