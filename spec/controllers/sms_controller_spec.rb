@@ -164,13 +164,12 @@ describe SmsController do
           Message.should_receive(:new).with(hash_including(
               :send_sms=>true, :to_groups=>@group.id, :sms_only=>nominal_body)).and_return(@message)
           @message.should_receive(:deliver)              
-#          @gateway.should_receive(:deliver).with(@from, '')
           post :create, @params   # i.e. sends 'd testgroup test message'
         end
 
         it 'confirms to sender' do
-          AppLog.should_receive(:create).with(hash_including(:code=>"SMS.sent.clickatell")).twice
           post :create, @params   # i.e. sends 'd testgroup test message'
+          response.body.should match /your message.*was sent to/i
         end
       end # 'when group is found'
       
@@ -183,8 +182,8 @@ describe SmsController do
         end
 
         it 'informs sender of error' do
-          @gateway.should_receive(:deliver).with(@from,  /error/i)
           post :create, @params   # i.e. sends 'd testgroup test message'
+          response.body.should match /error.*bad_group/i
         end
       end # 'when group is found'
       

@@ -17,8 +17,11 @@ class SessionsController < ApplicationController
 def create
   auth_hash = request.env['omniauth.auth']
   user_email = auth_hash['info']['email']
-  user = Member.find_by_email(user_email).first
-  if user.nil?
+#  alerts_group = Group.find_by_group_name('Security alerts')
+# Temporary authorization solution: only allow log in to those who are on the list (via omniauth) AND
+# who belong to one of these groups (members, sec, mod). Not including alerts group because this is 
+# a rather uncontrolled one.
+  unless login_allowed(user_email)
     render :text => "Sorry, that login doesn't work. Please try another or contact the system administrator."
     return
   end

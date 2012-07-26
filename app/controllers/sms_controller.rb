@@ -32,8 +32,8 @@ class SmsController < ApplicationController
         AppLog.create(:code => "SMS.received", :description=>"from #{@from} (#{@sender.shorter_name}): #{body}")
         resp = (process_sms(body) || '')[0..159]    # generate response
         AppLog.create(:code => "SMS.reply", :description=>"to #{@from}: #{resp}")
-        default_sms_gateway.deliver(@from, resp) #default_gateway in messages_helper creates an instance of gateway specified 
-                                            #  in SiteSettings default_outgoing_sms_gateway
+#        default_sms_gateway.deliver(@from, resp) #default_gateway in messages_helper creates an instance of gateway specified 
+#                                            #  in SiteSettings default_outgoing_sms_gateway
         render :text => resp, :status => 200, :content_type => Mime::TEXT.to_s  # Confirm w incoming gateway that msg received
 #      rescue
 #        AppLog.create(:code => "SMS.system_error", :description=>"on SMS#create: #{$!}, #{$!.backtrace[0..2]}")
@@ -59,7 +59,7 @@ private
        when 'group', 'groups' then do_list_groups
        when 'info' then do_info(text)  
 #           when 'location' then do_location(text)  
-       when 'updates' then send_updates(text)
+       when 'update', 'updates' then send_updates(text)
        when '?', 'help' then do_help(text)
        when /\A!/ then process_response(command, text)
        # More commands go here ...

@@ -29,6 +29,15 @@ module SessionsHelper
     self.current_user = nil
   end
 
+  def login_allowed(user_email)
+    user = Member.find_by_email(user_email).first
+    members_group = Group.find_by_group_name('Members')
+    sec_group = Group.find_by_group_name('Security leaders')
+    mod_group = Group.find_by_group_name('Moderators')
+    return user if (user && (user.groups & [members_group, sec_group, mod_group]).any? )
+    return false
+  end
+
   def deny_access
     redirect_to sign_in_path, :notice => "Please sign in."
   end
