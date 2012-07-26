@@ -158,7 +158,7 @@ private
       updates = Message.news_updates(:limit => 2)  # try again with no keywords
       found_without_keyword = updates.any?
     end
-    updates.each {|u| u.send_sms(:phone_numbers => @from, :news_update => true)}
+    updates.each {|u| u.deliver_sms(:phone_numbers => @from, :news_update => true)}
     return "No new updates with keyword(s) '#{keyword}'. The last one or two updates have been sent." if found_without_keyword
     return "Sent #{updates.count} updates" if updates.any? 
     return "No new updates found. Contact your organization if you need more information."
