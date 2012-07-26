@@ -21,7 +21,8 @@ def create
 # Temporary authorization solution: only allow log in to those who are on the list (via omniauth) AND
 # who belong to one of these groups (members, sec, mod). Not including alerts group because this is 
 # a rather uncontrolled one.
-  unless login_allowed(user_email)
+  user = login_allowed(user_email)
+  unless user
     render :text => "Sorry, that login doesn't work. Please try another or contact the system administrator."
     return
   end
