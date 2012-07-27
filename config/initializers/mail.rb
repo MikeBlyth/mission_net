@@ -1,8 +1,8 @@
 ActionMailer::Base.smtp_settings = {
-  :address        => 'gator31.hostgator.com',
-  :port           => '465',
-#  :address        => 'mail.livinginnigeria.org',
-#  :port           => '25',
+#  :address        => 'gator31.hostgator.com',
+#  :port           => '465',
+  :address        => 'mail.livinginnigeria.org',
+  :port           => '25',
   :authentication => :plain,
   :user_name      => 'joslink+livinginnigeria.org',
   :password       => 'wmbayouessexghettorick5W',

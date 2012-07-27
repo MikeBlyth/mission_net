@@ -1,5 +1,5 @@
 class Notifier < ActionMailer::Base
-  default :from => "database@sim-nigeria.org"
+  default :from => "joslink@livinginnigeria.org"
   include ApplicationHelper
   include IncomingMailsHelper  
   include NotifierHelper
@@ -12,7 +12,7 @@ class Notifier < ActionMailer::Base
   def send_help(recipients)
     @content = help_content
 
-    mail(:to => recipients, :subject=>'SIM Nigeria Database Help') do |format|
+    mail(:to => recipients, :subject=>'Joslink Database Help') do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
     end 
