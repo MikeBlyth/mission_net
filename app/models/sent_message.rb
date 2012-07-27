@@ -31,7 +31,7 @@ class SentMessage < ActiveRecord::Base
   end
 
   def to_s
-    member.full_name_short
+    member ? member.full_name_short : '--No member!--'
   end
 
   def set_confirmed_time  
