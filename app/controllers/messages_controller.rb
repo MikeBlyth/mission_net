@@ -6,16 +6,14 @@ class MessagesController < ApplicationController
     config.list.columns = [:id, :created_at, :user, :body, :sms_only, :send_sms, :send_email, :to_groups, 
         :sent_messages, :importance, :status_summary]
     config.create.link.page = true 
-#    config.columns[:sent_messages].label = 'Sent to'
+    config.columns[:sent_messages].label = 'Sent to'
     config.columns[:importance].label = 'Imp'
     config.columns[:user].clear_link
     config.create.link.inline = false 
     config.update.link = false
     config.actions.exclude :update
-#    config.actions.exclude :create  # TEMPORARY!
     list.sorting = {:created_at => 'DESC'}
-# NOT READY TO ADD "FOLLOW UP" ACTION
-#    config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
+    config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
   end
 
   def before_create_save(record)
@@ -27,7 +25,7 @@ class MessagesController < ApplicationController
   end
   
   def deliver_message(record)
-    record.deliver(:sms_gateway => default_sms_gateway)
+    record.deliver
   end
 
   # Send form to user for generating a follow-up on a given message

@@ -20,7 +20,7 @@ class IncomingMailsController < ApplicationController
     process_message_response
     commands = extract_commands(@body)
     if commands.nil? || commands.empty?
-      Notifier.send_generic(@from_address, "Error: nothing found in your message #{@body[0..160]}")
+      Notifier.send_generic(@from_address, "Error: nothing found in your message #{@body[0..160]}").deliver
       success = false
     else
       success = process_commands(commands)
