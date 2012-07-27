@@ -6,7 +6,7 @@ ActionMailer::Base.smtp_settings = {
   :authentication => :plain,
   :user_name      => 'joslink+livinginnigeria.org',
   :password       => 'wmbayouessexghettorick5W',
-#  :domain         => 'localhost:3000'
+  :domain         => 'joslink.herokuapp.com'
 }
 ActionMailer::Base.delivery_method = :smtp
 
