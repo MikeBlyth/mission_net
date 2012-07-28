@@ -31,6 +31,7 @@ AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_s
   #   See http://www.twilio.com/docs/api/rest/sending-sms for how to do status callbacks
   def deliver(numbers=@numbers, body=@body)
     # NB: message#deliver_sms currently sends numbers as a string, not an array.
+puts "**** Delivering with @client=#{@client}"
     if numbers.is_a? String
       @numbers = numbers.gsub("+","").split(/,\s*/)    # Convert to array so we can do "each"
     else
@@ -41,6 +42,7 @@ AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_s
     raise('No message body') unless @body
     reply = {} # To make status hash
     @numbers.each do |number|
+puts "****Delivering to number=#{number}"
       begin
         @client.account.sms.messages.create(
           :from => @phone_number,
