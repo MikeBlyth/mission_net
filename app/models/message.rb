@@ -253,7 +253,7 @@ puts "**** Message#deliver_email outgoing=#{outgoing}"
   # If params[:news_update] exists, the SentMessages are not updated with the status 
   #    (but since we're replying to an incoming number, it should work)
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
-  def deliver_sms(params)
+  def deliver_sms(params={})
 #puts "**** Message#deliver_sms; params=#{params}"
     sms_gateway = params[:sms_gateway] || default_sms_gateway
     phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
