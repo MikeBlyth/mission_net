@@ -215,7 +215,7 @@ puts "**** Message#deliver - Job queue = #{Delayed::Job.all}"
 
   # ToDo: clean up this mess and just give Notifier the Message object!
   def deliver_email
-#puts "**** deliver_email: emails=#{emails}"
+puts "**** deliver_email: emails=#{emails}"
     emails = sent_messages.map {|sm| sm.email}.compact.uniq
     self.subject ||= 'Message from SIM Nigeria'
     id_for_reply = self.following_up || id  # a follow-up message uses id of the original msg
@@ -223,7 +223,7 @@ puts "**** Message#deliver - Job queue = #{Delayed::Job.all}"
     outgoing = Notifier.send_group_message(:recipients=>emails, :content=>self.body, 
         :subject => subject, :id => id_for_reply , :response_time_limit => response_time_limit, 
         :bcc => true, :following_up => following_up) # send using bcc:, not to:
-#puts "**** Message#deliver_email outgoing=#{outgoing}"
+puts "**** Message#deliver_email outgoing=#{outgoing}"
     outgoing.deliver
     # Mark all as being sent, but only if they have an email address
     # This is terribly inefficient ... need to find a way to use a single SQL statement
