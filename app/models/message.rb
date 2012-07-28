@@ -231,7 +231,6 @@ puts "**** Message#deliver_email outgoing=#{outgoing}"
       sm.update_attributes(:msg_status => MessagesHelper::MsgSentToGateway) if sm.email
     end
   end
-#  handle_asynchronously :deliver_email
   
   # Add the message id if needed for reply, the signature and the time stamp
   def assemble_sms
@@ -272,7 +271,7 @@ puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
                                                                   # In production, a reply will always be present?
   end
-#  handle_asynchronously :deliver_sms
+
 
   def check_recipients
     unless to_groups || following_up || !(send_sms || send_email)
