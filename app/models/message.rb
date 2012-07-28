@@ -108,7 +108,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 #    heroku_set_workers(1)  # Of course this is for Heroku, to be able to run the background task. Kludgy but can't get other solutions (HireFire, Workless) to work.
     save! if self.new_record?
     if send_email
-      delay.deliver_email()
+      deliver_email()
     end
     if send_sms
 puts '**** Message#deliver - sending SMS job to queue'
