@@ -25,7 +25,7 @@ class MessagesController < ApplicationController
   end
   
   def deliver_message(record)
-    record.deliver
+    delay.record.deliver
   end
 
   # Send form to user for generating a follow-up on a given message

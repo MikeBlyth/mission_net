@@ -17,6 +17,7 @@ gem 'omniauth-facebook'
 gem 'omniauth-youtube'
 #gem 'omniauth-google'
 gem 'omniauth-google-oauth2'
+gem 'delayed_job_active_record'
 
 #gem 'active_scaffold_config_list_vho'
 
