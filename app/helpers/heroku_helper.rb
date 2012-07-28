@@ -18,7 +18,11 @@ module HerokuHelper
   def heroku_remove_worker(heroku, n=1)
     heroku.post_ps_scale('joslink', 'worker', "-#{n}")
   end
-  
+
+  def heroku_remove_all_workers(heroku)
+    heroku.post_ps_scale('joslink', 'worker', "0")
+  end
+        
 end
 
     
