@@ -105,7 +105,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   def deliver(params={})
     puts "**** Message#deliver" if params[:verbose]
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
-    heroku_set_workers(0)  # Of course this is for Heroku, to be able to run the background task. Kludgy but can't get other solutions (HireFire, Workless) to work.
+#    heroku_set_workers(1)  # Of course this is for Heroku, to be able to run the background task. Kludgy but can't get other solutions (HireFire, Workless) to work.
     save! if self.new_record?
     if send_email
       delay.deliver_email()
