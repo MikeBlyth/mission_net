@@ -26,7 +26,7 @@ class MessagesController < ApplicationController
   
   def deliver_message(record)
     flash[:notice] = 'Message is being delivered'
-    record.delay.deliver
+    record.deliver  # Note that Message#deliver uses DelayedJob to run the actual delivery in the background.
   end
 
   # Send form to user for generating a follow-up on a given message

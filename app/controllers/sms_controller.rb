@@ -134,7 +134,7 @@ private
       body = body[0..148-sender_name.size] + '-' + sender_name  # Truncate msg and add sender's name
       message = Message.new(:send_sms=>true, :to_groups=>group.id, :sms_only=>body)
       message.deliver  # Don't forget to deliver!
-      return("Your message ##{message.id} was sent to #{group.group_name} (#{message.members.count} recipients)")
+      return("Your message ##{message.id} is being sent to #{group.group_name} (#{message.members.count} recipients)")
     else
       return( ("Error: no group #{target_group}. Send command 'groups' to list the main ones incl " +
                Group.primary_group_abbrevs)[0..160] )
@@ -158,9 +158,9 @@ private
       updates = Message.news_updates(:limit => 2)  # try again with no keywords
       found_without_keyword = updates.any?
     end
-    updates.each {|u| u.deliver_sms(:phone_numbers => @from, :news_update => true)}
-    return "No new updates with keyword(s) '#{keyword}'. The last one or two updates have been sent." if found_without_keyword
-    return "Sent #{updates.count} updates" if updates.any? 
+    updates.each {|u| u.delay.deliver_sms(:phone_numbers => @from, :news_update => true)}
+    return "No new updates with keyword(s) '#{keyword}'. The last one or two updates are being sent." if found_without_keyword
+    return "Sending #{updates.count} updates" if updates.any? 
     return "No new updates found. Contact your organization if you need more information."
   end
 
