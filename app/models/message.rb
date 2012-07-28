@@ -24,6 +24,7 @@
 #
 
 include MessagesHelper
+require 'heroku-api'
 
 class Message < ActiveRecord::Base
   attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
@@ -105,6 +106,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     puts "**** Message#deliver" if params[:verbose]
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
     save! if self.new_record?
+    heroku = Heroku::API.new(:api_key => 'd758366a60299d3bb593d2aae9ae3b7455eacd14')
     heroku.ps_scale('joslink', :type => "workers", :qty => 1) 
     delay.deliver_email() if send_email
     delay.deliver_sms(:sms_gateway=>params[:sms_gateway] || default_sms_gateway) if send_sms
