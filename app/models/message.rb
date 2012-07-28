@@ -24,7 +24,7 @@
 #
 
 include MessagesHelper
-#require 'heroku-api'
+include HerokuHelper
 
 class Message < ActiveRecord::Base
   attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
@@ -105,6 +105,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   def deliver(params={})
     puts "**** Message#deliver" if params[:verbose]
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
+    heroku_set_workers(1)  # Of course this is for Heroku, to be able to run the background task. Kludgy but can't get other solutions (HireFire, Workless) to work.
     save! if self.new_record?
     if send_email
       delay.deliver_email()
@@ -228,6 +229,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
       sm.update_attributes(:msg_status => MessagesHelper::MsgSentToGateway) if sm.email
     end
   end
+  handle_asynchronously :deliver_email
   
   # Add the message id if needed for reply, the signature and the time stamp
   def assemble_sms
@@ -265,7 +267,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
                                                                   # In production, a reply will always be present?
   end
-  
+  handle_asynchronously :deliver_sms
   def check_recipients
     unless to_groups || following_up || !(send_sms || send_email)
       errors.add(:to_groups, 'Please select one or more groups to receive this message')

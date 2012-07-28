@@ -11,16 +11,20 @@ module HerokuHelper
     processes.map {|p| {:process => p['process'], :elapsed => p['elapsed']} if p['process'] =~ /work/i}.compact
   end
   
-  def heroku_add_worker(heroku, n=1)
-    heroku.post_ps_scale('joslink', 'worker', "+#{n}")
+  def heroku_add_worker(n=1)
+    heroku_connection.post_ps_scale('joslink', 'worker', "+#{n}")
   end
 
-  def heroku_remove_worker(heroku, n=1)
-    heroku.post_ps_scale('joslink', 'worker', "-#{n}")
+  def heroku_set_workers(n=1)
+    heroku_connection.post_ps_scale('joslink', 'worker', "#{n}")
   end
 
-  def heroku_remove_all_workers(heroku)
-    heroku.post_ps_scale('joslink', 'worker', "0")
+  def heroku_remove_worker(n=1)
+    heroku_connection.post_ps_scale('joslink', 'worker', "-#{n}")
+  end
+
+  def heroku_remove_all_workers
+    heroku_connection.post_ps_scale('joslink', 'worker', "0")
   end
         
 end
