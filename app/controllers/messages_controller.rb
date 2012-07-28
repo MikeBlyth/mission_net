@@ -25,6 +25,7 @@ class MessagesController < ApplicationController
   end
   
   def deliver_message(record)
+    flash[:notice] = 'Message is being delivered'
     record.delay.deliver
   end
 
