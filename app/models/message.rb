@@ -255,20 +255,19 @@ puts "**** Message#deliver - Job queue = #{Delayed::Job.all}"
   #    (but since we're replying to an incoming number, it should work)
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
   def deliver_sms(params)
-raise "Gotcha"
 puts "**** Message#deliver_sms; params=#{params}"
-    sms_gateway = params[:sms_gateway] || default_sms_gateway
-    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
-    phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
-    assemble_sms()
-puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
-    #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
-    gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
-#puts "**** sms_gateway=#{sms_gateway}"
-#puts "**** gateway_reply=#{gateway_reply}"
-    #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
-    update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
-                                                                  # In production, a reply will always be present?
+#    sms_gateway = params[:sms_gateway] || default_sms_gateway
+#    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
+#    phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
+#    assemble_sms()
+#puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
+#    #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
+#    gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
+##puts "**** sms_gateway=#{sms_gateway}"
+##puts "**** gateway_reply=#{gateway_reply}"
+#    #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
+#    update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
+#                                                                  # In production, a reply will always be present?
   end
 #  handle_asynchronously :deliver_sms
 
