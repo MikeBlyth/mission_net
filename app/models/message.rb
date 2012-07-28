@@ -111,7 +111,9 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
       delay.deliver_email()
     end
     if send_sms
+puts '**** Message#deliver - sending SMS job to queue'
       delay.deliver_sms(:sms_gateway=>params[:sms_gateway] || default_sms_gateway)
+puts "**** Message#deliver - Job queue = #{Delayed::Job.all}"
     end
   end
   
