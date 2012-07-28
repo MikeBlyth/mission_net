@@ -255,6 +255,7 @@ puts "**** Message#deliver - Job queue = #{Delayed::Job.all}"
   #    (but since we're replying to an incoming number, it should work)
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
   def deliver_sms(params)
+raise "Gotcha"
 puts "**** Message#deliver_sms; params=#{params}"
     sms_gateway = params[:sms_gateway] || default_sms_gateway
     phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
@@ -269,7 +270,8 @@ puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
                                                                   # In production, a reply will always be present?
   end
-  handle_asynchronously :deliver_sms
+#  handle_asynchronously :deliver_sms
+
   def check_recipients
     unless to_groups || following_up || !(send_sms || send_email)
       errors.add(:to_groups, 'Please select one or more groups to receive this message')
