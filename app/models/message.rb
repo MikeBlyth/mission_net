@@ -215,8 +215,8 @@ puts "**** Message#deliver - Job queue = #{Delayed::Job.all}"
 
   # ToDo: clean up this mess and just give Notifier the Message object!
   def deliver_email
-puts "**** deliver_email: emails=#{emails}"
     emails = sent_messages.map {|sm| sm.email}.compact.uniq
+puts "**** deliver_email: emails=#{emails}"
     self.subject ||= 'Message from SIM Nigeria'
     id_for_reply = self.following_up || id  # a follow-up message uses id of the original msg
 #puts "**** Messages#deliver_email response_time_limit=#{response_time_limit}"
