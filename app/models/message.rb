@@ -112,7 +112,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     end
     if send_sms
 puts '**** Message#deliver - sending SMS job to queue'
-      deliver_sms(:sms_gateway=>params[:sms_gateway] || default_sms_gateway)
+      deliver_sms
 puts "**** Message#deliver - Job queue = #{Delayed::Job.all}"
     end
   end
@@ -254,15 +254,18 @@ puts "**** Message#deliver_email outgoing=#{outgoing}"
   # If params[:news_update] exists, the SentMessages are not updated with the status 
   #    (but since we're replying to an incoming number, it should work)
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
-  def deliver_sms(params)
+  def deliver_sms#(params)
 puts "**** Message#deliver_sms; params=#{params}"
-    sms_gateway = params[:sms_gateway] || default_sms_gateway
-    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
+#    sms_gateway = params[:sms_gateway] || default_sms_gateway
+#    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
+    sms_gateway = default_sms_gateway
+    phone_numbers = sent_messages.map {|sm| sm.phone}.compact.uniq
     phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
     assemble_sms()
 puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
-    gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
+#    gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
+    sms_gateway.delay.deliver(phone_numbers, sms_only)
 #puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
