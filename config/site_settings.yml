@@ -98,5 +98,9 @@ sendgrid_password:
 contact_update_recipients:
   name: Contact Update Recipients
   type: string
-  
+
+background_queuing:
+  name: System used for background jobs (IronWorker or DelayedJobs)
+  type: string
+  default: IronWorker  
 

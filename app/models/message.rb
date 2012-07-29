@@ -107,9 +107,18 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     puts "**** Message#deliver" if options[:verbose]
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
     save! if self.new_record?
-    heroku_set_workers(1)  # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
-    delay.deliver_email() if send_email 
-    delay.deliver_sms() if send_sms 
+    case 
+    when SiteSetting.background_queuing =~ /iron/i
+      deliver_email() if send_email 
+      deliver_sms(:sms_gateway => ironworker_twilio_gateway.new) if send_sms 
+    when SiteSetting.background_queuing =~ /DJ|Delayed\s*Job/i
+      heroku_set_workers(1)  # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
+      delay.deliver_email() if send_email 
+      delay.deliver_sms() if send_sms 
+    else
+      deliver_email() if send_email 
+      deliver_sms() if send_sms 
+    end
   end
   
   # Array of members who have not yet responded to this message
