@@ -25,10 +25,11 @@ AppLog.create(:code => "SMS.init.#{@gateway_name}", :description=>"initialized")
     @body = body        #  ...
     raise('No phone numbers given') unless @numbers
     raise('No message body') unless @body
+    iron_worker_client ||= IronWorkerNG::Client.new
     @numbers.each do |number|
 #puts "****Delivering to number=#{number}"
       begin
-        iron_worker.tasks.create("twilio_worker",
+        iron_worker_client.tasks.create("twilio_worker",
           {:sid => @account_sid,
             :token => @auth_token,
             :from => @phone_number,
