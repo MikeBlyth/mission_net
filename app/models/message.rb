@@ -110,7 +110,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     save! if self.new_record?
     case 
     when SiteSetting.background_queuing =~ /iron/i
-      deliver_email() if send_email 
+      deliver_email() if send_email # Email doesn't really need its own background task because we're just sending one (to many recipients)
       deliver_sms(:sms_gateway => IronworkerTwilioGateway.new) if send_sms 
     when SiteSetting.background_queuing =~ /DJ|Delayed\s*Job/i
       heroku_set_workers(1)  # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
