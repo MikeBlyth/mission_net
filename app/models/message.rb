@@ -24,6 +24,7 @@
 #
 
 include MessagesHelper
+include SmsGatewayHelper
 
 class Message < ActiveRecord::Base
   attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
