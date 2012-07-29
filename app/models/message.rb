@@ -105,7 +105,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     puts "**** Message#deliver" if params[:verbose]
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
     save! if self.new_record?
-    delay.deliver_email() if send_email
+    delay.deliver_email(:sms_gateway=>params[:sms_gateway] || default_sms_gateway) if send_email #Z#
     delay.deliver_sms(:sms_gateway=>params[:sms_gateway] || default_sms_gateway) if send_sms
   end
   
@@ -206,7 +206,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 #private
 
   # ToDo: clean up this mess and just give Notifier the Message object!
-  def deliver_email
+  def deliver_email(options={})
 #puts "**** deliver_email: emails=#{emails}"
     emails = sent_messages.map {|sm| sm.email}.compact.uniq
     self.subject ||= 'Message from SIM Nigeria'

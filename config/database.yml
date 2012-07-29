@@ -28,7 +28,7 @@ test:
 
 production:
   adapter:  postgresql
-  database: joslink_prod
+  database: joslink_development
   encoding: unicode
   pool: 5
   timeout: 5000
