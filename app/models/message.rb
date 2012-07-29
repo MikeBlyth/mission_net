@@ -251,7 +251,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
     phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
     assemble_sms()
-#puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
+puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
     gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
 #puts "**** sms_gateway=#{sms_gateway}"
