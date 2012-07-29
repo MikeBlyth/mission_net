@@ -12,6 +12,7 @@ module SmsGatewaysHelper
     gateway_name = SiteSetting.default_outgoing_sms_gateway
     raise "Trying to send SMS but no gateway defined in site settings" unless gateway_name
     gateway_name = gateway_name.capitalize + "Gateway"
+return gateway_name.constantize.new  #D#
     if Rails.env == 'production'
       return gateway_name.constantize.new
     else    

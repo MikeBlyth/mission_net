@@ -8,7 +8,7 @@
 %body
   #menu_toggle
     %a.show_menu
-      %img(src="stylesheets/images/arrows-4-icon.png")
+      = image_tag "arrows-4-icon.png"
       %span#show_hide Hide menu
     #signed_in
       = signed_in? ? "Signed in as #{current_user.name}" : "Not signed in" 

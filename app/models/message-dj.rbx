@@ -24,6 +24,7 @@
 #
 
 include MessagesHelper
+include HerokuHelper
 
 class Message < ActiveRecord::Base
   attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
@@ -104,9 +105,16 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   def deliver(params={})
     puts "**** Message#deliver" if params[:verbose]
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
+#    heroku_set_workers(1)  # Of course this is for Heroku, to be able to run the background task. Kludgy but can't get other solutions (HireFire, Workless) to work.
     save! if self.new_record?
-    delay.deliver_email() if send_email
-    delay.deliver_sms(:sms_gateway=>params[:sms_gateway] || default_sms_gateway) if send_sms
+    if send_email
+      delay.deliver_email()
+    end
+    if send_sms
+puts '**** Message#deliver - sending SMS job to queue'
+      deliver_sms
+puts "**** Message#deliver - Job queue = #{Delayed::Job.all}"
+    end
   end
   
   # Array of members who have not yet responded to this message
@@ -207,15 +215,15 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 
   # ToDo: clean up this mess and just give Notifier the Message object!
   def deliver_email
-#puts "**** deliver_email: emails=#{emails}"
     emails = sent_messages.map {|sm| sm.email}.compact.uniq
+puts "**** deliver_email: emails=#{emails}"
     self.subject ||= 'Message from SIM Nigeria'
     id_for_reply = self.following_up || id  # a follow-up message uses id of the original msg
 #puts "**** Messages#deliver_email response_time_limit=#{response_time_limit}"
     outgoing = Notifier.send_group_message(:recipients=>emails, :content=>self.body, 
         :subject => subject, :id => id_for_reply , :response_time_limit => response_time_limit, 
         :bcc => true, :following_up => following_up) # send using bcc:, not to:
-#puts "**** Message#deliver_email outgoing=#{outgoing}"
+puts "**** Message#deliver_email outgoing=#{outgoing}"
     outgoing.deliver
     # Mark all as being sent, but only if they have an email address
     # This is terribly inefficient ... need to find a way to use a single SQL statement
@@ -223,6 +231,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
       sm.update_attributes(:msg_status => MessagesHelper::MsgSentToGateway) if sm.email
     end
   end
+#  handle_asynchronously :deliver_email
   
   # Add the message id if needed for reply, the signature and the time stamp
   def assemble_sms
@@ -245,22 +254,26 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   # If params[:news_update] exists, the SentMessages are not updated with the status 
   #    (but since we're replying to an incoming number, it should work)
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
-  def deliver_sms(params)
+  def deliver_sms#Z#(params)
 #puts "**** Message#deliver_sms; params=#{params}"
-    sms_gateway = params[:sms_gateway] || default_sms_gateway
-    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
+#Z#    sms_gateway = params[:sms_gateway] || default_sms_gateway
+#Z#    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
+    sms_gateway = default_sms_gateway
+    phone_numbers = sent_messages.map {|sm| sm.phone}.compact.uniq
     phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
     assemble_sms()
-#puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
+puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
-    gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
+#Z#    gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
+    sms_gateway.delay.deliver(phone_numbers, sms_only)
 #puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
-    update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
+#Z#    update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
                                                                   # In production, a reply will always be present?
   end
-  
+#  handle_asynchronously :deliver_sms
+
   def check_recipients
     unless to_groups || following_up || !(send_sms || send_email)
       errors.add(:to_groups, 'Please select one or more groups to receive this message')
