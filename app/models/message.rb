@@ -26,6 +26,7 @@
 include MessagesHelper
 include SmsGatewaysHelper
 include HerokuHelper
+require 'ironworker_twilio_gateway.rb'
 
 class Message < ActiveRecord::Base
   attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
@@ -110,7 +111,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     case 
     when SiteSetting.background_queuing =~ /iron/i
       deliver_email() if send_email 
-      deliver_sms(:sms_gateway => ironworker_twilio_gateway.new) if send_sms 
+      deliver_sms(:sms_gateway => IronworkerTwilioGateway.new) if send_sms 
     when SiteSetting.background_queuing =~ /DJ|Delayed\s*Job/i
       heroku_set_workers(1)  # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
       delay.deliver_email() if send_email 

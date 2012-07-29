@@ -1,5 +1,6 @@
 require 'application_helper'
 include ApplicationHelper
+require 'iron_worker_ng'
 
 class IronworkerTwilioGateway < SmsGateway
 
