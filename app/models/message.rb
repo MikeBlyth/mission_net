@@ -101,12 +101,12 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   # Send the messages -- done by creating the sent_message objects, one for each member
   #   members_in_multiple_groups(array) is all the members belonging to these groups and
   #   to_groups_array is the array form of the destination groups for this message
-  def deliver(params={})
-    puts "**** Message#deliver" if params[:verbose]
+  def deliver(options={})
+    puts "**** Message#deliver" if options[:verbose]
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
     save! if self.new_record?
     delay.deliver_email() if send_email #Z#
-    delay.deliver_sms() if send_sms #(:sms_gateway=>params[:sms_gateway] || default_sms_gateway) if send_sms
+    delay.deliver_sms() if send_sms #(:sms_gateway=>options[:sms_gateway] || default_sms_gateway) if send_sms
   end
   
   # Array of members who have not yet responded to this message
@@ -122,10 +122,10 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   # We may want to distinguish two groups: (1) those who have not received message (error status, pending, etc) and
   # (2) those who have not responded. (1) would be useful to overcome transient errors, while (2) would only be used
   # when we have specifically requested a response.
-  def send_followup(params={})
+  def send_followup(options={})
     self.members = members_not_responding
     deliver_email if send_email
-    deliver_sms(:sms_gateway=>params[:sms_gateway]) if send_sms
+    deliver_sms(:sms_gateway=>options[:sms_gateway]) if send_sms
   end    
     
   def timestamp
@@ -186,10 +186,10 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 
   # Do whatever needed to record that 'member' has responded to this message
   # Do not update a record that already has been marked with MessagesHelper::MsgResponseReceived
-  def process_response(params={})
-    member=params[:member]
-    text=params[:text]
-    mode=params[:mode] # (SMS or email)
+  def process_response(options={})
+    member=options[:member]
+    text=options[:text]
+    mode=options[:mode] # (SMS or email)
 #puts "**** process_response: self.id=#{self.id}, member=#{member}, text=#{text}"
 #puts "**** sent_messages = #{self.sent_messages}"
     sent_message = self.sent_messages.detect {|m| m.member_id == member.id}
@@ -241,14 +241,14 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   end
  
   # Deliver text messages to an array of phone members, recording their acceptance at the gateway
-  # If params[:phone_numbers] exists, it overrides the SentMessages records (so can send to a specific member)
-  # If params[:news_update] exists, the SentMessages are not updated with the status 
+  # If options[:phone_numbers] exists, it overrides the SentMessages records (so can send to a specific member)
+  # If options[:news_update] exists, the SentMessages are not updated with the status 
   #    (but since we're replying to an incoming number, it should work)
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
-  def deliver_sms(params)
-#puts "**** Message#deliver_sms; params=#{params}"
-    sms_gateway = params[:sms_gateway] || default_sms_gateway
-    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
+  def deliver_sms(options={})
+#puts "**** Message#deliver_sms; options=#{options}"
+    sms_gateway = options[:sms_gateway] || default_sms_gateway
+    phone_numbers = options[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
     phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
     assemble_sms()
 puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
@@ -257,7 +257,7 @@ puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
 #puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
-    update_sent_messages_w_status(gateway_reply) if params[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
+    update_sent_messages_w_status(gateway_reply) if options[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
                                                                   # In production, a reply will always be present?
   end
   
