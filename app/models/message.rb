@@ -106,7 +106,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
     save! if self.new_record?
     delay.deliver_email() if send_email #Z#
-    delay.deliver_sms(:sms_gateway=>params[:sms_gateway] || default_sms_gateway) if send_sms
+    delay.deliver_sms() if send_sms #(:sms_gateway=>params[:sms_gateway] || default_sms_gateway) if send_sms
   end
   
   # Array of members who have not yet responded to this message
