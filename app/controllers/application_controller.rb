@@ -16,7 +16,11 @@ class ApplicationController < ActionController::Base
         request.headers['REQUEST_URI'] =~ /update_status_clickatell/ or
         request.remote_addr == '127.0.0.1')
   end
-  
+
+  def iron_worker
+    @iron_worker_client ||= IronWorkerNG::Client.new
+  end  
+
 private
 
   def authorize

@@ -25,6 +25,7 @@
 
 include MessagesHelper
 include SmsGatewaysHelper
+include HerokuHelper
 
 class Message < ActiveRecord::Base
   attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
@@ -106,8 +107,9 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     puts "**** Message#deliver" if options[:verbose]
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
     save! if self.new_record?
-    delay.deliver_email() if send_email #Z#
-    delay.deliver_sms() if send_sms #(:sms_gateway=>options[:sms_gateway] || default_sms_gateway) if send_sms
+    heroku_set_workers(1)  # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
+    delay.deliver_email() if send_email 
+    delay.deliver_sms() if send_sms 
   end
   
   # Array of members who have not yet responded to this message

@@ -49,7 +49,7 @@ organization:
       
 default_outgoing_sms_gateway:
   name: SMS gateway for outgoing messages
-  default: Twilio
+  default: ironworker_twilio
   type: string
 
 clickatell_user_name:

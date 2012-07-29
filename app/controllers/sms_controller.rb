@@ -158,7 +158,9 @@ private
       updates = Message.news_updates(:limit => 2)  # try again with no keywords
       found_without_keyword = updates.any?
     end
-    updates.each {|u| u.delay.deliver_sms(:phone_numbers => @from, :news_update => true)}
+    updates.each do |u|
+      u.deliver_sms(:phone_numbers => @from, :news_update => true) # Don't try to use delayed-job here w present DJ/Heroku setup
+    end
     return "No new updates with keyword(s) '#{keyword}'. The last one or two updates are being sent." if found_without_keyword
     return "Sending #{updates.count} updates" if updates.any? 
     return "No new updates found. Contact your organization if you need more information."

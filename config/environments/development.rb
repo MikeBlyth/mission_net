@@ -34,4 +34,7 @@ Joslink::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+  
+  ENV['IRON_WORKER_TOKEN'] = 'KMJAbRfCQE9RxbtZDusj5SpgOhQ'
+  ENV['IRON_WORKER_PROJECT_ID'] = '5015152f0948514e68009db3'
 end
