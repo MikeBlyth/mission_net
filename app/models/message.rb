@@ -26,7 +26,7 @@
 include MessagesHelper
 include SmsGatewaysHelper
 include HerokuHelper
-require 'ironworker_twilio_gateway.rb'
+#require 'ironworker_twilio_gateway.rb'
 
 class Message < ActiveRecord::Base
   attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
@@ -260,7 +260,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
   def deliver_sms(options={})
 #puts "**** Message#deliver_sms; options=#{options}"
-    sms_gateway = options[:sms_gateway] || default_sms_gateway
+    sms_gateway = options[:sms_gateway] || SmsGateway.default_sms_gateway
     phone_numbers = options[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
     phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
     assemble_sms()

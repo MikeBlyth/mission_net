@@ -84,7 +84,7 @@ describe 'default_sms_gateway from from SiteSetting.gateway_name' do
     Rails.stub(:env => 'production')
     SiteSetting.stub(:default_outgoing_sms_gateway => 'clickatell')
     ClickatellGateway.should_receive(:new)
-    default_sms_gateway
+    SmsGateway.default_sms_gateway
   end
   
   it 'creates new mock gateway object in test mode' do
@@ -92,7 +92,7 @@ describe 'default_sms_gateway from from SiteSetting.gateway_name' do
     SiteSetting.stub(:default_outgoing_sms_gateway => 'clickatell')
     MockClickatellGateway.should_receive(:new)
     ClickatellGateway.should_not_receive(:new)
-    default_sms_gateway
+    SmsGateway.default_sms_gateway
   end
   
   it 'creates instance of user-defined mock gateway' do
@@ -101,7 +101,7 @@ describe 'default_sms_gateway from from SiteSetting.gateway_name' do
     SiteSetting.stub(:default_outgoing_sms_gateway => 'userdefined')
     MockUserdefinedGateway.should_receive(:new)
     MockClickatellGateway.should_not_receive(:new)
-    default_sms_gateway
+    SmsGateway.default_sms_gateway
   end
   
   it 'creates new MockClickatellGateway in test mode if no mock for requested gateway' do
@@ -109,7 +109,7 @@ describe 'default_sms_gateway from from SiteSetting.gateway_name' do
     SiteSetting.stub(:default_outgoing_sms_gateway => 'something')
     MockClickatellGateway.should_receive(:new)
     ClickatellGateway.should_not_receive(:new)
-    default_sms_gateway
+    SmsGateway.default_sms_gateway
   end
   
 end # default_sms_gateway

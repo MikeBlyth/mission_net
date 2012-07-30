@@ -565,6 +565,19 @@ describe Message do
 
   end # News updates
 
+  describe 'with IronWorker' do
+    before(:each) do
+      silence_warnings {IronworkerTwilioGateway = mock('IronworkerTwilioGateway', :new => @gateway)}
+      SiteSetting.stub(:default_sms_outgoing_gateway => 'ironworker_twilio')
+      SiteSetting.stub(:background_queuing => 'ironworker')
+    end
+   
+    it 'uses IronWorkerGateway for SMS' do
+      IronworkerTwilioGateway.should_receive(:new)
+      @gateway.should_receive(:deliver)
+      post :create, :record => {:sms_only=>"test "*10, :to_groups=>["1", '2'], :send_sms=>true}
+    end
+  end  
 
 
 

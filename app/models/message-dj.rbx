@@ -256,9 +256,9 @@ puts "**** Message#deliver_email outgoing=#{outgoing}"
   # ToDo: refactor so we don't need to get member-phone number correspondance twice
   def deliver_sms#Z#(params)
 #puts "**** Message#deliver_sms; params=#{params}"
-#Z#    sms_gateway = params[:sms_gateway] || default_sms_gateway
+#Z#    sms_gateway = params[:sms_gateway] || SmsGateway.default_sms_gateway
 #Z#    phone_numbers = params[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
-    sms_gateway = default_sms_gateway
+    sms_gateway = SmsGateway.default_sms_gateway
     phone_numbers = sent_messages.map {|sm| sm.phone}.compact.uniq
     phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
     assemble_sms()
