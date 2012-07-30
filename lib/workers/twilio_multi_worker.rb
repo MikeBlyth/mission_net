@@ -1,9 +1,8 @@
 require 'twilio-ruby'
+
 puts "Running TwilioMultiWorker..."
 
-puts "Connecting to Twilio..."
 client = Twilio::REST::Client.new(params['sid'], params['token'])
-puts "Connected."
 
 puts "Sending messages..."
 from = params['from']
@@ -24,3 +23,4 @@ numbers.each do |number|
 end
 
 puts "Finished processing TwilioSMSWorker."
+

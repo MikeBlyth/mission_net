@@ -4,6 +4,7 @@ include ApplicationHelper
 require 'httparty'
 require 'uri'
 include HerokuHelper
+require 'iron_worker_ng'
 
 # This is a thin wrapper around twilio-ruby to make it compatible with the "Gateway" class
 # See https://github.com/twilio/twilio-ruby/wiki

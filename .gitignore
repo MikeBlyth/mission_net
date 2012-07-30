@@ -24,3 +24,6 @@ heroku.log
 heroku.logs
 test.pdf
 config/initializers/secret_token.rb
+.iron.json
+iron.json
+iron_worker_credentials.rb
