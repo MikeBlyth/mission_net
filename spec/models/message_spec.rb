@@ -37,6 +37,8 @@ describe Message do
       @body = 'test message'
       @message = Message.new(:body => @body, :sms_only => '#'*50)
       @message.stub(:created_at).and_return(Time.now)
+      SiteSetting.stub(:default_sms_outgoing_gateway => 'Clickatell')
+      SiteSetting.stub(:background_queuing => '')
     end
 
   describe 'initialization' do

@@ -18,11 +18,8 @@ class TwilioGateway < SmsGateway
     @gateway_name = 'twilio'
     @required_params = [:account_sid, :auth_token, :phone_number]  # "twilio_" is automatically prefixed to these for looking in the site settings
     super
-#puts "**** @account_sid=#{@account_sid}"
-#puts "**** @auth_token=#{@auth_token}"
-AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_sid=#{(@account_sid || '')[0..6]}..., @auth_token=#{(@auth_token || '')[0..4]}...")
+    #AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_sid=#{(@account_sid || '')[0..6]}..., @auth_token=#{(@auth_token || '')[0..4]}...")
 #puts "**** Create Twilio Client:"
-    @client = Twilio::REST::Client.new @account_sid, @auth_token
 #puts "****   Client = #{@client}.attributes"    
   end
 
@@ -40,9 +37,36 @@ puts "**** Delivering with @client=#{@client}"
     @body = body        #  ...
     raise('No phone numbers given') unless @numbers
     raise('No message body') unless @body
+    deliver_direct
+    super
+  end
+
+  def deliver_ironworker
+    iron_worker_client ||= IronWorkerNG::Client.new
+    @numbers.each do |number|
+      begin
+        iron_worker_client.tasks.create("twilio_worker",
+          {:sid => @account_sid,
+            :token => @auth_token,
+            :from => @phone_number,
+            :to => number.with_plus,
+            :message => @body
+          }
+         )
+       end     
+    end
+  end
+  
+  def deliver_delayed_job
+    heroku_set_workers(1)  # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
+    delay.deliver_direct
+  end
+
+  def deliver_direct
+    @client = Twilio::REST::Client.new @account_sid, @auth_token
     reply = {} # To make status hash
     @numbers.each do |number|
-puts "****Delivering to number=#{number}"
+#puts "****Delivering to number=#{number}"
       begin
         @client.account.sms.messages.create(
           :from => @phone_number,
@@ -58,8 +82,6 @@ puts "****Delivering to number=#{number}"
        end     
     end
     @gateway_reply = reply
-    super
   end
-
 end  
 
