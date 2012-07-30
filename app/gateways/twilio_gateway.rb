@@ -3,6 +3,7 @@ require 'application_helper'
 include ApplicationHelper
 require 'httparty'
 require 'uri'
+include HerokuHelper
 
 # This is a thin wrapper around twilio-ruby to make it compatible with the "Gateway" class
 # See https://github.com/twilio/twilio-ruby/wiki
@@ -28,7 +29,7 @@ class TwilioGateway < SmsGateway
   #   See http://www.twilio.com/docs/api/rest/sending-sms for how to do status callbacks
   def deliver(numbers=@numbers, body=@body)
     # NB: message#deliver_sms currently sends numbers as a string, not an array.
-puts "**** Delivering with @client=#{@client}"
+#puts "**** Delivering with @background=#{@background}"
     if numbers.is_a? String
       @numbers = numbers.gsub("+","").split(/,\s*/)    # Convert to array so we can do "each"
     else
@@ -49,14 +50,19 @@ puts "**** Delivering with @client=#{@client}"
     super
   end
 
+  def iron_worker
+    @iron_worker_client ||= IronWorkerNG::Client.new
+  end  
+
   def deliver_ironworker
-    iron_worker_client ||= IronWorkerNG::Client.new
-    iron_worker_client.tasks.create("twilio_multi_worker",
+    iron_worker
+puts "**** creating iw task"
+    @iron_worker_client.tasks.create("twilio_multi_worker",
       {:sid => @account_sid,
         :token => @auth_token,
         :from => @phone_number,
         :numbers => @numbers,
-        :message => @body
+        :body => @body
       }
       )
     @gateway_reply = nil    # because job will be run later, asynchronously

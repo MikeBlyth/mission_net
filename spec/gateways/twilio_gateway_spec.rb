@@ -8,6 +8,7 @@ describe TwilioGateway do
   before(:each) do
     AppLog.stub(:create)
     FakeWeb.register_uri(:any, %r/http:\/\/api.twilio.com\//, :body => '{"message": "You tried to reach Twilio"}')
+    FakeWeb.register_uri(:any, %r/https?:\/\/worker.*iron.io\//, :body => '{"message": "You tried to reach IronWorker"}')
     @phone_1, @phone_2 = '+2347777777777', '+2348888888888'
   end
 
@@ -71,9 +72,10 @@ describe TwilioGateway do
 #    
 #  end
       
-  describe 'Deliver method sends messages' do
+  describe 'Deliver method sends messages--no delayed process' do
     before(:each) do
 #      @client = Twilio::REST::Client.new "@account_sid", "auth_token"
+      SiteSetting.stub(:twilio_background => '')
       @client = mock('Client').as_null_object
       Twilio::REST::Client.stub(:new => @client)
       @gateway = TwilioGateway.new
@@ -177,4 +179,85 @@ describe TwilioGateway do
               
 
   end # deliver method
+  
+  describe 'Deliver method sends messages--IronWorker' do
+    before(:each) do
+      SiteSetting.stub(:twilio_background => 'Ironworker')
+      @gateway = TwilioGateway.new
+      @iw_client = mock('IW_client').as_null_object
+      IronWorkerNG::Client.stub(:new => @iw_client)
+      @twilio_client = mock('Client', :to_s => 'MockClient').as_null_object
+      Twilio::REST::Client.stub(:new => @twilio_client)
+      @body = 'Test message'
+    end
+
+    describe 'for single phone number' do
+      before(:each) do
+        @phones = [@phone_1]
+      end
+      
+      it 'calls Twilio directly' do
+        @iw_client.should_not_receive(:create)
+        @twilio_client.should_receive(:create)
+        @gateway.deliver(@phones, @body)
+      end
+
+    end # for single phone number
+
+    describe 'for multiple phone numbers' do
+      before(:each) do
+        @phones = [@phone_1, @phone_2]
+      end
+
+      it 'calls @client to send message' do
+        @iw_client.should_receive(:create).with(
+            "twilio_multi_worker",
+            {:from => SiteSetting.twilio_phone_number, :numbers => @phones, :body => @body,
+             :sid => SiteSetting.twilio_account_sid, :token => SiteSetting.twilio_auth_token
+            }
+          )
+        @gateway.deliver(@phones, @body)
+      end
+
+    end # for multiple phone number
+  end # deliver method --IronWorker
+  
+  describe 'Deliver method sends messages--DelayedJob' do
+    before(:each) do
+      SiteSetting.stub(:twilio_background => 'Delayed Job')
+      @gateway = TwilioGateway.new
+      @mock_heroku_connection = mock('Heroku connection')
+      Heroku::API.stub(:new => @mock_heroku_connection)
+      @twilio_client = mock('Client', :to_s => 'MockClient').as_null_object
+      Twilio::REST::Client.stub(:new => @twilio_client)
+      @body = 'Test message'
+    end
+
+    describe 'for single phone number' do
+      before(:each) do
+        @phones = [@phone_1]
+      end
+      
+      it 'calls Twilio directly' do
+        @mock_heroku_connection.should_not_receive(:post_ps_scale) # Don't start a worker
+        @twilio_client.should_receive(:create)
+        @gateway.deliver(@phones, @body)
+        Delayed::Job.count.should == 0
+      end
+    end # for single phone number
+
+    describe 'for multiple phone numbers' do
+      before(:each) do
+        @phones = [@phone_1, @phone_2]
+      end
+
+      it 'calls @client to send message' do
+        @mock_heroku_connection.should_receive(:post_ps_scale) # Do start a worker
+        @gateway.deliver(@phones, @body)
+        Delayed::Job.count.should > 0
+      end
+
+    end # for multiple phone number
+  end # deliver method --IronWorker
+  
 end

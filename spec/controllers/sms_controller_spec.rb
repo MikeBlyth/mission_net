@@ -169,7 +169,7 @@ describe SmsController do
 
         it 'confirms to sender' do
           post :create, @params   # i.e. sends 'd testgroup test message'
-          response.body.should match /your message.*was sent to/i
+          response.body.should match /your message.*is being sent/i
         end
       end # 'when group is found'
       
@@ -225,7 +225,7 @@ describe SmsController do
         @update.should_receive(:deliver_sms).with(:phone_numbers => @from, :news_update=>true)
         @params['Body'] = "updates"
         post :create, @params   
-        response.body.should match /sent .*update/i
+        response.body.should match /sending 1 update/i
       end
 
       it 'returns all the latest news updates' do  # sends all that are returned by Message#news_updates
@@ -233,7 +233,7 @@ describe SmsController do
         @params['Body'] = "updates"
         @update.should_receive(:deliver_sms).with(:phone_numbers => @from, :news_update=>true).exactly(3).times
         post :create, @params   
-        response.body.should match /sent .*update/i
+        response.body.should match /sending 3 updates/i
       end
       
       it 'forwards keywords to Message#news_update' do

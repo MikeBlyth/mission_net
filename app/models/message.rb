@@ -25,7 +25,7 @@
 
 include MessagesHelper
 include SmsGatewaysHelper
-include HerokuHelper
+
 #require 'ironworker_twilio_gateway.rb'
 
 class Message < ActiveRecord::Base

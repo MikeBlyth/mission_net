@@ -12,7 +12,6 @@ describe MessagesController do
         @gateway = mock('Gateway')
         SmsGateway.stub(:default_sms_gateway => @gateway)
         SiteSetting.stub(:default_sms_outgoing_gateway => 'Clickatell')
-        SiteSetting.stub(:background_queuing => '')
       end
 
   def mock_message(stubs={})
