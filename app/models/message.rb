@@ -101,25 +101,13 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 #target_members.each {|m| puts "**** #{m.name}\t#{m.phone_1}\t#{m.email_1}"}
   end
   
-  # Send the messages -- done by creating the sent_message objects, one for each member
-  #   members_in_multiple_groups(array) is all the members belonging to these groups and
-  #   to_groups_array is the array form of the destination groups for this message
+  # Send the messages 
   def deliver(options={})
     puts "**** Message#deliver" if options[:verbose]
 #puts "**** Message#deliver response_time_limit=#{self.response_time_limit}"
     save! if self.new_record?
-    case 
-    when SiteSetting.background_queuing =~ /iron/i
-      deliver_email() if send_email # Email doesn't really need its own background task because we're just sending one (to many recipients)
-      deliver_sms(:sms_gateway => IronworkerTwilioGateway.new) if send_sms 
-    when SiteSetting.background_queuing =~ /DJ|Delayed\s*Job/i
-      heroku_set_workers(1)  # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
-      delay.deliver_email() if send_email 
-      delay.deliver_sms() if send_sms 
-    else
-      deliver_email() if send_email 
-      deliver_sms() if send_sms 
-    end
+    deliver_email() if send_email 
+    deliver_sms(:sms_gateway => options[:sms_gateway]) if send_sms # Note that if gateway is nil, default_sms_gateway will be used
   end
   
   # Array of members who have not yet responded to this message
@@ -264,7 +252,7 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
     phone_numbers = options[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
     phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
     assemble_sms()
-puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
+#puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
     gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
 #puts "**** sms_gateway=#{sms_gateway}"

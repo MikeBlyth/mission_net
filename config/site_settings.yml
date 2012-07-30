@@ -86,6 +86,11 @@ twilio_phone_number:
   name: Twilio Phone Number
   type: string
   default: +19999999999
+
+twilio_background:
+  name: System for background jobs (IronWorker or DelayedJobs)
+  type: string
+  default: IronWorker  
     
 sendgrid_user_name:
   name: Sendgrid User Name
@@ -99,8 +104,4 @@ contact_update_recipients:
   name: Contact Update Recipients
   type: string
 
-background_queuing:
-  name: System used for background jobs (IronWorker or DelayedJobs)
-  type: string
-  default: IronWorker  
 

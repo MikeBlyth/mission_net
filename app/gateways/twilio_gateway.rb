@@ -16,7 +16,7 @@ class TwilioGateway < SmsGateway
 
   def initialize
     @gateway_name = 'twilio'
-    @required_params = [:account_sid, :auth_token, :phone_number]  # "twilio_" is automatically prefixed to these for looking in the site settings
+    @required_params = [:account_sid, :auth_token, :phone_number, :background]  # "twilio_" is automatically prefixed to these for looking in the site settings
     super
     #AppLog.create(:code => "SMS.connect.#{@gateway_name}", :description=>"@account_sid=#{(@account_sid || '')[0..6]}..., @auth_token=#{(@auth_token || '')[0..4]}...")
 #puts "**** Create Twilio Client:"
@@ -37,29 +37,35 @@ puts "**** Delivering with @client=#{@client}"
     @body = body        #  ...
     raise('No phone numbers given') unless @numbers
     raise('No message body') unless @body
-    deliver_direct
+    # Use delivery system based on the parameter @background [i.e. background processing type]
+    case @background
+      when /iron/i
+        @numbers.count > 1 ? deliver_ironworker : deliver_direct
+      when /dj|delay.*job/i
+         @numbers.count > 1 ? deliver_delayed_job : deliver_direct
+      else
+        deliver_direct
+    end
     super
   end
 
   def deliver_ironworker
     iron_worker_client ||= IronWorkerNG::Client.new
-    @numbers.each do |number|
-      begin
-        iron_worker_client.tasks.create("twilio_worker",
-          {:sid => @account_sid,
-            :token => @auth_token,
-            :from => @phone_number,
-            :to => number.with_plus,
-            :message => @body
-          }
-         )
-       end     
-    end
+    iron_worker_client.tasks.create("twilio_multi_worker",
+      {:sid => @account_sid,
+        :token => @auth_token,
+        :from => @phone_number,
+        :numbers => @numbers,
+        :message => @body
+      }
+      )
+    @gateway_reply = nil    # because job will be run later, asynchronously
   end
   
   def deliver_delayed_job
-    heroku_set_workers(1)  # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
+    heroku_set_workers(1)   # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
     delay.deliver_direct
+    @gateway_reply = nil    # because job will be run later, asynchronously
   end
 
   def deliver_direct

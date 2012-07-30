@@ -65,6 +65,8 @@ class ClickatellGateway < SmsGateway
     @numbers.count == 1 ? status_of_single_message : status_of_multiple_messages
   end
   
+  # Return status hash like {'23480888888' => {:status => -1, :error => 'ERROR: No credit'}}
+  # or                      {'23480888888' => {:status => 2, :sms_id => '23abxx3278ljix9neh'}
   def status_of_single_message
     if @gateway_reply =~ /ID: (\w+)/
       return {@numbers[0] => {:status => MessagesHelper::MsgSentToGateway, :sms_id => @gateway_reply.body[4..99]}}
@@ -73,6 +75,8 @@ class ClickatellGateway < SmsGateway
     end
   end
   
+  # Just like status_of_single_message, but multiple. Need separate method because Clickatell uses different format
+  #   for status of single and multiple messages
   def status_of_multiple_messages
     #  Parse the Clickatell reply into array of hash like {:id=>'asebi9xxke...', :phone => '2345552228372'}
 #puts "**** gateway_reply=#{gateway_reply}"

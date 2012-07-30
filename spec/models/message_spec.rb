@@ -27,6 +27,7 @@ require 'spec_helper'
 require 'mock_clickatell_gateway'
 require 'messages_test_helper'
 require 'sim_test_helper'
+require 'fakeweb.rb'
 require 'messages_helper'
 include MessagesTestHelper
 include SimTestHelper
@@ -39,6 +40,7 @@ describe Message do
       @message.stub(:created_at).and_return(Time.now)
       SiteSetting.stub(:default_sms_outgoing_gateway => 'Clickatell')
       SiteSetting.stub(:background_queuing => '')
+      FakeWeb.allow_net_connect = false
     end
 
   describe 'initialization' do
@@ -188,6 +190,7 @@ describe Message do
         @message.send_email=true
         @members = members_w_contacts(1, false)
         @gateway = MockClickatellGateway.new(nil,@members) # but the coded mock is not used if we use message expectations!
+        SmsGateway.stub(:default_sms_gateway => @gateway)
         @gateway.stub(:deliver => successful_gateway_status(nominal_phone_number_array))
       end
       
@@ -232,6 +235,7 @@ describe Message do
         @members = members_w_contacts(2, false)
         @gateway = MockClickatellGateway.new(nil,@members)
         @gateway.stub(:deliver => successful_gateway_status(nominal_phone_number_array))
+        SmsGateway.stub(:default_sms_gateway => @gateway)
       end
       
       it "Sends an email" do
@@ -265,10 +269,11 @@ describe Message do
           select_media(:sms=>true)
           @message.send_sms = true
           @members = members_w_contacts(1, false)
+          @phone = nominal_phone_number_array[0]
           @message.save
-          @gateway = MockClickatellGateway.new(nil,@members)
+     #     @gateway = MockClickatellGateway.new(nil,@members)
           @mock_statuses = successful_gateway_status(nominal_phone_number_array)
-          @gateway.stub(:deliver => @mock_statuses)
+          @gateway = mock('SmsGateway', :deliver => @mock_statuses )
         end
         
         it "inserts gateway_message_id into sent_message" do
@@ -567,19 +572,20 @@ describe Message do
 
   end # News updates
 
-  describe 'with IronWorker' do
-    before(:each) do
-      silence_warnings {IronworkerTwilioGateway = mock('IronworkerTwilioGateway', :new => @gateway)}
-      SiteSetting.stub(:default_sms_outgoing_gateway => 'ironworker_twilio')
-      SiteSetting.stub(:background_queuing => 'ironworker')
-    end
-   
-    it 'uses IronWorkerGateway for SMS' do
-      IronworkerTwilioGateway.should_receive(:new)
-      @gateway.should_receive(:deliver)
-      post :create, :record => {:sms_only=>"test "*10, :to_groups=>["1", '2'], :send_sms=>true}
-    end
-  end  
+# ## These should go in Gateway tests, not message tests.
+#  describe 'with IronWorker' do
+#    before(:each) do
+#      silence_warnings {IronworkerTwilioGateway = mock('IronworkerTwilioGateway', :new => @gateway)}
+#      SiteSetting.stub(:default_sms_outgoing_gateway => 'ironworker_twilio')
+#      SiteSetting.stub(:background_queuing => 'ironworker')
+#    end
+#   
+#    it 'uses IronWorkerGateway for SMS' do
+#      IronworkerTwilioGateway.should_receive(:new)
+#      @gateway.should_receive(:deliver)
+#      post :create, :record => {:sms_only=>"test "*10, :to_groups=>["1", '2'], :send_sms=>true}
+#    end
+#  end  
 
 
 
