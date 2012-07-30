@@ -48,6 +48,7 @@ class TwilioGateway < SmsGateway
       else
         deliver_direct
     end
+    AppLog.create(:code => "SMS.deliver.#{@gateway_name}", :description=>"background=#{@background || 'none'}, count = #{@numbers.count} messages")
     super
   end
 
