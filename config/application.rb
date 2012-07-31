@@ -37,7 +37,9 @@ module Joslink
     config.encoding = "utf-8"
 
     # Configure sensitive parameters which will be filtered from the log file.
-    config.filter_parameters += [:password]
+    config.filter_parameters += [:password, :clickatell_user_name, :clickatell_password, :clickatell_api_id,
+              :twilio_account_sid, :twilio_auth_token, :twilio_phone_number,
+              :sendgrid_user_name, :sendgrid_password]
 
     # Enable escaping HTML in JSON.
     config.active_support.escape_html_entities_in_json = true

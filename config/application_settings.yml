@@ -5,12 +5,12 @@
 #  Settings[:rows_per_screen_page] = 20
 defaults: &defaults
   site: 
-    name: 'SIM Nigeria Database'
-    org:  'SIM Nigeria'
-    parent_org: 'SIM'
+    name: 'Joslink Database'
+    org:  'Joslink'
+    parent_org: 'Joslink'
   reports: 
     page_size: 'A4'
-    filename_prefix: 'sim_nigeria_'
+    filename_prefix: 'joslink_'
     birthday_calendar:
       birthday_prefix: 'BD: '
     travel:
@@ -37,9 +37,7 @@ defaults: &defaults
   formatting:
     format_phone_numbers: true  # by method ApplicationHelper::format_phone; false means bypass formatting
   email:
-    travel: jos.travel@sim.org
-    personnel: jos.perasst@sim.org
-  pers_task_types: [:pipeline, :orientation, :start_of_term, :end_of_term, :end_of_service]
+    administrator: 
   export: 
     member_fields: id last_name first_name middle_name country phone_1 phone_2 phone_private email_1 email_2 email_private location location_detail arrival_date departure_date groups
     group_fields: group_name abbrev primary members parent_group subgroups
