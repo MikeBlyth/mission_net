@@ -28,4 +28,4 @@ config/initializers/secret_token.rb
 iron.json
 iron_worker_credentials.rb
 database.yml
-
+config/database.yml
