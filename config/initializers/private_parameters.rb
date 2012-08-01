@@ -40,4 +40,4 @@ ActionMailer::Base.smtp_settings = {
 #    {:scope => 'https://www.googleapis.com/auth/userinfo.email', :access_type => 'online', :approval_prompt=> ''}
 
 ##  provider :google, '110446490946.apps.googleusercontent.com', 'vsTJ7b2JVCM_xb85lnaAHz5w'
-end
+#end
