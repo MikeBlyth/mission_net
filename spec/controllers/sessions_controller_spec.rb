@@ -19,6 +19,21 @@ describe SessionsController do
       Member.stub(:find_by_email => [user])
       login_allowed('anything').should == user
     end
+
+    it 'finds member with highest privileges when members share email address' do
+      email = 'ok@test.com'
+      sec_group = FactoryGirl.create(:group, :group_name => 'Security leaders')
+      admin_group = FactoryGirl.create(:group, :group_name => 'Administrators')
+      non_member = FactoryGirl.create(:member, :email_1 => email) 
+      member = FactoryGirl.create(:member, :groups => [sec_group], :email_1 => email)     
+      administrator = FactoryGirl.create(:member, :groups => [sec_group, admin_group], :email_1 => email) 
+      Member.stub(:find_by_email => [non_member, member, administrator])
+      administrator.reload.groups.should include admin_group
+      user = login_allowed(email)
+puts "**** user=#{user}" 
+      user.should == administrator
+    end
+      
   end
        
 

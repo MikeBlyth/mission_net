@@ -30,11 +30,16 @@ module SessionsHelper
   end
 
   def login_allowed(user_email)
-    user = Member.find_by_email(user_email).first
+    members_with_email = Member.find_by_email(user_email)
     members_group = Group.find_by_group_name('Members')
     sec_group = Group.find_by_group_name('Security leaders')
     mod_group = Group.find_by_group_name('Moderators')
-    return user if (user && (user.groups & [members_group, sec_group, mod_group]).any? )
+    admin_group = Group.find_by_group_name('Administrators')
+    # Have to go through each group in priority order so that we return the member with the highest privileges
+    members_with_email.each {|m| return m if m.groups.include? admin_group}
+    members_with_email.each {|m| return m if m.groups.include? mod_group}
+    members_with_email.each {|m| return m if m.groups.include? sec_group}
+    members_with_email.each {|m| return m if m.groups.include? members_group}
     return false
   end
 
