@@ -17,6 +17,7 @@ class SessionsController < ApplicationController
 def create
   auth_hash = request.env['omniauth.auth']
   user_email = auth_hash['info']['email']
+puts "**** auth_hash=#{auth_hash}"
 #  alerts_group = Group.find_by_group_name('Security alerts')
 # Temporary authorization solution: only allow log in to those who are on the list (via omniauth) AND
 # who belong to one of these groups (members, sec, mod). Not including alerts group because this is 
