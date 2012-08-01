@@ -16,6 +16,7 @@ class GroupsController < ApplicationController
     config.columns[:abbrev].inplace_edit = true
     config.columns[:primary].inplace_edit = true
     config.columns[:administrator].inplace_edit = true
+    config.columns[:administrator].label = 'Admin'
     config.columns[:moderator].inplace_edit = true
     config.columns[:member].inplace_edit = true
     config.columns[:limited].inplace_edit = true
