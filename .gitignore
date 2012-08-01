@@ -29,6 +29,4 @@ iron.json
 iron_worker_credentials.rb
 database.yml
 config/database.yml
-private_parameters_new.rbx
-tempconfig.rbx
 .env
