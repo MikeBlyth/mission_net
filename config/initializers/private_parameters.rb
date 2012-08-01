@@ -29,6 +29,6 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     {:scope => 'https://www.googleapis.com/auth/userinfo.email', :access_type => 'online', :approval_prompt=> ''}
 end
 
-puts "**** ENV['OMNIAUTH_GOOGLE_1}=#{ENV['OMNIAUTH_GOOGLE_1}}"
+puts "**** ENV['OMNIAUTH_GOOGLE_1]=#{ENV['OMNIAUTH_GOOGLE_1']}"
 puts "****   provider :google_oauth2, #{ENV['OMNIAUTH_GOOGLE_1']}, #{ENV['OMNIAUTH_GOOGLE_2'][0..4]},"
 
