@@ -14,7 +14,10 @@ OmniAuth.config.full_host = "http://localhost:3000" unless Rails.env == 'product
 google_id = ENV['OMNIAUTH_GOOGLE_1']
 google_key = ENV['OMNIAUTH_GOOGLE_2']
 puts "**** google_id=#{google_id}"
-puts "**** match=#{google_key == 'vsTJ7b2JVCM_xb85lnaAHz5w'}"
+if google_key == 'vsTJ7b2JVCM_xb85lnaAHz5w'
+  puts "**** Match ****"
+else
+  puts "**** " + google_key
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :facebook, ENV['OMNIAUTH_FB_1'], ENV['OMNIAUTH_FB_2']
