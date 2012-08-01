@@ -18,6 +18,7 @@ if google_key == 'vsTJ7b2JVCM_xb85lnaAHz5w'
   puts "**** Match ****"
 else
   puts "**** " + google_key
+end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :facebook, ENV['OMNIAUTH_FB_1'], ENV['OMNIAUTH_FB_2']
