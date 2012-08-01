@@ -11,9 +11,4 @@ OmniAuth.config.full_host = "http://localhost:3000" unless Rails.env == 'product
 #    {:scope => 'https://www.googleapis.com/auth/userinfo.email', :access_type => 'online', :approval_prompt=> ''}
 #end
 
-Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :facebook, '468716646474464', '3c8e5e8fc55cef0a9efc833641fb8776'
-#  provider :facebook, ENV['OMNIAUTH_FB_1'], ENV['OMNIAUTH_FB_2']
-  provider :google_oauth2,ENV['OMNIAUTH_GOOGLE_1'], ENV['OMNIAUTH_GOOGLE_2'], 
-    {:scope => 'https://www.googleapis.com/auth/userinfo.email', :access_type => 'online', :approval_prompt=> ''}
-end
+

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120728105237) do
+ActiveRecord::Schema.define(:version => 20120801204356) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -72,12 +72,6 @@ ActiveRecord::Schema.define(:version => 20120728105237) do
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
-  create_table "families", :force => true do |t|
-    t.integer  "head_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "groups", :force => true do |t|
     t.string   "group_name"
     t.integer  "parent_group_id"
@@ -86,6 +80,10 @@ ActiveRecord::Schema.define(:version => 20120728105237) do
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
     t.boolean  "user_selectable"
+    t.boolean  "administrator"
+    t.boolean  "moderator"
+    t.boolean  "member"
+    t.boolean  "limited"
   end
 
   create_table "groups_members", :id => false, :force => true do |t|
@@ -158,31 +156,6 @@ ActiveRecord::Schema.define(:version => 20120728105237) do
     t.string   "keywords"
     t.boolean  "news_update"
     t.boolean  "private"
-  end
-
-  create_table "people", :force => true do |t|
-    t.integer  "family_id"
-    t.string   "last_name"
-    t.string   "first_name"
-    t.string   "middle_name"
-    t.integer  "country_id"
-    t.string   "emergency_contact_phone"
-    t.string   "emergency_contact_email"
-    t.string   "emergency_contact_name"
-    t.string   "phone_1"
-    t.string   "phone_2"
-    t.string   "email_1"
-    t.string   "email_2"
-    t.integer  "location_id"
-    t.string   "location_detail"
-    t.date     "arrival_date"
-    t.date     "departure_date"
-    t.boolean  "receive_sms"
-    t.boolean  "receive_email"
-    t.boolean  "blood_donor"
-    t.integer  "blood_type_id"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
   end
 
   create_table "sent_messages", :force => true do |t|

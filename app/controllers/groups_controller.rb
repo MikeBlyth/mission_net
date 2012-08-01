@@ -7,13 +7,18 @@ class GroupsController < ApplicationController
   
   active_scaffold :group do |config|
     # list.columns.exclude :abo, :rh, :members
-    config.columns = [:group_name, :abbrev, :primary, :user_selectable, :group_member_names,  :parent_group, :subgroups]
+    config.columns = [:group_name, :abbrev, :primary, :user_selectable, 
+      :administrator, :moderator, :member, :limited, :group_member_names,  :parent_group, :subgroups]
     list.sorting = {:group_name => 'ASC'}
     config.show.link = false
     config.columns[:group_name].inplace_edit = true
     config.columns[:user_selectable].inplace_edit = true
     config.columns[:abbrev].inplace_edit = true
     config.columns[:primary].inplace_edit = true
+    config.columns[:administrator].inplace_edit = true
+    config.columns[:moderator].inplace_edit = true
+    config.columns[:member].inplace_edit = true
+    config.columns[:limited].inplace_edit = true
     config.columns[:parent_group].inplace_edit = true
     config.columns[:parent_group].form_ui = :select 
     config.action_links.add 'export', :label => 'Export', :page => true, :type => :collection, 
