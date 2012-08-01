@@ -24,11 +24,12 @@ ActionMailer::Base.smtp_settings = {
 OmniAuth.config.full_host = "http://localhost:3000" unless Rails.env == 'production' 
 
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :facebook, ENV['OMNIAUTH_FB_1'], ENV['OMNIAUTH_FB_2']
-  provider :google_oauth2, ENV['OMNIAUTH_GOOGLE_1'], ENV['OMNIAUTH_GOOGLE_2'], 
+#  provider :facebook, ENV['OMNIAUTH_FB_1'], ENV['OMNIAUTH_FB_2']
+#  provider :google_oauth2, ENV['OMNIAUTH_GOOGLE_1'], ENV['OMNIAUTH_GOOGLE_2'], 
+  provider :google_oauth2, '110446490946.apps.googleusercontent.com', 'vsTJ7b2JVCM_xb85lnaAHz5w', 
     {:scope => 'https://www.googleapis.com/auth/userinfo.email', :access_type => 'online', :approval_prompt=> ''}
 end
 
-puts "**** ENV['OMNIAUTH_GOOGLE_1]=#{ENV['OMNIAUTH_GOOGLE_1']}"
+puts "**** ENV['OMNIAUTH_GOOGLE_1']=#{ENV['OMNIAUTH_GOOGLE_1']}"
 puts "****   provider :google_oauth2, #{ENV['OMNIAUTH_GOOGLE_1']}, #{ENV['OMNIAUTH_GOOGLE_2'][0..4]},"
 
