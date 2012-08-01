@@ -3,20 +3,44 @@
 
 # Be sure to restart your server when you modify this file.
 
+# SECRET_TOKEN
 # Your secret key for verifying the integrity of signed cookies.
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-Joslink::Application.config.secret_token = '**********************************************************'
+# (You should already have the secret token in config/initializers/secret_token.rb. If you want
+# to keep it with other sensitive information, you can move it into this file)
+#Joslink::Application.config.secret_token = '**********************************************************'
 
-# Heroku API Key
+# OMNIAUTH AUTHENTICATION
+# THIS IS MANDATORY IF YOU USE THE OmniAuth AUTHENTICATION SYSTEM. 
+# See the OmniAuth tutorial at http://net.tutsplus.com/tutorials/ruby/how-to-use-omniauth-to-authenticate-your-users/
+# OmniAuth site is http://www.omniauth.org/ and you can just google for info on how to set it up.
+# If you don't use OmniAuth, you'll have to edit the source to use some other authentication scheme.
+OmniAuth.config.full_host = "http://localhost:3000" unless Rails.env == 'production' 
+Rails.application.config.middleware.use OmniAuth::Builder do
+  provider :facebook, '*************************', '*************************'
+  provider :google_oauth2, '*************************.apps.googleusercontent.com', '*************************', 
+    {:scope => 'https://www.googleapis.com/auth/userinfo.email', :access_type => 'online', :approval_prompt=> ''}
+end
+
+##  OPTIONAL CREDENTIALS
+
+# Heroku API Key -- Needed if you use DelayedJob on Heroku to run jobs in background.
+# If you're using Heroku anyway for hosting, simply put your API key here.
+# If you're not using Heroku for hosting, ignore this key.
 silence_warnings {ENV['HEROKU_API_KEY'] = '*************************'}
 
 # IronWorker (background processing service) credentials
+# Use this key (get free IronWorker account from iron.io) to run background jobs with IronWorker
   ENV['IRON_WORKER_TOKEN'] = '*************************'
   ENV['IRON_WORKER_PROJECT_ID'] = '*************************'
   
 # Action Mailer SMTP Settings
+# This is needed if you are going to send email with ActionMailer. You can also get 
+# an account with a mailing service like SendGrid. You can probably use an existing
+# Gmail account or one newly created just for this -- see 
+# http://guides.rubyonrails.org/action_mailer_basics.html#action-mailer-configuration-for-gmail
 ActionMailer::Base.smtp_settings = {
   :address        => '*************************',
   :port           => '*************************',
@@ -24,19 +48,7 @@ ActionMailer::Base.smtp_settings = {
   :user_name      => '*************************',
   :password       => '*************************',
   :domain         => '*************************',
-  :openssl_verify_mode => 'none'
+  :openssl_verify_mode => '****'
 }  
 
-OmniAuth.config.full_host = "http://localhost:3000" unless Rails.env == 'production' 
 
-Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :facebook, '*************************', '*************************'
-# If you don't need a refresh token -- if you're only using Google for account creation/auth and don't need google services -- set the access_type to 'online'.
-  # Also, set the approval prompt to an empty string, since otherwise it will be set to 'force', which makes users manually approve to the Oauth every time they log in.
-  # See http://googleappsdeveloper.blogspot.com/2011/10/upcoming-changes-to-oauth-20-endpoint.html
-  provider :google_oauth2, '*************************.apps.googleusercontent.com', '*************************', 
-    {:scope => 'https://www.googleapis.com/auth/userinfo.email', :access_type => 'online', :approval_prompt=> ''}
-  provider :youtube, '*************************.apps.googleusercontent.com', '*************************', 
-    {:scope => 'https://www.googleapis.com/auth/userinfo.email', :access_type => 'online', :approval_prompt=> ''}
-
-end

@@ -144,7 +144,7 @@ class Member < ActiveRecord::Base
   # in the country, on location, active, or whatever. Or we could simply define another column for 
   # members, since we don't plan to do travel-tracking in this version
   def self.those_in_country
-    return self.all
+    return self.where(:in_country => true)
   end
 
   def primary_email(options={})

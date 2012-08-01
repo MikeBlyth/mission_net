@@ -147,7 +147,7 @@ describe Message do
     end   
 
     it 'saves sent_message record for member' do
-      @members = members_w_contacts(2, false) # false = "Don't use stubs, use real objects"
+#      @members = members_w_contacts(2, false) # false = "Don't use stubs, use real objects"
       @message.save.should be_true   
       @message.sent_messages.count.should == 2
       @message.sent_messages.each do |sent_message|
@@ -156,7 +156,15 @@ describe Message do
       end
     end   
 
+    it 'saves contact info in message object' do
+      @message.save
+      @message.phones.should == nominal_phone_number_array    
+      @message.emails.should == nominal_email_array
+    end
+
   end # generates sent_message records
+  
+    
   
   describe 'delivers to gateways' do
     after(:each) do

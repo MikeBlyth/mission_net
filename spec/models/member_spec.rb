@@ -215,6 +215,15 @@ describe Member do
     end # 'contact_summary_text'
   end   # contact information 
 
+  describe 'finds those in country' do
+    
+    it 'checks the "in country" field' do
+      @member = FactoryGirl.create(:member, :in_country => true)
+      @member_ooc = FactoryGirl.create(:member, :in_country => false)
+      Member.those_in_country.should == [@member]
+    end
+  end
+      
   describe 'export' do
     before(:each) do
       @member = FactoryGirl.build(:member)

@@ -32,6 +32,7 @@ class Message < ActiveRecord::Base
   attr_accessible :body, :code, :confirm_time_limit, :expiration, :following_up, :from_id, 
       :importance, :response_sime_limit, :retries, :retry, :send_email, :send_sms, :sms_only, 
       :subject, :to_groups, :user_id, :keywords, :private, :news_update
+  attr_reader :phones, :emails
   has_many :sent_messages
   has_many :members, :through => :sent_messages 
   belongs_to :user, :class_name => 'Member'
@@ -48,6 +49,8 @@ class Message < ActiveRecord::Base
       message.send "#{setting}=", Settings.messages[setting] if (message.send setting).nil?
     end
   #  user = current_user 
+    @phones = nil
+    @emails = nil
   end   
   
   # ********** Class Methods ************************
@@ -74,6 +77,11 @@ class Message < ActiveRecord::Base
     "[#{id || 'new'}] #{timestamp || '--' }: #{(body || sms_only)[0..50]}"
   end
 
+  def insert_contact_info(target_members)
+    @emails = target_members.map {|c| c.primary_email}.compact.uniq
+    @phones = target_members.map {|c| c.primary_phone}.compact.uniq
+  end
+
   # (1) Add any Group members to the addressees (self.members) when groups are specified
   # (2) Generate @contact_info hash
   # (3) Remove any addressees who don't have the needed contact info, so that they won't count as
@@ -96,7 +104,8 @@ class Message < ActiveRecord::Base
     when self.send_sms && self.send_email
       target_members.delete_if {|c| c.primary_email.nil? && c.primary_phone.nil?}
     end
-self.members.destroy_all # force recreate the join table entries, to be sure contact info is fresh
+    insert_contact_info(target_members)
+    self.members.destroy_all # force recreate the join table entries, to be sure contact info is fresh
     self.members = target_members
 #target_members.each {|m| puts "**** #{m.name}\t#{m.phone_1}\t#{m.email_1}"}
   end
@@ -208,12 +217,12 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
 
   # ToDo: clean up this mess and just give Notifier the Message object!
   def deliver_email(options={})
-#puts "**** deliver_email: emails=#{emails}"
-    emails = sent_messages.map {|sm| sm.email}.compact.uniq
+    @emails ||= options[:emails] || sent_messages.map {|sm| sm.email}.compact.uniq
+    @emails = @emails.split(',') if @emails.is_a? String # Strangely, arrays respond to split in this app, so can't use "respond_to?"
     self.subject ||= 'Message from SIM Nigeria'
     id_for_reply = self.following_up || id  # a follow-up message uses id of the original msg
 #puts "**** Messages#deliver_email response_time_limit=#{response_time_limit}"
-    outgoing = Notifier.send_group_message(:recipients=>emails, :content=>self.body, 
+    outgoing = Notifier.send_group_message(:recipients=>@emails, :content=>self.body, 
         :subject => subject, :id => id_for_reply , :response_time_limit => response_time_limit, 
         :bcc => true, :following_up => following_up) # send using bcc:, not to:
 #puts "**** Message#deliver_email outgoing=#{outgoing}"
@@ -249,12 +258,12 @@ self.members.destroy_all # force recreate the join table entries, to be sure con
   def deliver_sms(options={})
 #puts "**** Message#deliver_sms; options=#{options}"
     sms_gateway = options[:sms_gateway] || SmsGateway.default_sms_gateway
-    phone_numbers = options[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
-    phone_numbers = phone_numbers.split(',') if phone_numbers.is_a? String
+    @phones ||= options[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
+    @phones = @phones.split(',') if @phones.is_a? String 
     assemble_sms()
 #puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
-    gateway_reply = sms_gateway.deliver(phone_numbers, sms_only)
+    gateway_reply = sms_gateway.deliver(@phones, sms_only)
 #puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
