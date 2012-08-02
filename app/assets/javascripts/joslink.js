@@ -8,6 +8,13 @@ $(function() {
     }
 });
 
+
+/* Make some things into buttons */
+
+$(function() {
+    $( "#connect_facebook, #connect_google").button();
+});
+
 // Toggle Menu Visibility
     $(function() {
       $(".show_menu").click(function() {

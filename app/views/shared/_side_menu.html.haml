@@ -1,6 +1,6 @@
-%h5 
-  Main Menu
 - if signed_in? 
+  %h5 
+    Main Menu
   %ul.links
     %li= link_to 'Members', members_path 
     %li= link_to "Edit your user info", edit_member_path(current_user)
@@ -22,8 +22,4 @@
       %li= link_to 'Settings (be careful!)', site_settings_path
   %hr
 - else 
-  %p Please sign in 
-  = link_to "Sign in", sign_in_path
-
-
 

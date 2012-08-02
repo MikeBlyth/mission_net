@@ -28,24 +28,24 @@ module SessionsHelper
   # (e.g., "current_user_member?" is true even if the user is only in an administrator group,
   # because admin is higher than member)
 
+  def administrator?(user)
+    highest_privilege(user.groups) == :administrator
+  end
+  
   def current_user_admin?
-#    current_user.groups.find_by_group_name("Administrators")
-    highest_privilege(current_user.groups) == :administrator
+    administrator?(current_user)
   end
 
-  def current_user_moderator?
-    [:administrator, :moderator].include? highest_privilege(current_user.groups)
-#    current_user.groups.find_by_group_name("Administrators") ||
-#      current_user.groups.find_by_group_name("Moderators") || 
-#      current_user.groups.find_by_group_name("Security leaders") 
+  def moderator?(user)
+    [:administrator, :moderator].include? highest_privilege(user.groups)
   end
 
-  def current_user_member?
-    [:administrator, :moderator, :member].include? highest_privilege(current_user.groups)
+  def member?(user)
+    [:administrator, :moderator, :member].include? highest_privilege(user.groups)
   end
 
-  def current_user_limited?
-    [:administrator, :moderator, :member, :limited].include? highest_privilege(current_user.groups)
+  def limited?(user)
+    [:administrator, :moderator, :member, :limited].include? highest_privilege(user.groups)
   end
   
   # Other Methods
@@ -66,15 +66,12 @@ module SessionsHelper
 
   def login_allowed(user_email)
     members_with_email = Member.find_by_email(user_email)
-    members_group = Group.find_by_group_name('Members')
-    sec_group = Group.find_by_group_name('Security leaders')
-    mod_group = Group.find_by_group_name('Moderators')
-    admin_group = Group.find_by_group_name('Administrators')
     # Have to go through each group in priority order so that we return the member with the highest privileges
-    members_with_email.each {|m| return m if m.groups.include? admin_group}
-    members_with_email.each {|m| return m if m.groups.include? mod_group}
-    members_with_email.each {|m| return m if m.groups.include? sec_group}
-    members_with_email.each {|m| return m if m.groups.include? members_group}
+    members_with_email.each {|m| return m if administrator?(m)}
+    members_with_email.each {|m| return m if moderator?(m)}
+    members_with_email.each {|m| return m if member?(m)}
+    # Uncomment next line if you want users with "limited" privileges to be able to log in to web interface
+    # members_with_email.each {|m| return m if limited?(m)}
     return false
   end
 

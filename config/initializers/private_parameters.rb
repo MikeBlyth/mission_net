@@ -4,7 +4,7 @@
 
 # Be sure to restart your server when you modify this file.
 
-if Rails.env == 'development'
+if Rails.env != 'production'
   File.open("#{Rails.root}/.env") do |file|
     file.each_line do |line|
       if line =~ /(.*?)=(.*)/

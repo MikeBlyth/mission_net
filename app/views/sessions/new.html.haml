@@ -1,4 +1,12 @@
 %h1 Sign In
-= link_to "Connect With Facebook", "/auth/facebook"
-= link_to "Connect With Google", "/auth/google_oauth2"
+%p 
+  Use your existing account on FaceBook or Google to log in. 
+  %br
+  Your main email address listed on Facebook or Google must 
+  %br
+  match one of your addresses listed in this directory.
+= link_to "Connect using your Facebook account", "/auth/facebook", :id => 'connect_facebook'
+%br
+%br
+= link_to "Connect using your Google account", "/auth/google_oauth2", :id => 'connect_google'
 
