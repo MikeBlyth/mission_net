@@ -55,7 +55,7 @@ describe SmsController do
   
   describe 'filters based on member status' do
 
-    it 'accepts sms from SIM member (using phone_1)' do
+    it 'accepts sms from member (using phone_1)' do
       Member.stub(:find_by_phone).and_return([@sender])
       post :create, @params
       response.status.should == 200
@@ -161,7 +161,7 @@ describe SmsController do
              
        it 'delivers a group message' do
           nominal_body = @body+"-#{@sender.shorter_name}"
-          Message.should_receive(:new).with(hash_including(
+          Message.should_receive(:new).with(hash_including(:user_id => @sender.id,
               :send_sms=>true, :to_groups=>@group.id, :sms_only=>nominal_body)).and_return(@message)
           @message.should_receive(:deliver)              
           post :create, @params   # i.e. sends 'd testgroup test message'
@@ -299,6 +299,28 @@ describe SmsController do
 #    end  
 
   end # 'handles these commands:'
+
+  # If an SMS is received from someone who has been _sent_ a message within a time frame, 
+  # assume that this is a reply to that message. For now, just assume it's replying to the last message the user received.
+  describe 'handles untagged replies' do
+    before(:each) do
+      @group = FactoryGirl.create(:group)
+      @member = FactoryGirl.create(:member)
+      @member.groups = [@group]
+      @message = FactoryGirl.create(:message, :send_sms => true, :to_groups => @group.id.to_s)
+    end
+    
+    it 'test setup' do
+      @message.deliver
+      @member.messages.should == [@message]
+    end
+    
+    it 'test setup' do
+      @message.deliver
+      @member.messages.should == [@message]
+    end
+    
+  end
 
   describe 'handles responses to messages' do
     # Responses are indicated by a command '!nnnn' where nnnn is the message number

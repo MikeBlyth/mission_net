@@ -132,7 +132,7 @@ private
     if group   # if we found the group requested by the sender
       sender_name = @sender.shorter_name
       body = body[0..148-sender_name.size] + '-' + sender_name  # Truncate msg and add sender's name
-      message = Message.new(:send_sms=>true, :to_groups=>group.id, :sms_only=>body)
+      message = Message.new(:user_id => @sender.id, :send_sms=>true, :to_groups=>group.id, :sms_only=>body)
       message.deliver  # Don't forget to deliver!
       return("Your message ##{message.id} is being sent to #{group.group_name} (#{message.members.count} recipients)")
     else

@@ -7,7 +7,7 @@ module LocationsHelper
   end
 
   def location_choices(selected)
-  cities = City.where(true).order('name')
+    cities = City.where(true).order('name')
     options = option_groups_from_collection_for_select(cities, :locations_sorted, 
             :name, :id, :description, selected)
     return options

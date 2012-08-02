@@ -11,6 +11,7 @@ FactoryGirl.define do
     email_1 "email_1"
     email_2 "email_2"
     location_id 1
+    in_country true
     location_detail "MyString"
     arrival_date "2012-06-02"
     departure_date "2012-06-02"

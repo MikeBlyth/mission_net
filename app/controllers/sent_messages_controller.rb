@@ -6,7 +6,7 @@ class SentMessagesController < ApplicationController
     list.sorting = {:message_id => 'DESC', :confirmed_time => 'DESC'}
   #  config.delete.link = false
     config.show.link = false
-    config.actions.exclude :update
+    config.actions.exclude :update, :create
   end
 
 #  include AuthenticationHelper
