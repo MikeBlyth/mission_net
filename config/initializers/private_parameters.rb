@@ -4,11 +4,13 @@
 
 # Be sure to restart your server when you modify this file.
 
+needed_parameters = %w{ SMTP_ADDRESS SMTP_PORT SMTP_AUTHENTICATION SMTP_USER_NAME SMTP_PASSWORD SMTP_DOMAIN
+      SMTP_OPENSSL_VERIFY_MODE OMNIAUTH_FB_1 OMNIAUTH_FB_2 OMNIAUTH_GOOGLE_1 OMNIAUTH_GOOGLE_2 RAILS_SECRET_TOKEN}
 if Rails.env != 'production'
   File.open("#{Rails.root}/.env") do |file|
     file.each_line do |line|
       if line =~ /(.*?)=(.*)/
-        ENV[$1] = $2
+        ENV[$1] = $2 if needed_parameters.include? $1
       end
     end
   end
