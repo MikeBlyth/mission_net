@@ -30,7 +30,6 @@ describe SessionsController do
       Member.stub(:find_by_email => [non_member, member, administrator])
       administrator.reload.groups.should include admin_group
       user = login_allowed(email)
-puts "**** user=#{user}" 
       user.should == administrator
     end
       
