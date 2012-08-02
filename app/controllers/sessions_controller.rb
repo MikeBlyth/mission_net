@@ -15,7 +15,6 @@ class SessionsController < ApplicationController
 # to match the member in the database (Member).
 
 def create
-y request
   auth_hash = request.env['omniauth.auth']
   user_email = auth_hash['info']['email']
 puts "**** auth_hash=#{auth_hash}"

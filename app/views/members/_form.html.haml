@@ -1,124 +1,132 @@
+<script>
+$(function() {
+$( "#tabs" ).tabs();
+});
+</script>
 - @member = @record
-= fields_for :record do |member|
-  %table.new_family
-    %tr
-      %td
-        = member.label :name, "Full name of individual", :class=>'required'
-        %br
-        = member.text_field :name, :class=> "name-input"
-        %br
-        %p.description Must be unique
-      %td
-        = member.label :last_name, "", :class=>'required'
-        %br
-        = member.text_field :last_name, :class=> "last_name-input"
-      %td
-        = member.label :first_name, "", :class=>'required'
-        %br
-        = member.text_field :first_name, :class=> "first_name-input"
-    %tr
-      %td
-      %td
-        = member.label :middle_name
-        %br
-        = member.text_field :middle_name, :class=> "middle_name-input"
-      %td
-        = member.label :short_name
-        %br
-        = member.text_field :short_name, :class=> "short_name-input"
-    %tr
-      %td
-        .country
-          = member.label :country
-          %br
-          - choices = options_from_collection_for_select(Country.where('include_in_selection').select('id, name').order('name'), :id, :name, @member[:country_id])
-          = member.select(:country, choices, {:include_blank => true }, :class=>'wide-input')    
-    %tr
-      %td
-        = member.label :phone_1
-        %br
-        = member.telephone_field :phone_1, :class=>'phone-input'
-      %td
-        = member.label :phone_2
-        %br
-        = member.telephone_field :phone_2, :class=>'phone-input'
-      %td
-        = member.label :phone_private, 'Phone number is private?'
-        %br
-        = member.check_box :phone_private
-    %tr
-      %td
-        = member.label :email_1
-        %br
-        = member.email_field :email_1
-      %td
-        = member.label :email_2
-        %br
-        = member.email_field :email_2
-      %td
-        = member.label :email_private, 'Email is private?'
-        %br
-        = member.check_box :email_private
-    %tr
-      %td{:colspan => '3'} <h5>Emergency Contact Information </h5>
-    %tr
-      %td
-        = member.label :emergency_contact_name        
-        %br
-        = member.text_field :emergency_contact_name, :class=>'name-input'
-      %td
-        = member.label :emergency_contact_phone        
-        %br
-        = member.telephone_field :emergency_contact_phone, :class=>'phone-input'
-      %td
-        = member.label :emergency_contact_email        
-        %br
-        = member.email_field :emergency_contact_email, :class=>'email-input'
-      %tr
-        %td{:colspan => '3'} <h5>Location</h5>
-      %tr
-        %td
-          = member.label :location
-          %br
-          = member.select(:location, location_choices(@member[:location_id]), {:include_blank => true })    
-        %td
-          = member.label :location_detail
-          %br
-          = member.text_field :location_detail, :class=>'name-input'
-      %tr
-        %td
-          %table
-            %tr
-              %td
-                = member.label :in_country
-                %br
-                = member.check_box :in_country
-              %td    
-                = member.label :arrival_date
-                %br
-                = member.date_select :arrival_date
-        %td    
-          = member.label :departure_date
-          %br
-          = member.date_select :departure_date
-      %tr
-        %td <h5>Groups</h5>
-        %td <h5>Blood type</h5>
-      %tr
-        %td
-          = member.label :group, "Groups"
-          %br
-          -#= member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>10         
-          = member.select :groups, group_choices(@member), {:include_blank => '(none)' },  :multiple => true, :size=>10, :class=>'multiselect'  
-        %td
-          %table
-            %tr
-              %td
-                = member.label :blood_type
-                %br
-                = collection_select(:health_data, :bloodtype_id, Bloodtype.all, :id, :full, {:include_blank => true }, :class=>'medium-input')    
-              %td    
-                = member.label :blood_donor
-                %br
-                = member.check_box :blood_donor
+<div >
+#tabs
+  %ul
+    %li <a href="#tabs-member">Name & Country</a>
+    %li <a href="#tabs-contact">Contact Info</a>
+    %li <a href="#tabs-other">Other</a>
+  
+  = fields_for :record do |member|
+    #tabs-member
+      %table.new_family
+        %tr
+          %td
+            = member.label :name, "Full name of individual", :class=>'required'
+            %br
+            = member.text_field :name, :class=> "name-input"
+            %br
+            %p.description Must be unique
+          %td
+            .country
+              = member.label :country, "Passport country"
+              %br
+              - choices = options_from_collection_for_select(Country.where('include_in_selection').select('id, name').order('name'), :id, :name, @member[:country_id])
+              = member.select(:country, choices, {:include_blank => true }, :class=>'wide-input')    
+          %td
+            = member.label :group, "Groups"
+            %br
+            -#= member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>10         
+            = member.select :groups, group_choices(@member), {:include_blank => '(none)' },  :multiple => true, :size=>10, :class=>'multiselect'  
+        %tr
+          %td
+            = member.label :last_name, "", :class=>'required'
+            %br
+            = member.text_field :last_name, :class=> "last_name-input"
+          %td
+            = member.label :first_name, "", :class=>'required'
+            %br
+            = member.text_field :first_name, :class=> "first_name-input"
+        %tr
+          %td
+            = member.label :middle_name
+            %br
+            = member.text_field :middle_name, :class=> "middle_name-input"
+          %td
+            = member.label :short_name
+            %br
+            = member.text_field :short_name, :class=> "short_name-input"
+        %tr
+    #tabs-contact
+      %table.new_family
+        %tr
+          %td
+            = member.label :phone_1
+            %br
+            = member.telephone_field :phone_1, :class=>'phone-input'
+          %td
+            = member.label :phone_2
+            %br
+            = member.telephone_field :phone_2, :class=>'phone-input'
+          %td
+            = member.label :phone_private, 'Phone number is private?'
+            %br
+            = member.check_box :phone_private
+        %tr
+          %td
+            = member.label :email_1
+            %br
+            = member.email_field :email_1
+          %td
+            = member.label :email_2
+            %br
+            = member.email_field :email_2
+          %td
+            = member.label :email_private, 'Email is private?'
+            %br
+            = member.check_box :email_private
+        %tr
+          %td{:colspan => '3'} <h5>Emergency Contact Information </h5>
+        %tr
+          %td
+            = member.label :emergency_contact_name        
+            %br
+            = member.text_field :emergency_contact_name, :class=>'name-input'
+          %td
+            = member.label :emergency_contact_phone        
+            %br
+            = member.telephone_field :emergency_contact_phone, :class=>'phone-input'
+          %td
+            = member.label :emergency_contact_email        
+            %br
+            = member.email_field :emergency_contact_email, :class=>'email-input'
+          %tr
+            %td{:colspan => '3'} <h5>Location</h5>
+          %tr
+            %td
+              = member.label :location
+              %br
+              = member.select(:location, location_choices(@member[:location_id]), {:include_blank => true })    
+            %td
+              = member.label :location_detail
+              %br
+              = member.text_field :location_detail, :class=>'name-input'
+    #tabs-other
+      %table.new_family
+        %tr
+          %td{:style=>"width: 10%; padding: 0px;"}
+            = member.label :in_country, "In country"
+            %br
+            = member.check_box :in_country
+          %td{:style=>"width: 10%; padding: 0px;"}
+            = member.label :arrival_date
+            %br
+            = member.date_select :arrival_date, {}, :style => "font-size: smaller"
+          %td    
+            = member.label :departure_date
+            %br
+            = member.date_select :departure_date
+        %tr
+          %td    
+            = member.label :blood_donor
+            %br
+            = member.check_box :blood_donor
+          %td
+            = member.label :blood_type
+            %br
+            = collection_select(:health_data, :bloodtype_id, Bloodtype.all, :id, :full, {:include_blank => true }, :class=>'medium-input')    
 

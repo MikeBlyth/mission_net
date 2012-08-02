@@ -6,13 +6,13 @@
     %li= link_to "Edit your user info", edit_member_path(current_user)
     %li= link_to "Sign out", sign_out_path 
     %h5 Moderators
-    - if current_user_moderator?
+    - if moderator?(current_user)
       %li= link_to 'Groups', groups_path
       %li= link_to 'Message list', messages_path
       %li= link_to 'Create new message', new_message_path
       %li= link_to 'Log', '/app_logs'
     %h5 Option Tables
-    - if current_user_admin?
+    - if administrator?(current_user)
       %li= link_to 'Bloodtypes', bloodtypes_path 
       %li= link_to 'Cities', cities_path 
       %li= link_to 'Countries', countries_path 
