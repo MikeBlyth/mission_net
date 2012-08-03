@@ -58,7 +58,6 @@ class TwilioGateway < SmsGateway
 
   def deliver_ironworker
     iron_worker
-puts "**** creating iw task"
     @iron_worker_client.tasks.create("twilio_multi_worker",
       {:sid => @account_sid,
         :token => @auth_token,

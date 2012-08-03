@@ -295,7 +295,7 @@ describe SmsController do
 
   # If an SMS is received from someone who has been _sent_ a message within a time frame, 
   # assume that this is a reply to that message. For now, just assume it's replying to the last message the user received.
-  describe 'handles untagged replies' do
+  describe 'handles unsolicited replies' do
     before(:each) do
       @group = FactoryGirl.create(:group)
       @sender = FactoryGirl.create(:member, :last_name => 'Responder')
@@ -305,10 +305,23 @@ describe SmsController do
     
     describe 'when no recent message was sent' do
 
-      it 'returns error for unrecognized command' do
+      it 'returns error for unrecognized command when there is no message' do
         post :create, @params
         response.body.should =~ /unknown .*unsolicited/i
       end
+    
+      it 'returns error for unrecognized command when there is old message' do
+        @moderator = FactoryGirl.create(:member, :last_name => 'Moderator')
+        @sender.groups = [@group]
+        @message = FactoryGirl.create(:message, :user_id => @moderator.id, :send_sms => true, :to_groups => @group.id.to_s)
+        sm = SentMessage.last
+        sm.created_at = 1.year.ago
+        sm.save
+        post :create, @params
+        response.body.should =~ /unknown .*unsolicited/i
+      end
+    
+
         
     end # when no recent message was sent
     
@@ -329,7 +342,7 @@ describe SmsController do
         Member.stub(:find_by_phone).and_return([@sender])
         @message.deliver
         post :create,  {:From => @sender.phone_1, :Body => 'Unsolicited response'}  # @sender delivers a message to the system
-        response.body.should match "forwarded to .*#{@moderator.last_name}"
+        response.body.should match Regexp.new("forward.*to .*#{@moderator.last_name}.*#{@moderator.phone_1}")
       end
       
       it 'replies to last message' do

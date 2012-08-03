@@ -65,8 +65,8 @@ private
        # More commands go here ...
        else
          unsolicited_response(body) ||
-           "unknown command '#{command}'. If you want to reply to a msg you received, pls contact " + 
-             "the sender. Don't use this number."
+           "Unknown command '#{command}'. Send HELP for instructions. If u want to reply to a msg u received, pls contact " + 
+             "the sender directly. Don't use this number."
 #             "unknown command '#{command}'. Info=" + (do_info(text) if Member.find_with_name(text))
        end
   end
@@ -79,7 +79,8 @@ private
     msg = "<=#{@from} #{@sender.shorter_name}: #{body}"
     if last_message_sender
       SmsGateway.default_sms_gateway.deliver(last_message_sender.phone_1, msg)
-      return "forwarded to #{last_message_sender.last_name}"
+      return "I forwarded your msg to #{last_message_sender.shorter_name}. It would be better to contact him/her" +
+             " directly at #{last_message_sender.phone_1}."
     end
     return nil
   end
