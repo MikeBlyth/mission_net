@@ -248,6 +248,81 @@ describe Member do
     end
       
   end # Export
+  
+  describe 'Calculating in-country status' do
+    before(:each) do
+      @member = FactoryGirl.build_stubbed(:member, :in_country=>true, :departure_date => nil, :arrival_date => nil)
+    end
+    
+    describe 'when dates frame an in-country period' do
+      it 'returns False when in-country interval is exceeded' do
+        @member.departure_date = Date.today - 2.days
+        @member.arrival_date = Date.today - 20.days
+        @member.calculate_in_country_status.should == [false, nil, nil]
+      end
+        
+      it 'returns true when today falls during in-country interval' do
+        @member.departure_date = Date.today + 2.days
+        @member.arrival_date = Date.today - 20.days
+        @member.calculate_in_country_status.should == [true, @member.departure_date, @member.arrival_date]
+      end
+        
+      it "doesn't change anything when in-country interval is in the future" do
+        @member.departure_date = Date.today + 20.days
+        @member.arrival_date = Date.today + 2.days
+        @member.calculate_in_country_status.should == [true, @member.departure_date, @member.arrival_date]
+      end
+    end # when dates frame an in-country period
+      
+    describe 'when dates frame an out-of-country period' do
+      it 'returns true when out-of-country interval is exceeded' do
+        @member.arrival_date = Date.today - 2.days
+        @member.departure_date = Date.today - 20.days
+        @member.calculate_in_country_status.should == [true, nil, @member.arrival_date]
+      end
+        
+      it 'returns false when today falls during out-of-country interval' do
+        @member.arrival_date = Date.today + 2.days
+        @member.departure_date = Date.today - 20.days
+        @member.calculate_in_country_status.should == [false, @member.departure_date, @member.arrival_date]
+      end
+        
+      it "doesn't change anything when out-of-country interval is in the future" do
+        @member.arrival_date = Date.today + 20.days
+        @member.departure_date = Date.today + 2.days
+        @member.in_country = false  # Should remain false even though logically person is in the country
+        @member.calculate_in_country_status.should == [false, @member.departure_date, @member.arrival_date]
+      end
+    end # when dates frame an in-country period
+      
+    describe 'when only departure date is given' do
+      it 'returns no change when departure date is in the future' do
+        @member.in_country = false  # Should remain false if set, even though logically person is in the country
+        @member.departure_date = Date.today + 20.days
+        @member.calculate_in_country_status.should == [false, @member.departure_date, nil]
+      end
+        
+      it 'returns false when departure date is in the past' do
+        @member.departure_date = Date.today - 20.days
+        @member.calculate_in_country_status.should == [false, @member.departure_date, nil]
+      end
+    end # when only departure date is given
+        
+    describe 'when only arrival date is given' do
+      it 'returns no change when arrival date is in the future' do
+        @member.in_country = true  # Should remain true if set, even though logically person is not yet in the country
+        @member.arrival_date = Date.today + 20.days
+        @member.calculate_in_country_status.should == [true, nil, @member.arrival_date]
+      end
+        
+      it 'returns true when arrival date is in the past' do
+        @member.arrival_date = Date.today - 20.days
+        @member.calculate_in_country_status.should == [true, nil, @member.arrival_date]
+      end
+        
+    end # when only arrival date is given
+      
+  end
 
 end
 

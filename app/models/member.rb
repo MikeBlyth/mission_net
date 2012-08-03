@@ -151,6 +151,31 @@ class Member < ActiveRecord::Base
     return self.where(:in_country => true)
   end
 
+  # Use the Departure and Arrival dates to calculate whether person is in country.
+  def calculate_in_country_status
+    today = Date.today
+    arr = arrival_date
+    dep = departure_date
+    case
+    when dep && arr && dep < arr   # dates mark period when person will be out of country
+      case 
+        when today > arr then [true, nil, arr] # person has already arrived
+        when today >= dep then [false, dep, arr]  # person has departed and not arrived
+        else [in_country, dep, arr] # not yet departed; in_country should be true, but we'll leave it alone
+      end
+    when dep && arr && dep >= arr  # dates mark period when person will be IN the country 
+      case 
+        when today > dep then [false, nil, nil] # person has already departed
+        when today >= arr then [true, dep, arr]  # person has arrived and not departed
+        else [in_country, dep, arr] # not yet arrived; in_country should be false, but we'll leave it alone
+      end
+    when dep && arr.nil?    # date when person will leave the country 
+      today > dep ? [false, dep, nil] : [in_country, dep, nil]    
+    when dep.nil? && arr    # date when person will arrive in the country 
+      today >= arr ? [true, nil, arr] : [in_country, nil, arr]    
+    end      
+  end
+  
   def primary_email(options={})
     return email_1 || email_2
   end
