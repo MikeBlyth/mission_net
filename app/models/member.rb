@@ -156,24 +156,39 @@ class Member < ActiveRecord::Base
     today = Date.today
     arr = arrival_date
     dep = departure_date
-    case
+    original_status = [in_country, dep, arr]
+    new_status = case
     when dep && arr && dep < arr   # dates mark period when person will be out of country
       case 
         when today > arr then [true, nil, arr] # person has already arrived
         when today >= dep then [false, dep, arr]  # person has departed and not arrived
-        else [in_country, dep, arr] # not yet departed; in_country should be true, but we'll leave it alone
+        else original_status # not yet departed; in_country should be true, but we'll leave it alone
       end
     when dep && arr && dep >= arr  # dates mark period when person will be IN the country 
       case 
         when today > dep then [false, nil, nil] # person has already departed
         when today >= arr then [true, dep, arr]  # person has arrived and not departed
-        else [in_country, dep, arr] # not yet arrived; in_country should be false, but we'll leave it alone
+        else original_status # not yet arrived; in_country should be false, but we'll leave it alone
       end
     when dep && arr.nil?    # date when person will leave the country 
-      today > dep ? [false, dep, nil] : [in_country, dep, nil]    
+      today > dep ? [false, dep, nil] : original_status   
     when dep.nil? && arr    # date when person will arrive in the country 
-      today >= arr ? [true, nil, arr] : [in_country, nil, arr]    
+      today >= arr ? [true, nil, arr] : original_status  
+    else 
+      original_status
     end      
+puts "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}\t#{original_status[1]}=>#{new_status[1]}\t#{original_status[2]}=>#{new_status[2]}" unless new_status == original_status
+    return new_status
+  end
+
+  def auto_update_in_country_status(do_updates)
+    self.in_country, self.departure_date, self_arrival_date = calculate_in_country_status
+    self.save if do_updates
+  end
+
+  def self.auto_update_all_in_country_statuses
+    do_updates = SiteSetting.auto_update_in_country_status
+    self.all.each {|m| m.auto_update_in_country_status(do_updates)}
   end
   
   def primary_email(options={})

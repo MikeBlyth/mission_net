@@ -34,4 +34,13 @@ Joslink::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+
+  # Comment-out this section if you want to see the SQL log entries on the server output
+  # (doesn't seem to do any good at least using the Pry console)
+#  config.after_initialize do
+#    ActiveRecord::Base.logger = Rails.logger.clone
+#    ActiveRecord::Base.logger.level = Logger::INFO
+#    puts "**** ActiveRecord::Base.logger.level is now #{ActiveRecord::Base.logger.level}"
+#  end
+
 end

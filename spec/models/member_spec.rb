@@ -262,6 +262,7 @@ describe Member do
       end
         
       it 'returns true when today falls during in-country interval' do
+        @member.in_country = false
         @member.departure_date = Date.today + 2.days
         @member.arrival_date = Date.today - 20.days
         @member.calculate_in_country_status.should == [true, @member.departure_date, @member.arrival_date]
@@ -316,12 +317,46 @@ describe Member do
       end
         
       it 'returns true when arrival date is in the past' do
+        @member.in_country = false
         @member.arrival_date = Date.today - 20.days
         @member.calculate_in_country_status.should == [true, nil, @member.arrival_date]
       end
         
     end # when only arrival date is given
       
+    describe 'updating in_country status for one record' do
+      
+      it 'performs update if SiteSetting.auto_update_in_country_status is true' do
+        @member.stub(:calculate_in_country_status => [true, nil, @member.arrival_date])
+        @member.should_receive(:save)
+        @member.auto_update_in_country_status(true)
+      end
+
+      it 'does not perform update if SiteSetting.auto_update_in_country_status is false' do
+        @member.stub(:calculate_in_country_status => [true, nil, @member.arrival_date])
+        @member.should_not_receive(:save)
+        @member.auto_update_in_country_status(false)
+      end
+    end # updating in_country status
+
+    describe 'updating in_country status for all records' do
+      before(:each) do
+        @member.stub(:calculate_in_country_status => [true, nil, @member.arrival_date])
+        Member.stub(:all => [@member])
+      end        
+      
+      it 'performs update if SiteSetting.auto_update_in_country_status is true' do
+        SiteSetting.stub(:auto_update_in_country_status => true)
+        @member.should_receive(:auto_update_in_country_status).with(true)
+        Member.auto_update_all_in_country_statuses
+      end
+
+      it 'does not perform update if SiteSetting.auto_update_in_country_status is false' do
+        SiteSetting.stub(:auto_update_in_country_status => false)
+        @member.should_receive(:auto_update_in_country_status).with(false)
+        Member.auto_update_all_in_country_statuses
+      end
+    end # updating in_country status
   end
 
 end

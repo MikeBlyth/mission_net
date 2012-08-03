@@ -104,4 +104,8 @@ contact_update_recipients:
   name: Contact Update Recipients
   type: string
 
-
+auto_update_in_country_status:
+  name: Auto-update in-country status?
+  type: boolean
+  default: false
+  
