@@ -98,13 +98,6 @@ describe SmsController do
           Member.stub(:find_with_name).and_return([@target])
         end
                           
-        it 'returns error for unrecognized command' do
-          @params['Body'] = "xxxx #{@last_name}"
-          post :create, @params
-          response.body.should =~ /unknown .*xxxx/i
-        end
-        
-
         it "sends contact info and location" do
           post :create, @params
           response.body.should match @last_name
@@ -305,21 +298,51 @@ describe SmsController do
   describe 'handles untagged replies' do
     before(:each) do
       @group = FactoryGirl.create(:group)
-      @member = FactoryGirl.create(:member)
-      @member.groups = [@group]
-      @message = FactoryGirl.create(:message, :send_sms => true, :to_groups => @group.id.to_s)
+      @sender = FactoryGirl.create(:member)
+      @params = {:From => @sender.phone_1, :Body => 'Unsolicited response'}
     end
     
-    it 'test setup' do
-      @message.deliver
-      @member.messages.should == [@message]
-    end
+    describe 'when no recent message was sent' do
+
+      it 'returns error for unrecognized command' do
+        post :create, @params
+        response.body.should =~ /unknown .*unsolicited/i
+      end
+        
+    end # when no recent message was sent
     
-    it 'test setup' do
-      @message.deliver
-      @member.messages.should == [@message]
-    end
-    
+    describe 'when recent message was sent' do
+      before(:each) do
+        # Create a message in the DB, which had been delivered by @moderator to a group including @sender of this unsolicited reply
+        @moderator = FactoryGirl.create(:member)
+        @sender.groups = [@group]
+        @message = FactoryGirl.create(:message, :user_id => @moderator.id, :send_sms => true, :to_groups => @group.id.to_s)
+      end
+          
+      it 'test setup' do
+        @message.deliver
+        @sender.messages.should == [@message]
+      end
+
+      it 'confirms forwarding' do
+        Member.stub(:find_by_phone).and_return([@sender])
+        @message.deliver
+        post :create,  {:From => @sender.phone_1, :Body => 'Unsolicited response'}  # @sender delivers a message to the system
+        response.body.should match /forwarded to/      
+      end
+      
+      it 'replies to last message' do
+        Member.stub(:find_by_phone).and_return([@sender])
+        @gateway = mock('Gateway')
+  #      @gateway.should_receive(:deliver)#.with(@member.phone_1, Regexp.new(@sender.last_name))
+        @message.deliver
+        SmsGateway.stub(:default_sms_gateway => @gateway)
+  #      Message.should_receive(:new).with(hash_including(:user_id => @sender.id,
+  #              :send_sms=>true, :to_groups=>nil, :sms_only=>nominal_body)).and_return(@message)
+        post :create,  {:From => @sender.phone_1, :Body => 'Unsolicited response'}  # @sender delivers a message to the system
+        response.body.should match /forwarded to/      
+      end
+    end     # when recent message was sent
   end
 
   describe 'handles responses to messages' do

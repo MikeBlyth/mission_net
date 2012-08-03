@@ -49,29 +49,18 @@ group :development, :test do
   gem 'annotate', '~> 2.4.1.beta' 
   gem "rspec-rails"#, "2.5.0"
   gem "capybara", "= 0.4.1.2"
-#  gem "rcov"
-#  gem "launchy"
+  gem "guard"
+  gem "guard-spork"
+  gem "guard-rails"  # Restart development server when needed
+  gem "guard-annotate"
+  gem 'ruby_gntp'
   gem 'debugger'
   gem 'pry'
   gem 'pry-rails'
   gem "factory_girl"
   gem "factory_girl_rails"
-  # To use debugger
   gem "selenium-client"
   gem "database_cleaner"
   gem 'spork', '>= 0.9.2'
 end
-# To use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.0.0'
 
-# To use Jbuilder templates for JSON
-# gem 'jbuilder'
-
-# Use unicorn as the app server
-# gem 'unicorn'
-
-# Deploy with Capistrano
-# gem 'capistrano'
-
-# To use debugger
-# gem 'debugger'

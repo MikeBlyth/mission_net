@@ -1,5 +1,4 @@
 # == Schema Information
-# Schema version: 20120710110255
 #
 # Table name: members
 #
@@ -23,9 +22,14 @@
 #  receive_sms             :boolean
 #  receive_email           :boolean
 #  blood_donor             :boolean
-#  blood_type_id           :integer
+#  bloodtype_id            :integer
 #  created_at              :datetime        not null
 #  updated_at              :datetime        not null
+#  phone_private           :boolean
+#  email_private           :boolean
+#  in_country              :boolean
+#  comments                :string(255)
+#  short_name              :string(255)
 #
 
 

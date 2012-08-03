@@ -21,6 +21,9 @@
 #  following_up        :integer
 #  created_at          :datetime        not null
 #  updated_at          :datetime        not null
+#  keywords            :string(255)
+#  news_update         :boolean
+#  private             :boolean
 #
 
 include MessagesHelper

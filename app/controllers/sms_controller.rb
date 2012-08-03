@@ -64,10 +64,18 @@ private
        when /\A!/ then process_response(command, text)
        # More commands go here ...
        else
-         "unknown command '#{command}'. If you want to reply to a msg you received, pls contact " + 
-         "the sender. Don't use this number."
+         unsolicited_response(text) ||
+           "unknown command '#{command}'. If you want to reply to a msg you received, pls contact " + 
+             "the sender. Don't use this number."
 #             "unknown command '#{command}'. Info=" + (do_info(text) if Member.find_with_name(text))
        end
+  end
+
+  def unsolicited_response(text)
+    last_message = SentMessage.where(:member_id => @sender.id).order('created_at DESC').first
+puts "**** last_message=#{last_message}"
+    return nil if last_message.nil? || (Time.now - last_message.created_at) > 6.hours
+    return "forwarded to someone"
   end
 
   # Return help

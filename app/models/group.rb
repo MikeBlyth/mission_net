@@ -82,7 +82,6 @@ class Group < ActiveRecord::Base
 end
 
 # == Schema Information
-# Schema version: 20120710102112
 #
 # Table name: groups
 #
@@ -93,5 +92,10 @@ end
 #  primary         :boolean
 #  created_at      :datetime        not null
 #  updated_at      :datetime        not null
+#  user_selectable :boolean
+#  administrator   :boolean
+#  moderator       :boolean
+#  member          :boolean
+#  limited         :boolean
 #
 
