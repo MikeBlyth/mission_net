@@ -31,7 +31,7 @@
       If auto-update in-country status is selected, the system will check 
       members' arrival and departure dates, if any, and adjust their in_country status accordingly.
       This is done daily (in the early morning)
-    = settings_field(:auto_update_in_country_status, :field_type => :boolean)
+    = settings_field(:auto_update_in_country_status, :choices=> [['Yes',1],['No','0']])
     %hr
     = submit_tag 'Save'
     

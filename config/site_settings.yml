@@ -106,6 +106,6 @@ contact_update_recipients:
 
 auto_update_in_country_status:
   name: Auto-update in-country status?
-  type: boolean
-  default: false
+  type: integer
+  default: 
   

@@ -346,13 +346,13 @@ describe Member do
       end        
       
       it 'performs update if SiteSetting.auto_update_in_country_status is true' do
-        SiteSetting.stub(:auto_update_in_country_status => true)
+        SiteSetting.stub(:auto_update_in_country_status => '1')
         @member.should_receive(:auto_update_in_country_status).with(true)
         Member.auto_update_all_in_country_statuses
       end
 
       it 'does not perform update if SiteSetting.auto_update_in_country_status is false' do
-        SiteSetting.stub(:auto_update_in_country_status => false)
+        SiteSetting.stub(:auto_update_in_country_status => '0')
         @member.should_receive(:auto_update_in_country_status).with(false)
         Member.auto_update_all_in_country_statuses
       end
