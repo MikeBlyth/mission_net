@@ -64,18 +64,24 @@ private
        when /\A!/ then process_response(command, text)
        # More commands go here ...
        else
-         unsolicited_response(text) ||
+         unsolicited_response(body) ||
            "unknown command '#{command}'. If you want to reply to a msg you received, pls contact " + 
              "the sender. Don't use this number."
 #             "unknown command '#{command}'. Info=" + (do_info(text) if Member.find_with_name(text))
        end
   end
 
-  def unsolicited_response(text)
-    last_message = SentMessage.where(:member_id => @sender.id).order('created_at DESC').first
-puts "**** last_message=#{last_message}"
-    return nil if last_message.nil? || (Time.now - last_message.created_at) > 6.hours
-    return "forwarded to someone"
+  def unsolicited_response(body)
+    last_sent_message = SentMessage.where(:member_id => @sender.id).order('created_at DESC').first
+#puts "**** last_sent_message=#{last_sent_message}"
+    return nil if last_sent_message.nil? || (Time.now - last_sent_message.created_at) > 6.hours
+    last_message_sender = Member.find last_sent_message.message.user_id
+    msg = "<=#{@from} #{@sender.shorter_name}: #{body}"
+    if last_message_sender
+      SmsGateway.default_sms_gateway.deliver(last_message_sender.phone_1, msg)
+      return "forwarded to #{last_message_sender.last_name}"
+    end
+    return nil
   end
 
   # Return help

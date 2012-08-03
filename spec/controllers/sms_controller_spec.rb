@@ -298,8 +298,9 @@ describe SmsController do
   describe 'handles untagged replies' do
     before(:each) do
       @group = FactoryGirl.create(:group)
-      @sender = FactoryGirl.create(:member)
-      @params = {:From => @sender.phone_1, :Body => 'Unsolicited response'}
+      @sender = FactoryGirl.create(:member, :last_name => 'Responder')
+      @body = 'Unsolicited response'
+      @params = {:From => @sender.phone_1, :Body => @body}
     end
     
     describe 'when no recent message was sent' do
@@ -314,33 +315,30 @@ describe SmsController do
     describe 'when recent message was sent' do
       before(:each) do
         # Create a message in the DB, which had been delivered by @moderator to a group including @sender of this unsolicited reply
-        @moderator = FactoryGirl.create(:member)
+        @moderator = FactoryGirl.create(:member, :last_name => 'Moderator')
         @sender.groups = [@group]
         @message = FactoryGirl.create(:message, :user_id => @moderator.id, :send_sms => true, :to_groups => @group.id.to_s)
       end
           
       it 'test setup' do
         @message.deliver
-        @sender.messages.should == [@message]
+        @sender.messages.should == [@message]  # Just checking that our setup is OK, with sender having recent message
       end
 
       it 'confirms forwarding' do
         Member.stub(:find_by_phone).and_return([@sender])
         @message.deliver
         post :create,  {:From => @sender.phone_1, :Body => 'Unsolicited response'}  # @sender delivers a message to the system
-        response.body.should match /forwarded to/      
+        response.body.should match "forwarded to .*#{@moderator.last_name}"
       end
       
       it 'replies to last message' do
         Member.stub(:find_by_phone).and_return([@sender])
         @gateway = mock('Gateway')
-  #      @gateway.should_receive(:deliver)#.with(@member.phone_1, Regexp.new(@sender.last_name))
+        @gateway.should_receive(:deliver).with(@moderator.phone_1, Regexp.new("#{@sender.last_name}.*#{@body}"))
         @message.deliver
         SmsGateway.stub(:default_sms_gateway => @gateway)
-  #      Message.should_receive(:new).with(hash_including(:user_id => @sender.id,
-  #              :send_sms=>true, :to_groups=>nil, :sms_only=>nominal_body)).and_return(@message)
         post :create,  {:From => @sender.phone_1, :Body => 'Unsolicited response'}  # @sender delivers a message to the system
-        response.body.should match /forwarded to/      
       end
     end     # when recent message was sent
   end
