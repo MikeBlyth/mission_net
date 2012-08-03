@@ -177,7 +177,9 @@ class Member < ActiveRecord::Base
     else 
       original_status
     end      
-puts "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}\t#{original_status[1]}=>#{new_status[1]}\t#{original_status[2]}=>#{new_status[2]}" unless new_status == original_status
+logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}\t#{original_status[1]}=>#{new_status[1]}\t#{original_status[2]}=>#{new_status[2]}" unless new_status == original_status
+    AppLog.create(:code => 'Member.update', :description => 
+      "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}\t#{original_status[1]}=>#{new_status[1]}\t#{original_status[2]}=>#{new_status[2]}") unless new_status == original_status
     return new_status
   end
 
