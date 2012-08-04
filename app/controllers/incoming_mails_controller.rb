@@ -148,10 +148,11 @@ private
   end
 
   def confirmation_message(body, use_sms, valid_group_names, invalid_group_names)
-    confirmation = "Your message #{body[0..120]} was sent to groups #{valid_group_names.join(', ')}. "
-    if use_sms && body.length > 150
-      confirmation << "Only the first 150 characters of your message were sent by SMS, so recipients will see " + 
-          "at most '#{body[0..149]}'."
+    body_joined = format_text(body[0..149])
+    confirmation = "CONFIRMATION\n\nYour message: \n\n#{body_joined} \n\nwas sent to groups #{valid_group_names.join(', ')}. "
+    if use_sms && body.length > 150 
+      confirmation << "Only the first 150 characters at most of your message were sent by SMS, " + 
+          "so recipients will see at most the portion above."
     end 
     unless invalid_group_names.empty?
       if invalid_group_names.size == 1
@@ -182,6 +183,13 @@ puts "**** setup_message: group_ids=#{group_ids}"
                 :send_email => use_email, :send_sms => use_sms, :sms_only => sms_only)
   end
 
+  # Just any elementary reformatting ...
+  def format_text(text)
+    # Reflow
+    reformatted = text.gsub(/\s*\n\s*\n+/, '$#$').gsub(/\s*\n\s*/, ' ').gsub('$#$', "\n\n")
+    return reformatted
+  end
+
   # Needs refactoring!
   def group_deliver(text, command)
     unless text =~ /\A\s*\S+\s+(.*?):\s*(.*)/m  # "d <groups>: <body>..."  (body is multi-line)
@@ -190,7 +198,7 @@ puts "**** setup_message: group_ids=#{group_ids}"
              "\n\nFor example, \"email admin: This is a message for admin.\"" +
              " \n\nWhat I got was \"#{text}.\"")
     end
-    body = $2   # All the rest of the message, from match above (text =~ ...)
+    body = format_text($2)   # All the rest of the message, from match above (text =~ ...)
     group_names_string = $1
     accepted = accepted_groups(group_names_string)
     # This 'unless' clause disallows those below member status from sending to groups
