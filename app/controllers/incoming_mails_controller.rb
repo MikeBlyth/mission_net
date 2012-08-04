@@ -18,7 +18,7 @@ class IncomingMailsController < ApplicationController
     end
     @subject = params['subject']
     @body = params['plain']
-    AppLog.create('Message.create', :description => "Email from #{@from_address}, body = #{@body[0..99]}")
+    AppLog.create(:code => 'Message.create', :description => "Email from #{@from_address}, body = #{@body[0..99]}")
     process_message_response
     commands = extract_commands(@body)
     if commands.nil? || commands.empty?
@@ -139,7 +139,7 @@ private
 
   def validate_groups(group_names_string)
     group_names = group_names_string.gsub(/;|,/, ' ').split(/\s+/)  # e.g. ['security', 'admin']
-    group_ids = Group.ids_from_names(group_names)   # e.g. [1, 5]
+    group_ids = Group.ids_from_names(group_names)   # e.g. [1, 5, 'badGroupName']
     valid_group_ids = group_ids.map {|g| g if g.is_a? Integer}.compact
     valid_group_names = valid_group_ids.map{|g| Group.find(g).group_name}
     invalid_group_names = (group_ids - valid_group_ids)
