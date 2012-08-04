@@ -55,6 +55,7 @@ describe MessagesController do
     end  
     
     it 'counts empty response_time_limit as nil' do
+      @members = members_w_contacts(1, false)
       @gateway.should_receive :deliver
       post :create, :record => {:sms_only=>"test "*10, :to_groups=>["1", '2'], 
         :response_time_limit=>'', :send_sms=>true}

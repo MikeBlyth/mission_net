@@ -151,7 +151,7 @@ private
     confirmation = "Your message #{body[0..120]} was sent to groups #{valid_group_names.join(', ')}. "
     if use_sms && body.length > 150
       confirmation << "Only the first 150 characters of your message were sent by SMS, so recipients will see " + 
-          "at most '#{body[0..149}'."
+          "at most '#{body[0..149]}'."
     end 
     unless invalid_group_names.empty?
       if invalid_group_names.size == 1
