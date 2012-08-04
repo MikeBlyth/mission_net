@@ -9,7 +9,7 @@ describe 'id tag helper (message_id_tag)' do
   end
   
   it 'generates id_tag for head' do
-    message_id_tag(:id=>500, :action=>:generate, :location=>:subject).should == "(SimJos message #500)"
+    message_id_tag(:id=>500, :action=>:generate, :location=>:subject).should == "(JosAlerts message #500)"
   end
 
   it 'generates confirming tag for explanation (in body)' do
@@ -18,7 +18,7 @@ describe 'id tag helper (message_id_tag)' do
     
   it 'finds id_tag in subject' do
     message_id_tag(:action=>:find, :location=>:subject,
-      :text => "Re: Important security message (SimJos message #501)").should == 501
+      :text => "Re: Important security message (JosAlerts message #501)").should == 501
   end
   
   it 'returns nil when finding id_tag in subject' do
@@ -45,7 +45,7 @@ end
 describe 'find_message_id_tag' do
   
   it 'finds tag in header' do
-    find_message_id_tag(:subject=>"Re: Security (SimJos message #501)", :body => "Just some stuff").
+    find_message_id_tag(:subject=>"Re: Security (JosAlerts message #501)", :body => "Just some stuff").
       should == 501
   end
 
@@ -59,6 +59,10 @@ describe 'find_message_id_tag' do
   
   it 'returns nil if no text is empty' do
     find_message_id_tag().should be_nil
+  end
+  
+  it 'returns nil for exclamation point without following digits' do
+    find_message_id_tag(:subject=>"Confirming", :body => "Just some stuff! ").should be_nil
   end
   
 end # find_message_id_tag

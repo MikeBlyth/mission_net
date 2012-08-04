@@ -37,14 +37,14 @@ module MessagesHelper
       if params[:location] == :body
         return "##{params[:id]}"
       else
-        return "(SimJos message ##{params[:id]})"
+        return "(JosAlerts message ##{params[:id]})"
       end
     when :find
       if params[:location] == :body
-        params[:text] =~ /[\s\(\[]*!([0-9]*)/ || params[:text] =~ /confirm +[!#]([0-9]*)/i
+        params[:text] =~ /[\s\(\[]*!([0-9]+)/ || params[:text] =~ /confirm +[!#]([0-9]+)/i
         return $1 ? $1.to_i : nil
       else
-        params[:text] =~ /SimJos message #([0-9]{1,9})\)/i
+        params[:text] =~ /JosAlerts message #([0-9]{1,9})\)/i
         return $1 ? $1.to_i : nil
       end
     when :confirm_tag    # This is for use in an explanation of how to confirm
