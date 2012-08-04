@@ -222,7 +222,13 @@ class Message < ActiveRecord::Base
   def deliver_email(options={})
     @emails ||= options[:emails] || sent_messages.map {|sm| sm.email}.compact.uniq
     @emails = @emails.split(',') if @emails.is_a? String # Strangely, arrays respond to split in this app, so can't use "respond_to?"
-    self.subject ||= 'Message from SIM Nigeria'
+    if @emails.empty?
+puts "**** Trying to deliver message ##{self.id} but no email addresses found."  
+      AppLog.create(:code => 'Message.deliver_email', :severity=> 'warning', 
+         :description => "Attempting to send message ##{self.id} but no email addresses found")
+      return
+    end
+    self.subject ||= 'Message from Joslink/Josalerts'
     id_for_reply = self.following_up || id  # a follow-up message uses id of the original msg
 #puts "**** Messages#deliver_email response_time_limit=#{response_time_limit}"
     outgoing = Notifier.send_group_message(:recipients=>@emails, :content=>self.body, 

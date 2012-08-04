@@ -18,6 +18,7 @@ class IncomingMailsController < ApplicationController
     end
     @subject = params['subject']
     @body = params['plain']
+    AppLog.create('Message.create', :description => "Email from #{@from_address}, body = #{@body[0..99]}")
     process_message_response
     commands = extract_commands(@body)
     if commands.nil? || commands.empty?
@@ -141,7 +142,7 @@ private
     group_ids = Group.ids_from_names(group_names)   # e.g. [1, 5]
     valid_group_ids = group_ids.map {|g| g if g.is_a? Integer}.compact
     valid_group_names = valid_group_ids.map{|g| Group.find(g).group_name}
-    invalid_group_names = group_ids - valid_group_ids   # This will be names of any groups not found
+    invalid_group_names = (group_ids - valid_group_ids)
     return {:valid_group_names => valid_group_names, :invalid_group_names => invalid_group_names, 
             :valid_group_ids => valid_group_ids}
   end
@@ -176,6 +177,7 @@ private
     use_email = use_email?(command)
     use_sms   = use_sms?(command)
     sms_only = body[0..150] if use_sms
+puts "**** setup_message: group_ids=#{group_ids}"
     return Message.create(:to_groups=>group_ids, :body=>body, 
                 :send_email => use_email, :send_sms => use_sms, :sms_only => sms_only)
   end
