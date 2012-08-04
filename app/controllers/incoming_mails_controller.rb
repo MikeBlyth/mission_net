@@ -1,7 +1,7 @@
 require 'application_helper'
 class IncomingMailsController < ApplicationController
   require 'mail'
-  skip_before_filter :verify_authenticity_token
+  skip_before_filter :verify_authenticity_token, :authorize
 
   def create  # need the name 'create' to conform with REST defaults, or change routes
 #puts "IncomingController create: params=#{params}"
