@@ -269,6 +269,12 @@ puts "**** Trying to deliver message ##{self.id} but no email addresses found."
     sms_gateway = options[:sms_gateway] || SmsGateway.default_sms_gateway
     @phones ||= options[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
     @phones = @phones.split(',') if @phones.is_a? String 
+    if @phones.empty?
+puts "**** Trying to deliver SMS for message ##{self.id} but no phone numbers found."  
+      AppLog.create(:code => 'Message.deliver_sms', :severity=> 'warning', 
+         :description => "Attempting to send SMS for message ##{self.id} but no phone numbers found")
+      return
+    end
     assemble_sms()
 #puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 

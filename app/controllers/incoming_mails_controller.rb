@@ -151,7 +151,7 @@ private
     confirmation = "Your message #{body[0..120]} was sent to groups #{valid_group_names.join(', ')}. "
     if use_sms && body.length > 150
       confirmation << "Only the first 150 characters of your message were sent by SMS, so recipients will see " + 
-          "'#{sms_only}'."
+          "at most '#{body[0..149}'."
     end 
     unless invalid_group_names.empty?
       if invalid_group_names.size == 1
@@ -176,7 +176,7 @@ private
     #  (This could be done more elegantly but the method below works well with testing)
     use_email = use_email?(command)
     use_sms   = use_sms?(command)
-    sms_only = body[0..150] if use_sms
+    sms_only = body[0..149] if use_sms
 puts "**** setup_message: group_ids=#{group_ids}"
     return Message.create(:to_groups=>group_ids, :body=>body, 
                 :send_email => use_email, :send_sms => use_sms, :sms_only => sms_only)
