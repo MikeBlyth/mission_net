@@ -10,6 +10,7 @@ class IncomingMailsController < ApplicationController
 #puts "**** Contacts=#{Contact.all.each {|c| c.email_1}.join(' ')}"
 #puts "**** @possible_senders=#{@possible_senders}"
     @from_member = @possible_senders.first
+    @privileges = highest_privilege_by_email(@from_address)
 # puts "**** @from_member=#{@from_member}"
     if @from_member.nil?
       render :text => 'Refused--unknown sender', :status => 403, :content_type => Mime::TEXT.to_s
@@ -138,13 +139,22 @@ private
     end
     body = $2   # All the rest of the message, from match above (text =~ ...)
     group_names_string = $1
+    # This 'unless' clause disallows those below member from sending to groups
+    # If they try, then the message is sent to the moderators ('cause maybe it's important!)
+    # and an error message is returned.
+    unless [:administrator, :moderator, :member].include? @highest_privilege ||
+          group_names_string =~ /\A(mods|moderators)\Z/i
+      return "Sorry, you are not allowed to send messages directly to groups, but your message "
+        + "is being forwarded to the moderator(s)."
+      group_names=['Moderators']
+    end
     group_names = group_names_string.gsub(/;|,/, ' ').split(/\s+/)  # e.g. ['security', 'admin']
     group_ids = Group.ids_from_names(group_names)   # e.g. [1, 5]
     valid_group_ids = group_ids.map {|g| g if g.is_a? Integer}.compact
     valid_group_names = valid_group_ids.map{|g| Group.find(g).group_name}
     invalid_group_names = group_ids - valid_group_ids   # This will be names of any groups not found
     if valid_group_ids.empty?
-      return("You sent the \"d\" command, which means to forward the message to groups, but " +
+      return("You sent the \"#{command}\" command, which means to forward the message to groups, but " +
           "no valid group names or abbreviations found in \"#{group_names_string}.\" ")
     end
     sender_name = @from_member.full_name_short
@@ -152,10 +162,15 @@ private
     #  (This could be done more elegantly but the method below works well with testing)
     use_email = (command =~ /e/) ? true : false
     use_sms   = (command =~ /d/) ? true : false
+    sms_only = body[0..150]
     message = Message.create(:to_groups=>valid_group_ids, :body=>body, 
-        :send_email => use_email, :send_sms => use_sms)
+        :send_email => use_email, :send_sms => use_sms, :sms_only => sms_only)
     message.deliver  # Don't forget to deliver!
     confirmation = "Your message #{body[0..120]} was sent to groups #{valid_group_names.join(', ')}. "
+    if use_sms && body.length > 150
+      confirmation << "Only the first 150 characters of your message were sent by SMS, so recipients will see " + 
+          "'#{sms_only}'."
+    end 
     unless invalid_group_names.empty?
       if invalid_group_names.size == 1
         confirmation << "Group #{invalid_group_names} was not found, so did not receive message."

@@ -64,6 +64,17 @@ module SessionsHelper
     self.current_user = nil
   end
 
+  # There is probably a much faster and elegant way to do this, but as it is rarely called I'm just leaving it
+  def highest_privilege_by_email(user_email)
+    members_with_email = Member.find_by_email(user_email)
+    # Have to go through each group in priority order so that we return the member with the highest privileges
+    members_with_email.each {|m| return :administrator if administrator?(m)}
+    members_with_email.each {|m| return :moderator if moderator?(m)}
+    members_with_email.each {|m| return :member if member?(m)}
+    members_with_email.each {|m| return :limited if limited?(m)}
+    return nil
+  end
+  
   def login_allowed(user_email)
     members_with_email = Member.find_by_email(user_email)
     # Have to go through each group in priority order so that we return the member with the highest privileges

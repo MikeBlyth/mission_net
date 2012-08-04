@@ -138,5 +138,31 @@ describe SessionsHelper do
       
   end
        
+  describe 'Highest privilege by email' do
+    
+    it 'finds highest privilege (Admin) among all members sharing an email address' do
+      email = 'ok@test.com'
+      sec_group = FactoryGirl.create(:group, :group_name => 'Security leaders', :moderator => true)
+      admin_group = FactoryGirl.create(:group, :group_name => 'Administrators', :administrator => true)
+      non_member = FactoryGirl.create(:member, :email_1 => email) 
+      member = FactoryGirl.create(:member, :groups => [sec_group], :email_1 => email)     
+      administrator = FactoryGirl.create(:member, :groups => [sec_group, admin_group], :email_1 => email) 
+      Member.stub(:find_by_email => [non_member, member, administrator])
+      administrator.reload.groups.should include admin_group
+      highest_privilege_by_email(email).should == :administrator
+    end
+      
+    it 'finds highest privilege (member) among all members sharing an email address' do
+      email = 'ok@test.com'
+      limited_group = FactoryGirl.create(:group, :group_name => 'Limited', :limited => true)
+      member_group = FactoryGirl.create(:group, :group_name => 'Members', :member => true)
+      non_member = FactoryGirl.create(:member, :email_1 => email) 
+      member = FactoryGirl.create(:member, :groups => [member_group], :email_1 => email)     
+      limited = FactoryGirl.create(:member, :groups => [limited_group], :email_1 => email) 
+      Member.stub(:find_by_email => [non_member, member, limited])
+      highest_privilege_by_email(email).should == :member
+    end
+      
+  end
 
 end

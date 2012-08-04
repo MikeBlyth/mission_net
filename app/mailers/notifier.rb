@@ -12,7 +12,7 @@ class Notifier < ActionMailer::Base
   def send_help(recipients)
     @content = help_content
 
-    mail(:to => recipients, :subject=>'Joslink Database Help') do |format|
+    mail(:to => recipients, :subject=>'Joslink/Josalerts Database Help') do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
     end 
@@ -53,7 +53,7 @@ class Notifier < ActionMailer::Base
   end
 
   def send_test(recipients, content)
-    @content = "Test from database@sim-nigeria.org\n\n#{content}"
+    @content = "Test from joslink@livinginnigeria.org\n\n#{content}"
     mail(:to => recipients, :subject=>'Test from database') do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
@@ -66,7 +66,7 @@ class Notifier < ActionMailer::Base
     mail(
       :to => (bcc ? '' : recipients),
       :bcc => (bcc ? recipients : ''), 
-      :subject=>'Message from SIM Nigeria'
+      :subject=>'Message from Joslink/Josalerts'
                                            ) do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}

@@ -871,14 +871,16 @@ Group.delete_all
 x = Group.new(:group_name => 'All', :abbrev => 'all', :primary => true)
 x.id = 1
 x.save
-x = Group.new(:group_name => 'Administrators', :abbrev => 'admin', :parent_group_id => 3, :primary => true)
+x = Group.new(:group_name => 'Administrators', :abbrev => 'admin', :parent_group_id => 3, :primary => true, :administrator => true)
 x.id = 2
 x.save
-x = Group.new(:group_name => 'Moderators', :abbrev => 'mod', :parent_group_id => 4, :primary => true)
+x = Group.new(:group_name => 'Moderators', :abbrev => 'mod', :parent_group_id => 4, :primary => true, :moderator => true)
 x.id = 3
 x.save
-x = Group.new(:group_name => 'Members', :abbrev => 'members', :parent_group_id => 1, :primary => true)
+x = Group.new(:group_name => 'Members', :abbrev => 'members', :parent_group_id => 1, :primary => true, :member => true)
 x.id = 4
+x = Group.new(:group_name => 'Limited', :abbrev => 'limited', :parent_group_id => 1, :primary => true, :limited => true)
+x.id = 5
 x.save
 
 

@@ -3,6 +3,8 @@ include SimTestHelper
 include ApplicationHelper
 include IncomingMailsHelper
 include MessagesHelper
+
+ActionMailer::Base.delivery_method = :test
   
 def rebuild_message
     @params[:message] = "From: #{@params['from']}\r\n" + 
@@ -25,8 +27,9 @@ describe IncomingMailsController do
 
   describe 'filters based on member status' do
 
-    it 'accepts mail from SIM member (using email address)' do
+    it 'accepts mail from member (using email address)' do
       Member.stub(:find_by_email).and_return([FactoryGirl.create(:member)])
+binding.pry
       post :create, @params
       response.status.should == 200
     end
@@ -136,7 +139,7 @@ describe IncomingMailsController do
         ActionMailer::Base.deliveries.length.should == 1
         ActionMailer::Base.deliveries.last.to.should == [@params['from']]
         mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
-        mail.should match 'Accessing the SIM Nigeria Database by Email'
+        mail.should match 'Accessing the .* Database by Email'
       end
     end #help
     
