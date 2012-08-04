@@ -3,6 +3,7 @@ include ApplicationHelper
 require 'httparty'
 require 'uri'
 require 'sms_gateway'
+#include SessionHelper
 include SmsGatewaysHelper
 
 class SmsController < ApplicationController
@@ -91,6 +92,7 @@ private
     command_summary = [ ['d <group>', 'deliver msg to grp'], 
                         ['groups', 'list main grps'],
                         ['info <name>', 'get contact info'],
+                        ['updates', 'get updates'],
 #                        ['location <place>', 'set current loc'],
                         ['!21 <reply>', 'reply to msg 21']
                       ]

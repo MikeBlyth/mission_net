@@ -4,7 +4,7 @@ include ApplicationHelper
 include IncomingMailsHelper
 include MessagesHelper
 
-ActionMailer::Base.delivery_method = :test
+ActionMailer::Base.delivery_method.should == :test
   
 def rebuild_message
     @params[:message] = "From: #{@params['from']}\r\n" + 
@@ -29,7 +29,6 @@ describe IncomingMailsController do
 
     it 'accepts mail from member (using email address)' do
       Member.stub(:find_by_email).and_return([FactoryGirl.create(:member)])
-binding.pry
       post :create, @params
       response.status.should == 200
     end
@@ -171,72 +170,101 @@ binding.pry
       controller.from_member.should == [@member]
     end
     
-    it 'distributes email to groups when groups are found' do
-      Message.should_receive(:create).with({:send_sms=>false, :send_email=>true, 
-                          :to_groups=>[@group_1.id, @group_2.id], :body=>@body})
-      @params['plain'] = "email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
-      post :create, @params
-    end
-
-    it 'distributes sms to groups when groups are found' do
-      Message.should_receive(:create).with({:send_sms=>true, :send_email=>false, 
-                          :to_groups=>[@group_1.id, @group_2.id], :body=>@body})
-      @params['plain'] = "sms #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
-      post :create, @params
-    end
-
-    it 'distributes sms & email to groups when groups are found' do
-      Message.should_receive(:create).with({:send_sms=>true, :send_email=>true, 
-                          :to_groups=>[@group_1.id, @group_2.id], :body=>@body})
-      @params['plain'] = "d+email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
-      post :create, @params
-    end
-
-    it 'distributes to found groups when only some groups are found' do
-      Message.should_receive(:create).with({:send_sms=>false, :send_email=>true, 
-                          :to_groups=>[@group_1.id, @group_2.id], :body=>@body})
-      @params['plain'] = "email badGroup #{@group_1.abbrev} sadGroup #{@group_2.abbrev}: #{@body}"
-      post :create, @params
-    end
-
-    it 'creates no message when no groups are found' do
-      Message.should_not_receive(:create)
-      @params['plain'] = "email badGroup sadGroup: #{@body}"
-      post :create, @params
-    end
-    
-    describe 'notifies sender of results' do
+    describe 'when sender is allowed' do
       before(:each) do
-        @old_notifier = Notifier
-        silence_warnings {Notifier = mock('Notifier')}
-        @mock_mail = mock('email', :deliver=>true)
-      end
-      after(:each) do
-        silence_warnings {Notifier = @old_notifier}
+        Member.stub(:find_by_email => [@member])
+        @member.stub(:groups => [mock_model(Group, :administrator => true)] )
       end
       
-      it 'warns that no groups were found' do
-        Notifier.should_receive(:send_generic).with(@params[:from], /no valid group/).
-          and_return(@mock_mail)
-        @params['plain'] = "d badGroup sadGroup: #{@body}"
+      it 'distributes email to groups when groups are found' do
+        Message.should_receive(:create).with(hash_including({:send_sms=>false, :send_email=>true, 
+                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
+        @params['plain'] = "email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
         post :create, @params
       end
 
-      it 'warns that some groups were not found' do
-        Notifier.should_receive(:send_generic).with(@params[:from], 
-          Regexp.new("was sent to groups #{@group_1.group_name}.* sadGroup were not found")).
-          and_return(@mock_mail)
-        @params['plain'] = "d badGroup sadGroup #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+      it 'distributes sms to groups when groups are found' do
+        Message.should_receive(:create).with(hash_including({:send_sms=>true, :send_email=>false, 
+                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
+        @params['plain'] = "sms #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
         post :create, @params
       end
-      it 'warns if nothing after the "d" command' do
-        Notifier.should_receive(:send_generic).with(@params[:from], 
-          Regexp.new("I don't understand")).
-          and_return(@mock_mail)
-        @params['plain'] = "d "
+
+      it 'distributes sms & email to groups when groups are found' do
+        Message.should_receive(:create).with(hash_including({:send_sms=>true, :send_email=>true, 
+                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
+        @params['plain'] = "d+email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
         post :create, @params
       end
-    end # notifies sender of results
+
+      it 'distributes to found groups when only some groups are found' do
+        Message.should_receive(:create).with(hash_including({:send_sms=>false, :send_email=>true, 
+                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
+        @params['plain'] = "email badGroup #{@group_1.abbrev} sadGroup #{@group_2.abbrev}: #{@body}"
+        post :create, @params
+      end
+
+      it 'creates no message when no groups are found' do
+        Message.should_not_receive(:create)
+        @params['plain'] = "email badGroup sadGroup: #{@body}"
+        post :create, @params
+      end
+      
+      describe 'notifies sender of results' do
+        before(:each) do
+          @old_notifier = Notifier
+          silence_warnings {Notifier = mock('Notifier')}
+          @mock_mail = mock('email', :deliver=>true)
+        end
+        after(:each) do
+          silence_warnings {Notifier = @old_notifier}
+        end
+        
+        it 'warns that no groups were found' do
+          Notifier.should_receive(:send_generic).with(@params[:from], /no valid group/).
+            and_return(@mock_mail)
+          @params['plain'] = "d badGroup sadGroup: #{@body}"
+          post :create, @params
+        end
+
+        it 'warns that some groups were not found' do
+          Notifier.should_receive(:send_generic).with(@params[:from], 
+            Regexp.new("was sent to groups #{@group_1.group_name}.* sadGroup were not found")).
+            and_return(@mock_mail)
+          @params['plain'] = "d badGroup sadGroup #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+          post :create, @params
+        end
+        it 'warns if nothing after the "d" command' do
+          Notifier.should_receive(:send_generic).with(@params[:from], 
+            Regexp.new("I don't understand")).
+            and_return(@mock_mail)
+          @params['plain'] = "d "
+          post :create, @params
+        end
+      end # notifies sender of results
+    end # when sender is allowed
+    
+    describe 'when sender is forbidden' do
+      before(:each) do
+        Member.stub(:find_by_email => [@member])
+        @member.stub(:groups => [mock_model(Group)] )
+        @mod_group = FactoryGirl.create(:group, :group_name => 'Moderators')
+      end
+      
+      it 'does not send email to groups' do
+        Message.should_not_receive(:create).with(hash_including({:send_sms=>true, :send_email=>true, 
+                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
+        @params['plain'] = "email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+        post :create, @params
+      end
+
+      it 'sends rejected email to moderators' do
+        Message.should_receive(:create).with(hash_including({:send_sms=>false, :send_email=>true, 
+                            :to_groups=>[@mod_group.id], :body=>"Rejected: #{@body}"}))
+        @params['plain'] = "email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+        post :create, @params
+      end
+    end # when sender is forbidden
   end # Distributes email and sms to groups
   
   describe 'handles email responses to group messages' do

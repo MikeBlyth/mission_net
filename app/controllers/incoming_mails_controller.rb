@@ -130,42 +130,23 @@ private
 #    Notifier.send_generic(from, 'Your location has been updated to ' + text).deliver
 #  end  
 
-  def group_deliver(text, command)
-    unless text =~ /\A\s*\S+\s+(.*?):\s*(.*)/m  # "d <groups>: <body>..."  (body is multi-line)
-      return("I don't understand. To send to groups, separate the group names with spaces" +
-             " and be sure to follow the group or groups with a colon (':')." +
-             "\n\nFor example, \"email admin: This is a message for admin.\"" +
-             " \n\nWhat I got was \"#{text}.\"")
-    end
-    body = $2   # All the rest of the message, from match above (text =~ ...)
-    group_names_string = $1
-    # This 'unless' clause disallows those below member from sending to groups
-    # If they try, then the message is sent to the moderators ('cause maybe it's important!)
-    # and an error message is returned.
-    unless [:administrator, :moderator, :member].include? @highest_privilege ||
-          group_names_string =~ /\A(mods|moderators)\Z/i
-      return "Sorry, you are not allowed to send messages directly to groups, but your message "
-        + "is being forwarded to the moderator(s)."
-      group_names=['Moderators']
-    end
+  # Accept messages from approved groups, and those directed only to moderators
+  def accepted_groups(group_names_string)
+    return [:administrator, :moderator, :member].include? @privileges ||
+               group_names_string =~ /\A(mods|moderators)\Z/i
+  end
+
+  def validate_groups(group_names_string)
     group_names = group_names_string.gsub(/;|,/, ' ').split(/\s+/)  # e.g. ['security', 'admin']
     group_ids = Group.ids_from_names(group_names)   # e.g. [1, 5]
     valid_group_ids = group_ids.map {|g| g if g.is_a? Integer}.compact
     valid_group_names = valid_group_ids.map{|g| Group.find(g).group_name}
     invalid_group_names = group_ids - valid_group_ids   # This will be names of any groups not found
-    if valid_group_ids.empty?
-      return("You sent the \"#{command}\" command, which means to forward the message to groups, but " +
-          "no valid group names or abbreviations found in \"#{group_names_string}.\" ")
-    end
-    sender_name = @from_member.full_name_short
-    # If command is like 'email'... use email. If it's like 'd' use sms.
-    #  (This could be done more elegantly but the method below works well with testing)
-    use_email = (command =~ /e/) ? true : false
-    use_sms   = (command =~ /d/) ? true : false
-    sms_only = body[0..150]
-    message = Message.create(:to_groups=>valid_group_ids, :body=>body, 
-        :send_email => use_email, :send_sms => use_sms, :sms_only => sms_only)
-    message.deliver  # Don't forget to deliver!
+    return {:valid_group_names => valid_group_names, :invalid_group_names => invalid_group_names, 
+            :valid_group_ids => valid_group_ids}
+  end
+
+  def confirmation_message(body, use_sms, valid_group_names, invalid_group_names)
     confirmation = "Your message #{body[0..120]} was sent to groups #{valid_group_names.join(', ')}. "
     if use_sms && body.length > 150
       confirmation << "Only the first 150 characters of your message were sent by SMS, so recipients will see " + 
@@ -179,6 +160,60 @@ private
       end
     end
     return confirmation
+  end
+
+  def use_email?(command)
+    (command =~ /e/) ? true : false
+  end
+
+  def use_sms?(command)
+    (command =~ /d/) ? true : false
+  end
+
+  def setup_message(body, command, group_ids)
+    # If command is like 'email'... use email. If it's like 'd' use sms.
+    #  (This could be done more elegantly but the method below works well with testing)
+    use_email = use_email?(command)
+    use_sms   = use_sms?(command)
+    sms_only = body[0..150] if use_sms
+    return Message.create(:to_groups=>group_ids, :body=>body, 
+                :send_email => use_email, :send_sms => use_sms, :sms_only => sms_only)
+  end
+
+  # Needs refactoring!
+  def group_deliver(text, command)
+    unless text =~ /\A\s*\S+\s+(.*?):\s*(.*)/m  # "d <groups>: <body>..."  (body is multi-line)
+      return("I don't understand. To send to groups, separate the group names with spaces" +
+             " and be sure to follow the group or groups with a colon (':')." +
+             "\n\nFor example, \"email admin: This is a message for admin.\"" +
+             " \n\nWhat I got was \"#{text}.\"")
+    end
+    body = $2   # All the rest of the message, from match above (text =~ ...)
+    group_names_string = $1
+    accepted = accepted_groups(group_names_string)
+    # This 'unless' clause disallows those below member status from sending to groups
+    # If they try, then the message is sent to the moderators ('cause maybe it's important!)
+    # and an error message is returned.
+    unless accepted
+      group_names_string='Moderators'
+      body = 'Rejected: ' + body
+    end
+    groups_checked = validate_groups(group_names_string)
+    valid_group_ids = groups_checked[:valid_group_ids]
+    valid_group_names = groups_checked[:valid_group_names]
+    invalid_group_names = groups_checked[:invalid_group_names]
+    if valid_group_ids.empty?
+      return("You sent the \"#{command}\" command, which means to forward the message to groups, but " +
+          "no valid group names or abbreviations found in \"#{group_names_string}.\" ")
+    end
+    message = setup_message(body, command, valid_group_ids)
+    message.deliver  # Don't forget to deliver!
+    if accepted
+      return confirmation_message(body, use_sms?(command), valid_group_names, invalid_group_names)
+    else
+      return "Sorry, you are not allowed to send messages directly to groups, but your message "
+        + "is being forwarded to the moderator(s)."
+    end
   end
 
 end # Class
