@@ -115,11 +115,11 @@ $( "#tabs" ).tabs();
           %td{:style=>"width: 10%; padding: 0px;"}
             = member.label :arrival_date
             %br
-            = member.date_select :arrival_date, {}, :style => "font-size: smaller"
+            = member.date_select :arrival_date, {:include_blank => true}, :style => "font-size: smaller"
           %td    
             = member.label :departure_date
             %br
-            = member.date_select :departure_date
+            = member.date_select :departure_date, {:include_blank => true}, :style => "font-size: smaller"
         %tr
           %td    
             = member.label :blood_donor
