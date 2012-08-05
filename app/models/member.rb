@@ -36,6 +36,9 @@
 ############## JOSLINK ###################
 class Member < ActiveRecord::Base
   include NameHelper
+  require 'sessions_helper'
+  include SessionsHelper
+  
   extend ExportHelper
 
   attr_accessible :arrival_date, :departure_date, :email_1, :email_2, :name, :first_name, :last_name, :middle_name, 
@@ -195,6 +198,17 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
   
   def primary_email(options={})
     return email_1 || email_2
+  end
+
+  # ToDo: The whole area of privileges/roles needs to be reworked -- getting cumbersome
+  def has_privileges(privilege)
+    case privilege
+      when :administrator then return administrator?(self)
+      when :moderator then return moderator?(self)
+      when :member then return member?(self)
+      when :limited then return limited?(self)
+    end
+    return nil
   end
 
   def add_authorization_provider(auth_hash)

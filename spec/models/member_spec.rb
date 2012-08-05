@@ -359,5 +359,50 @@ describe Member do
     end # updating in_country status
   end
 
+  describe 'privilege (role) level:' do
+    before(:each) do
+      @admin_group = FactoryGirl.build_stubbed(:group, :administrator => true)
+      @mod_group = FactoryGirl.build_stubbed(:group, :moderator => true)
+      @member_group = FactoryGirl.build_stubbed(:group, :member => true)
+      @limited_group = FactoryGirl.build_stubbed(:group, :limited => true)
+      @nothing_group = FactoryGirl.build_stubbed(:group)
+      @member = FactoryGirl.build_stubbed(:member)
+    end
+    
+    it 'administrator includes all roles' do
+      @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :administrator => true)])
+      [:administrator, :moderator, :member, :limited].each {|level| @member.has_privileges(level).should be true}    
+    end
+
+    it 'moderator includes lower roles' do
+      @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :moderator => true)])
+      @member.has_privileges(:administrator).should be false
+      @member.has_privileges(:moderator).should be true
+      @member.has_privileges(:member).should be true
+      @member.has_privileges(:limited).should be true
+    end
+
+    it 'member includes lower roles' do
+      @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :member => true)])
+      @member.has_privileges(:administrator).should be false
+      @member.has_privileges(:moderator).should be false
+      @member.has_privileges(:member).should be true
+      @member.has_privileges(:limited).should be true
+    end
+    
+    it 'limited includes no other roles' do
+      @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :limited => true)])
+      @member.has_privileges(:administrator).should be false
+      @member.has_privileges(:moderator).should be false
+      @member.has_privileges(:member).should be false
+      @member.has_privileges(:limited).should be true
+    end
+
+    it 'member with no privilege has no roles' do
+      @member.stub(:groups => [FactoryGirl.build_stubbed(:group)])
+      [:administrator, :moderator, :member, :limited].each {|level| @member.has_privileges(level).should be false}
+    end
+  end  # privilege (role) level
+
 end
 

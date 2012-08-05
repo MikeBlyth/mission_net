@@ -178,7 +178,7 @@ private
     use_email = use_email?(command)
     use_sms   = use_sms?(command)
     sms_only = body[0..149] if use_sms
-puts "**** setup_message: group_ids=#{group_ids}"
+#puts "**** setup_message: group_ids=#{group_ids}"
     return Message.create(:to_groups=>group_ids, :body=>body, 
                 :send_email => use_email, :send_sms => use_sms, :sms_only => sms_only)
   end
