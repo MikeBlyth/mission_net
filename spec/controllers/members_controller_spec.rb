@@ -16,7 +16,7 @@ describe MembersController do
       end
       
       it "should allow access to 'destroy'" do
-        # Member.should_receive(:destroy) # Why can't this work ??
+        # Member.should_receive(:destroy) # Why can't this work ?? (Probably because it should be member instance and not Member class?
         @member = FactoryGirl.create(:member)
         put :destroy, :id => @member.id
         response.should_not redirect_to(sign_in_path)
@@ -31,14 +31,34 @@ describe MembersController do
       
     end # for signed-in users
 
-#    describe "for non-signed-in users" do
+    describe "for moderators" do
+      before(:each) do
+        @user = test_sign_in_fast_with_role(:moderator)
+        @user.has_privilege(:moderator).should be true
+      end
 
-#      it "should deny access to 'new'" do
-#        get :new
-#        response.should redirect_to(signin_path)
-#      end
+      it 'allows moderators to create' do
+        Member.should_receive(:new)
+        get :new
+      end
 
-#    end # for non-signed-in users
+      it 'allows moderators to update' do
+        Member.should_receive(:update)
+        get :update
+      end
+
+    end
+
+    describe "for non-signed-in users" do
+
+      it "should deny access to 'new'" do
+        get :new
+        response.should redirect_to(sign_in_path)
+      end
+
+    end # for non-signed-in users
+    
+    
 
   end # describe "authentication before controller access"
 

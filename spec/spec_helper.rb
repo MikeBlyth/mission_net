@@ -56,10 +56,19 @@ puts "**** SPORK LOADING PREFORK"
   end
 
   def test_sign_in_fast
-      controller.stub(:authenticate_admin).and_return(:true)
-      controller.stub(:authenticate).and_return(:true)
+#      controller.stub(:authenticate_admin).and_return(:true)
+#      controller.stub(:authenticate).and_return(:true)
       controller.stub(:current_user).and_return(mock('User', :admin? => true))
       controller.stub(:current_user_admin?).and_return(true)
+  end
+
+  def test_sign_in_fast_with_role(privilege)
+#      controller.stub(:authenticate_admin).and_return(:true)
+#      controller.stub(:authenticate).and_return(:true)
+      group = FactoryGirl.build_stubbed(:group, privilege => true)
+      user = FactoryGirl.build_stubbed(:member, :groups => [group])
+      controller.stub(:current_user).and_return(user)
+      return user
   end
 
   def test_sign_out
