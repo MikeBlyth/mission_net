@@ -30,12 +30,15 @@ describe MessagesController do
                                :response_time_limit, :importance]
       settings_with_default.each {|setting| assigns(:record)[setting].should == Settings.messages[setting]}
     end
+
   end
 
   describe 'Create' do
     before(:each) do
  #     controller.stub(:current_user=>FactoryGirl.build(:member))
-      test_sign_in_fast
+      @user = FactoryGirl.build(:member)
+      @user.stub(:has_role? => true)
+      controller.stub(:current_user=>@user)
     end
       
     it 'adds user name to record' do

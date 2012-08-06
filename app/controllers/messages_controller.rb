@@ -3,6 +3,7 @@ include SmsGatewaysHelper
 
 class MessagesController < ApplicationController
   load_and_authorize_resource
+# skip_authorization_check
   
   active_scaffold :message do |config|
     config.list.columns = [:id, :created_at, :user, :body, :sms_only, :send_sms, :send_email, :to_groups, 
@@ -18,13 +19,8 @@ class MessagesController < ApplicationController
     config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
   end
 
-def create
-  binding.pry
-end
-
   def before_create_save(record)
     record.user = current_user if current_user
-binding.pry  
   end
 
   def after_create_save(record)
