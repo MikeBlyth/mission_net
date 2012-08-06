@@ -51,46 +51,17 @@ puts "**** SPORK LOADING PREFORK"
   end
 
   # Define a helper to directly sign in a test user
-  def test_sign_in(user)
-    controller.sign_in(user)
-  end
+#  def test_sign_in(user)
+#    controller.sign_in(user)
+#  end
 
-  def test_sign_in_fast
-#      controller.stub(:authenticate_admin).and_return(:true)
-#      controller.stub(:authenticate).and_return(:true)
-      controller.stub(:current_user).and_return(mock('User', :admin? => true, :id=>'999',
-      :is_administrator? => true, 
-      :is_moderator? => true,
-      :is_member? => true,
-      :is_limited? => true
-      ))
-      controller.stub(:current_user_admin?).and_return(true)
+  def test_sign_in(role=:administrator)
+    group = FactoryGirl.build_stubbed(:group, role => true)
+    @user = FactoryGirl.build_stubbed(:member, :groups => [group], :id => 999)
+    controller.stub(:current_user).and_return(@user)
+    return @user
   end
-
-  def test_sign_in_with(roles=[true,true,true,true])
-      controller.stub(:current_user).and_return(mock_model(Member, :id=>'999', 
-      :is_administrator? => roles[0],
-      :is_moderator? => roles[1],
-      :is_member? => roles[2],
-      :is_limited? => roles[3]
-      ).as_null_object)
-  end
-
-  def test_sign_in_administrator
-    test_sign_in_with([true,true,true,true])
-  end
-  
-  def test_sign_in_moderator
-    test_sign_in_with([false,true,true,true])
-  end
-  
-  def test_sign_in_member
-    test_sign_in_with([false,false,true,true])
-  end
-  
-  def test_sign_in_limited
-    test_sign_in_with([false,false,false,true])
-  end
+  alias test_sign_in_fast test_sign_in
 
   def test_sign_out
     controller.sign_out

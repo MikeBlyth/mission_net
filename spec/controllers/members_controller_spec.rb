@@ -34,7 +34,7 @@ describe MembersController do
 
     describe "for moderators" do
       before(:each) do
-        @user = test_sign_in_moderator
+        @user = test_sign_in(:moderator)
         @user.is_moderator?.should eq true
         @user.is_administrator?.should eq false
       end
@@ -55,7 +55,7 @@ describe MembersController do
 
     describe "for members" do
       before(:each) do
-        @user = test_sign_in_fast_member
+        @user = test_sign_in_fast(:member)
         @user.is_member?.should eq true
         @user.is_moderator?.should eq false
       end
