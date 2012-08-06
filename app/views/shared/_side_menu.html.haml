@@ -2,17 +2,18 @@
   %h5 
     Main Menu
   %ul.links
-    %li= link_to 'Members', members_path 
     %li= link_to "Edit your user info", edit_member_path(current_user)
     %li= link_to "Sign out", sign_out_path 
-    %h5 Moderators
-    - if moderator?(current_user)
-      %li= link_to 'Groups', groups_path
-      %li= link_to 'Message list', messages_path
+    - if member?(current_user)
+      %li= link_to 'Members', members_path 
       %li= link_to 'Create new message', new_message_path
+    - if moderator?(current_user)
+      %h5 Moderators
+      %li= link_to 'Message list', messages_path
+      %li= link_to 'Groups', groups_path
       %li= link_to 'Log', '/app_logs'
-    %h5 Option Tables
     - if administrator?(current_user)
+      %h5 Option Tables
       %li= link_to 'Bloodtypes', bloodtypes_path 
       %li= link_to 'Cities', cities_path 
       %li= link_to 'Countries', countries_path 

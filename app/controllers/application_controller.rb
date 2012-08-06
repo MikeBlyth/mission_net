@@ -9,14 +9,29 @@ class ApplicationController < ActionController::Base
   end
 
   before_filter :require_https, :except => :update_status_clickatell #, :only => [:login, :signup, :change_password] 
-  before_filter :authorize
-#  before_filter :authorize_moderator, :except => [:index]
+  check_authorization  
   
   def require_https
     redirect_to :protocol => "https://" unless (request.protocol=='https://' or request.host=='localhost' or
         request.host == 'test.host' or 
         request.headers['REQUEST_URI'] =~ /update_status_clickatell/ or
         request.remote_addr == '127.0.0.1')
+  end
+
+  rescue_from CanCan::AccessDenied do |exception|
+# puts "CanCan AccessDenied #{exception.message}\n\tsigned in=#{signed_in?} as #{current_user}, #{current_user.admin if current_user}"
+# puts "CanCan AccessDenied #{exception.message}"
+    puts "**** Access denied by CanCan: #{exception.message} ****"# if Rails.env == 'test'
+
+    if !signed_in? 
+      redirect_to sign_in_path
+    else  
+     if (request.referer == request.url) # A rare occasion 
+        redirect_to safe_page_path
+      else
+        redirect_to request.referer, :alert => exception.message
+      end
+    end
   end
 
   def iron_worker

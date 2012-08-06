@@ -3,6 +3,7 @@ Joslink::Application.routes.draw do
   resources :cities do as_routes end
 
   get "sessions/new"
+  get "sessions/safe_page", :as => 'safe_page'
   get '/:controller/export', :action => 'export'
   match '/:controller/import', :action => 'import'
 

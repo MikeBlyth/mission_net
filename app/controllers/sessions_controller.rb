@@ -1,12 +1,13 @@
 class SessionsController < ApplicationController
 
   skip_before_filter :authorize, :only => [:new, :create, :update]
-
+  skip_authorization_check
+  
   def new
     redirect_to(initialize_path) if Member.count == 0
   end
 
-# Unlike many applications, this one authorizes only users who are already members in the list. That is, we do not
+# This app authorizes only users who are already members in the list. That is, we do not
 # have a separate list of users who can access the application. Anyone who is listed in the database can access
 # it, and no one not listed can access it. 
 #
@@ -24,7 +25,8 @@ puts "**** auth_hash=#{auth_hash}"
 # a rather uncontrolled one.
   user = login_allowed(user_email)
   unless user
-    render :text => "Sorry, that login doesn't work. Please try another or contact the system administrator."
+    flash[:info] = "Sorry, that login is not authorized to use this application. Please try another or contact the system administrator."
+    redirect_to sign_in_path
     return
   end
  
@@ -48,6 +50,10 @@ puts "**** auth_hash=#{auth_hash}"
     redirect_to home_path
   end
 end
+
+  # Safe landing page for authorization issues
+  def safe_page
+  end
 
   # This gets called by the auth provider (e.g. Facebook) when the signin with the provider didn't work
   def failure

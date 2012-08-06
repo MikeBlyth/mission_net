@@ -1,9 +1,9 @@
 class GroupsController < ApplicationController
 #  before_filter :authenticate #, :only => [:edit, :update]
   include ApplicationHelper
+  include SessionsHelper
 #  include AuthenticationHelper
-#  load_and_authorize_resource
-
+  load_and_authorize_resource
   
   active_scaffold :group do |config|
     # list.columns.exclude :abo, :rh, :members

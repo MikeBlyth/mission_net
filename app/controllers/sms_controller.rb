@@ -9,7 +9,8 @@ include SmsGatewaysHelper
 class SmsController < ApplicationController
   include HTTParty
   skip_before_filter :verify_authenticity_token, :authorize, :authorize_privilege
-
+  skip_authorization_check
+  
   # Create - handle incoming SMS message from TWILIO (Will need adjustment if other gateway is used)
   #
   # Twilio sends the message to create just as if it were a web HTTP request

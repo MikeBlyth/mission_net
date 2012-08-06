@@ -39,6 +39,7 @@ GEM
     annotate (2.4.1.beta1)
     arel (3.0.2)
     builder (3.0.0)
+    cancan (1.6.8)
     capybara (0.4.1.2)
       celerity (>= 0.7.9)
       culerity (>= 0.2.4)
@@ -145,7 +146,6 @@ GEM
     multipart-post (1.1.5)
     net-http-persistent (2.7)
     nokogiri (1.5.5)
-    oauth (0.4.6)
     oauth2 (0.8.0)
       faraday (~> 0.8)
       httpauth (~> 0.1)
@@ -160,14 +160,9 @@ GEM
     omniauth-google-oauth2 (0.1.12)
       omniauth (~> 1.0)
       omniauth-oauth2
-    omniauth-oauth (1.0.1)
-      oauth
-      omniauth (~> 1.0)
     omniauth-oauth2 (1.1.0)
       oauth2 (~> 0.8.0)
       omniauth (~> 1.0)
-    omniauth-youtube (1.0)
-      omniauth-oauth (~> 1.0)
     pg (0.14.0)
     polyglot (0.3.3)
     pry (0.9.9.6)
@@ -206,7 +201,6 @@ GEM
       ffi (>= 0.5.0)
     rdoc (3.12)
       json (~> 1.4)
-    redis (3.0.1)
     rest (2.0.2)
       net-http-persistent
       rest-client (>= 0.3.0)
@@ -272,6 +266,7 @@ PLATFORMS
 DEPENDENCIES
   active_scaffold!
   annotate (~> 2.4.1.beta)
+  cancan
   capybara (= 0.4.1.2)
   coffee-rails (~> 3.2.1)
   configurable_engine
@@ -294,12 +289,10 @@ DEPENDENCIES
   omniauth (~> 1.0.0)
   omniauth-facebook
   omniauth-google-oauth2
-  omniauth-youtube
   pg
   pry
   pry-rails
   rails (= 3.2.5)
-  redis
   rspec-rails
   ruby_gntp
   sass-rails (~> 3.2.3)

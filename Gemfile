@@ -14,14 +14,13 @@ gem 'settingslogic'
 gem 'configurable_engine'
 gem 'omniauth', '~> 1.0.0'
 gem 'omniauth-facebook'
-gem 'omniauth-youtube'
-#gem 'omniauth-google'
+#gem 'omniauth-youtube'
 gem 'omniauth-google-oauth2'
 gem 'delayed_job_active_record'
 gem 'heroku-api'
 gem 'iron_worker_ng'
-gem 'redis'
-#gem "workless", "~> 1.0.1"
+gem 'cancan'
+#gem 'redis'
 
 #gem 'active_scaffold_config_list_vho'
 

@@ -201,8 +201,9 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
   end
 
   # ToDo: The whole area of privileges/roles needs to be reworked -- getting cumbersome
-  def has_privilege(privilege)
-    case privilege
+  # This is probably redundant and can just be replace with the direct calls
+  def has_role(role)
+    case role
       when :administrator then return administrator?(self)
       when :moderator then return moderator?(self)
       when :member then return member?(self)

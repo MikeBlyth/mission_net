@@ -4,7 +4,7 @@ class MembersController < ApplicationController
 #  include AuthenticationHelper
   include ApplicationHelper
 #  include ExportHelper
-  skip_before_filter :authorize_privilege, :only => [:edit, :update] # Will use ActiveScaffold for authorization here
+  skip_before_filter :authorize_privilege#, :only => [:edit, :update] # Will use ActiveScaffold for authorization here
   
 
   active_scaffold :member do |config|
@@ -130,8 +130,13 @@ class MembersController < ApplicationController
   end
 
 protected
+# Need to figure out how this works -- doesn't work as below! 
   def update_authorized?(record=nil)
-    record && current_user.id == record.id
+    is_member = (record.is_a? Member)
+    same_id = is_member ? current_user.id == record.id : false
+    ok = is_member && same_id
+    puts "**** record=#{record}, #{record.id if record.is_a? Member}, ok = #{ok}, same-#{same_id}"
+    return ok #|| !is_member
   end
 end
   

@@ -1,8 +1,8 @@
 class CountriesController < ApplicationController
   helper :countries
 
-#  before_filter :authenticate #, :only => [:edit, :update]
-#  include AuthenticationHelper
+  include SessionsHelper
+  load_and_authorize_resource
   
   active_scaffold :country do |config|
     config.columns = [:name, :nationality, :include_in_selection, :code]

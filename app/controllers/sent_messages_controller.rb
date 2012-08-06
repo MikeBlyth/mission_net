@@ -1,4 +1,6 @@
 class SentMessagesController < ApplicationController
+
+
   active_scaffold :sent_message do |config|
     config.list.columns = [:id, :message_id, :member, :msg_status, :phone, :confirmed_time, :confirmed_mode, :confirmation_message]
  #   config.subform.columns.exclude :message
@@ -8,9 +10,6 @@ class SentMessagesController < ApplicationController
     config.show.link = false
     config.actions.exclude :update, :create
   end
-
-#  include AuthenticationHelper
-#skip_authorize_resource :only => :update_status_clickatell
 
   def update_status_clickatell
 #puts "Clickatell status call with params=#{params}"

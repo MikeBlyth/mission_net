@@ -2,6 +2,7 @@ class SetupController < ActionController::Base
 
   protect_from_forgery
   before_filter :check_users  # Setup can only be used before there are any members
+  skip_check_authorization
 
   def initialize
   end
