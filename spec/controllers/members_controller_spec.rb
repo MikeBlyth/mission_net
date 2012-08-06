@@ -34,8 +34,9 @@ describe MembersController do
 
     describe "for moderators" do
       before(:each) do
-        @user = test_sign_in_fast_with_role(:moderator)
-        @user.has_role?(:moderator).should eq true
+        @user = test_sign_in_moderator
+        @user.is_moderator?.should eq true
+        @user.is_administrator?.should eq false
       end
 
       it 'allows moderators to create' do
@@ -54,9 +55,9 @@ describe MembersController do
 
     describe "for members" do
       before(:each) do
-        @user = test_sign_in_fast_with_role(:member)
-        @user.has_role?(:member).should eq true
-        @user.has_role?(:moderator).should eq false
+        @user = test_sign_in_fast_member
+        @user.is_member?.should eq true
+        @user.is_moderator?.should eq false
       end
 
       it 'does not allow _members_ to update' do

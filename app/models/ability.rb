@@ -16,46 +16,20 @@ class Ability
     end
 
     case 
-      when user.has_role?(:administrator)
+      when user.is_administrator?
         can :manage, :all
-      when user.has_role?(:moderator)
+      when user.is_moderator?
         can :manage, :all
         cannot [:create, :update, :delete], SiteSetting
-      when user.has_role?(:member)
+      when user.is_member?
         can :read, :all
         cannot :read, [SiteSetting, AppLog]
         can :create, Message
         can :update, Member, :id => user.id  # Allow user to edit own records
-      when user.has_role?(:limited)
+      when user.is_limited?
         cannot :manage, :all
         can [:read, :update], Member, :id => user.id
     end
-
-#    if user.nil?
-#      cannot :manage, :all
-#      return
-#    end
-
-#    if limited?(user)
-#      cannot :manage, :all
-#      can [:read, :update], Member, :id => user.id
-#    end
-#    
-#    if member?(user)
-#      can :read, :all
-#      cannot :read, [SiteSetting, AppLog]
-#      can :create, Message
-#      can :update, Member, :id => user.id  # Allow user to edit own records
-#    end
-
-#    if moderator?(user)
-#      can :manage, :all
-#      cannot [:create, :update, :delete], SiteSetting
-#    end
-#    
-#    if administrator?(user)
-#      can :manage, :all
-#    end
 
   end  # initialize
 end # class

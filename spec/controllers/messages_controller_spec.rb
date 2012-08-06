@@ -7,12 +7,12 @@ require 'iron_worker_ng'
 
 describe MessagesController do
 
-      before(:each) do
-        test_sign_in_fast
-        @gateway = mock('Gateway')
-        SmsGateway.stub(:default_sms_gateway => @gateway)
-        SiteSetting.stub(:default_sms_outgoing_gateway => 'Clickatell')
-      end
+  before(:each) do
+    test_sign_in_fast
+    @gateway = mock('Gateway')
+    SmsGateway.stub(:default_sms_gateway => @gateway)
+    SiteSetting.stub(:default_sms_outgoing_gateway => 'Clickatell')
+  end
 
   def mock_message(stubs={})
     @mock_message ||= mock_model(Message, stubs).as_null_object
@@ -20,10 +20,6 @@ describe MessagesController do
 
   describe 'New' do
     
-    it 'setup' do
-#      binding.pry  
-    end
-
     it 'sets defaults from Settings' do
       get :new
       settings_with_default = [:confirm_time_limit, :retries, :retry_interval, :expiration, 
@@ -35,12 +31,23 @@ describe MessagesController do
 
   describe 'Create' do
     before(:each) do
- #     controller.stub(:current_user=>FactoryGirl.build(:member))
       @user = FactoryGirl.build(:member)
-      @user.stub(:has_role? => true)
+      @user.stub(:is_administrator => true)
       controller.stub(:current_user=>@user)
+      controller.stub(:deliver_message=>true)   # to skip the delivery
     end
       
+    it 'admin can create message' do
+      lambda{post :create, :record => {:body=>"test", :to_groups=>["1", '2'], :send_sms=>true, :send_email=>false}}.
+        should change{Message.count}.by(1)
+    end
+    
+    it 'member can create message' do
+      controller.stub(:deliver_message=>true)   # to skip the delivery
+      post :create, :record => {:body=>"test", :to_groups=>["1", '2'], :send_sms=>true, :send_email=>false}
+      Message.first.user.should == controller.current_user
+    end
+    
     it 'adds user name to record' do
       controller.stub(:deliver_message=>true)   # to skip the delivery
       post :create, :record => {:body=>"test", :to_groups=>["1", '2'], :send_sms=>true, :send_email=>false}

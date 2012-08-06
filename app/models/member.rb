@@ -202,14 +202,30 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
 
   # ToDo: The whole area of privileges/roles needs to be reworked -- getting cumbersome
   # This is probably redundant and can just be replace with the direct calls
-  def has_role?(role)
-    case role
-      when :administrator then return administrator?(self)
-      when :moderator then return moderator?(self)
-      when :member then return member?(self)
-      when :limited then return limited?(self)
-    end
-    return nil
+#  def has_role?(role)
+#    case role
+#      when :administrator then return administrator?(self)
+#      when :moderator then return moderator?(self)
+#      when :member then return member?(self)
+#      when :limited then return limited?(self)
+#    end
+#    return nil
+#  end
+
+  def is_administrator?
+    administrator?(self)
+  end
+
+  def is_moderator?
+    moderator?(self)
+  end
+
+  def is_member?
+    member?(self)
+  end
+
+  def is_limited?
+    limited?(self)
   end
 
   def add_authorization_provider(auth_hash)

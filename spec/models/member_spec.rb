@@ -371,36 +371,42 @@ describe Member do
     
     it 'administrator includes all roles' do
       @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :administrator => true)])
-      [:administrator, :moderator, :member, :limited].each {|level| @member.has_role?(level).should be true}    
+      @member.is_administrator?.should be true
+      @member.is_moderator?.should be true
+      @member.is_member?.should be true
+      @member.is_limited?.should be true
     end
 
     it 'moderator includes lower roles' do
       @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :moderator => true)])
-      @member.has_role?(:administrator).should be false
-      @member.has_role?(:moderator).should be true
-      @member.has_role?(:member).should be true
-      @member.has_role?(:limited).should be true
+      @member.is_administrator?.should be false
+      @member.is_moderator?.should be true
+      @member.is_member?.should be true
+      @member.is_limited?.should be true
     end
 
     it 'member includes lower roles' do
       @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :member => true)])
-      @member.has_role?(:administrator).should be false
-      @member.has_role?(:moderator).should be false
-      @member.has_role?(:member).should be true
-      @member.has_role?(:limited).should be true
+      @member.is_administrator?.should be false
+      @member.is_moderator?.should be false
+      @member.is_member?.should be true
+      @member.is_limited?.should be true
     end
     
     it 'limited includes no other roles' do
       @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :limited => true)])
-      @member.has_role?(:administrator).should be false
-      @member.has_role?(:moderator).should be false
-      @member.has_role?(:member).should be false
-      @member.has_role?(:limited).should be true
+      @member.is_administrator?.should be false
+      @member.is_moderator?.should be false
+      @member.is_member?.should be false
+      @member.is_limited?.should be true
     end
 
     it 'member with no privilege has no roles' do
       @member.stub(:groups => [FactoryGirl.build_stubbed(:group)])
-      [:administrator, :moderator, :member, :limited].each {|level| @member.has_role?(level).should be false}
+      @member.is_administrator?.should be false
+      @member.is_moderator?.should be false
+      @member.is_member?.should be false
+      @member.is_limited?.should be false
     end
   end  # privilege (role) level
 
