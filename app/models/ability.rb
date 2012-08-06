@@ -22,7 +22,9 @@ class Ability
         can :manage, :all
         cannot [:create, :update, :delete], SiteSetting
       when user.is_member?
-        can :read, :all
+puts "***** USER IS MEMBER ****"
+        cannot [:manage], :all
+        can [:read, :index, :search, :show_search, :search_field], :all
         cannot :read, [SiteSetting, AppLog]
         can :create, Message
         can :update, Member, :id => user.id  # Allow user to edit own records

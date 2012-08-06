@@ -38,17 +38,11 @@ puts "**** auth_hash=#{auth_hash}"
   if session[:user_id]
     # Means our user is signed in. Add the authorization to the user
     Member.find(session[:user_id]).add_authorization_provider(auth_hash)
- 
-    render :text => "You can now login using #{auth_hash["provider"].capitalize} too!"
   else
-    # Don't actually need this if we're just going to use the email to identify the user, right?
-    # Log him in or sign him up
-#   auth = Authorization.find_or_create(auth_hash, user.id)
- 
     # Insert the user into the session
     session[:user_id] = user.id
-    redirect_to home_path
   end
+  redirect_to home_path
 end
 
   # Safe landing page for authorization issues
