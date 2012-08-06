@@ -34,16 +34,12 @@ describe MessagesController do
 
   describe 'Create' do
     before(:each) do
-#      @old_applog = AppLog
-#      silence_warnings { AppLog = mock('AppLog').as_null_object }
-      controller.stub(:current_user=>FactoryGirl.build(:member))
+ #     controller.stub(:current_user=>FactoryGirl.build(:member))
+      test_sign_in_fast
     end
-#    after(:each) do
-#      silence_warnings { AppLog = @old_applog }
-#    end
       
     it 'adds user name to record' do
-      controller.stub(:deliver_message=>true)
+      controller.stub(:deliver_message=>true)   # to skip the delivery
       post :create, :record => {:body=>"test", :to_groups=>["1", '2'], :send_sms=>true, :send_email=>false}
       Message.first.user.should == controller.current_user
     end

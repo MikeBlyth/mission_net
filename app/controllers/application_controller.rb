@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
      if (request.referer == request.url) # A rare occasion 
         redirect_to safe_page_path
       else
-        redirect_to request.referer, :alert => exception.message
+        redirect_to request.referer || safe_page_path, :alert => exception.message
       end
     end
   end

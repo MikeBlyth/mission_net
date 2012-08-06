@@ -16,17 +16,17 @@ class Ability
     end
 
     case 
-      when administrator?(user)
+      when user.has_role?(:administrator)
         can :manage, :all
-      when moderator?(user)
+      when user.has_role?(:moderator)
         can :manage, :all
         cannot [:create, :update, :delete], SiteSetting
-      when member?(user)
+      when user.has_role?(:member)
         can :read, :all
         cannot :read, [SiteSetting, AppLog]
         can :create, Message
         can :update, Member, :id => user.id  # Allow user to edit own records
-      when limited?(user)
+      when user.has_role?(:limited)
         cannot :manage, :all
         can [:read, :update], Member, :id => user.id
     end

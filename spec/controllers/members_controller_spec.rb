@@ -3,13 +3,14 @@ require 'spec_helper'
 describe MembersController do
   
   describe "authentication before controller access" do
-
+    before(:each) do
+    end
+    
     describe "for signed-in admin users" do
- 
       before(:each) do
         test_sign_in_fast
       end
-      
+ 
       it "should allow access to 'new'" do
         Member.should_receive(:new).at_least(1).times # not sure why, but it is receiving msg twice!
         get :new
@@ -25,7 +26,7 @@ describe MembersController do
       it "should allow access to 'update'" do
         # Member.should_receive(:update)
         @member = FactoryGirl.create(:member)
-        put :update, :id => @member.id, :record => @member.attributes, :member => @member.attributes
+        put :update, :id => @member.id, :record => @member.attributes
         response.should_not redirect_to(sign_in_path)
       end
       
@@ -34,20 +35,45 @@ describe MembersController do
     describe "for moderators" do
       before(:each) do
         @user = test_sign_in_fast_with_role(:moderator)
-        @user.has_privilege(:moderator).should be true
+        @user.has_role?(:moderator).should eq true
       end
 
       it 'allows moderators to create' do
-        Member.should_receive(:new)
-        get :new
+        member = FactoryGirl.build_stubbed(:member)
+        lambda{post :create, 'record' => member.attributes}.should change{Member.count}.by(1)
+        response.should_not redirect_to(sign_in_path)
       end
 
       it 'allows moderators to update' do
-        Member.should_receive(:update)
-        get :update
+        @member = FactoryGirl.create(:member)
+        put :update, :id => @member.id, :record => @member.attributes
+        response.should_not redirect_to(sign_in_path)
       end
 
     end
+
+    describe "for members" do
+      before(:each) do
+        @user = test_sign_in_fast_with_role(:member)
+        @user.has_role?(:member).should eq true
+        @user.has_role?(:moderator).should eq false
+      end
+
+      it 'does not allow _members_ to update' do
+        @member = FactoryGirl.create(:member)
+        put :update, :id => @member.id, :record => @member.attributes
+        response.should redirect_to(safe_page_path)
+      end
+
+      it 'does members to update their own record' do
+        @member = FactoryGirl.build(:member)
+        @member.id = @user.id
+        @member.save
+        put :update, :id => @member.id, :record => @member.attributes
+        response.should_not redirect_to(safe_page_path)
+      end
+
+    end # for members
 
     describe "for non-signed-in users" do
 
@@ -58,8 +84,6 @@ describe MembersController do
 
     end # for non-signed-in users
     
-    
-
   end # describe "authentication before controller access"
 
   describe 'Export' do

@@ -5,7 +5,7 @@ class MembersController < ApplicationController
   include ApplicationHelper
 #  include ExportHelper
   skip_before_filter :authorize_privilege#, :only => [:edit, :update] # Will use ActiveScaffold for authorization here
-  
+  load_and_authorize_resource
 
   active_scaffold :member do |config|
     # Enable user-configurable listing (user can select and order columns)
@@ -131,12 +131,12 @@ class MembersController < ApplicationController
 
 protected
 # Need to figure out how this works -- doesn't work as below! 
-  def update_authorized?(record=nil)
-    is_member = (record.is_a? Member)
-    same_id = is_member ? current_user.id == record.id : false
-    ok = is_member && same_id
-    puts "**** record=#{record}, #{record.id if record.is_a? Member}, ok = #{ok}, same-#{same_id}"
-    return ok #|| !is_member
-  end
+#  def update_authorized?(record=nil)
+#    is_member = (record.is_a? Member)
+#    same_id = is_member ? current_user.id == record.id : false
+#    ok = is_member && same_id
+#    puts "**** record=#{record}, #{record.id if record.is_a? Member}, ok = #{ok}, same-#{same_id}"
+#    return ok #|| !is_member
+#  end
 end
   

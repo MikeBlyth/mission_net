@@ -58,7 +58,7 @@ puts "**** SPORK LOADING PREFORK"
   def test_sign_in_fast
 #      controller.stub(:authenticate_admin).and_return(:true)
 #      controller.stub(:authenticate).and_return(:true)
-      controller.stub(:current_user).and_return(mock('User', :admin? => true))
+      controller.stub(:current_user).and_return(mock('User2', :admin? => true, :has_role? => true))
       controller.stub(:current_user_admin?).and_return(true)
   end
 
