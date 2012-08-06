@@ -1,8 +1,7 @@
 #require 'authentication_helper'
 
 class LocationsController < ApplicationController
-#  before_filter :authenticate #, :only => [:edit, :update]
-#  include AuthenticationHelper
+
   load_and_authorize_resource
   
   active_scaffold :location do |config|

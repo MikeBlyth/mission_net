@@ -8,7 +8,7 @@ include SmsGatewaysHelper
 
 class SmsController < ApplicationController
   include HTTParty
-  skip_before_filter :verify_authenticity_token, :authorize, :authorize_privilege
+  skip_before_filter :verify_authenticity_token, :authorize
   skip_authorization_check
   
   # Create - handle incoming SMS message from TWILIO (Will need adjustment if other gateway is used)

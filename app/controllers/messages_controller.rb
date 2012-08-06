@@ -3,7 +3,6 @@ include SmsGatewaysHelper
 
 class MessagesController < ApplicationController
   load_and_authorize_resource
-# skip_authorization_check
   
   active_scaffold :message do |config|
     config.list.columns = [:id, :created_at, :user, :body, :sms_only, :send_sms, :send_email, :to_groups, 

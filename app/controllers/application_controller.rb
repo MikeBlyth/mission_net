@@ -19,8 +19,6 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from CanCan::AccessDenied do |exception|
-# puts "CanCan AccessDenied #{exception.message}\n\tsigned in=#{signed_in?} as #{current_user}, #{current_user.admin if current_user}"
-# puts "CanCan AccessDenied #{exception.message}"
     puts "**** Access denied by CanCan: #{exception.message} ****"# if Rails.env == 'test'
 
     if !signed_in? 
@@ -44,12 +42,4 @@ private
     redirect_to(sign_in_url, :notice => "Please log in") unless signed_in?
   end
   
-  def authorize_privilege(privilege = :member)
-    redirect_to signin_path if !signed_in? 
-    redirect_to request.referer, :alert => exception.message unless current_user.has_privilege(privilege)
-  end    
-
-  def authorize_moderator
-    authorize_privilege(:moderator)
-  end
 end

@@ -1,5 +1,7 @@
 class SentMessagesController < ApplicationController
 
+  skip_before_filter :verify_authenticity_token, :authorize
+  skip_authorization_check
 
   active_scaffold :sent_message do |config|
     config.list.columns = [:id, :message_id, :member, :msg_status, :phone, :confirmed_time, :confirmed_mode, :confirmation_message]

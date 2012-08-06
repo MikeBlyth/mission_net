@@ -1,7 +1,6 @@
 class CountriesController < ApplicationController
   helper :countries
 
-  include SessionsHelper
   load_and_authorize_resource
   
   active_scaffold :country do |config|

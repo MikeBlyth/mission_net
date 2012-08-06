@@ -1,10 +1,9 @@
 class MembersController < ApplicationController
   helper :countries
 
-#  include AuthenticationHelper
   include ApplicationHelper
-#  include ExportHelper
-  skip_before_filter :authorize_privilege#, :only => [:edit, :update] # Will use ActiveScaffold for authorization here
+
+  skip_before_filter :authorize_privilege
   load_and_authorize_resource
 
   active_scaffold :member do |config|
