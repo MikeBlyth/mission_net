@@ -30,7 +30,8 @@ Joslink::Application.routes.draw do
   get   '/signin', :to => 'sessions#new', :as => :sign_in  # signin is just an alias for login
   get '/logout', :to => 'sessions#destroy', :as => :sign_out
   get '/signout', :to => 'sessions#destroy', :as => :sign_out  # signout is just an alias for logout
-  match '/auth/:provider/callback', :to => 'sessions#create'
+  match '/auth/:provider/callback', :to => 'sessions#create', :as => :create_session
+  match '/signin_test', :to => 'sessions#create', :as => :create_test_session
   match '/auth/failure', :to => 'sessions#failure'
   get '/setup', :to => 'setup#initialize', :as => :initialize
   post '/setup', :to => 'setup#initialize_save'

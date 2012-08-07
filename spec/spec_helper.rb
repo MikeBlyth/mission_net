@@ -67,13 +67,22 @@ puts "**** SPORK LOADING PREFORK"
     controller.sign_out
   end
 
-  def integration_test_sign_in(options={})
+  def integration_test_sign_in(role=:administrator)
+    role_group = FactoryGirl.create(:group, role => true)
+    user = FactoryGirl.create(:member, :name=>'test', :groups => [role_group], :email_1 => 'testemail')
+    visit create_test_session_path
+  end
+     
+
+  def integration_test_sign_in_old(options={})
       @user = Factory.create(:user, options)
       visit signin_path
       fill_in "Name",    :with => @user.name
       fill_in "Password", :with => @user.password
       click_button "Sign in"
   end
+
+
 
   load 'sim_test_helper.rb'
 #  load 'messages_test_helper.rb'

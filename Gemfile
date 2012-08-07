@@ -53,6 +53,7 @@ group :development, :test do
   gem "guard-rails"  # Restart development server when needed
   gem "guard-annotate"
   gem 'ruby_gntp'
+  gem 'launchy'
   gem 'debugger'
   gem 'pry'
   gem 'pry-rails'

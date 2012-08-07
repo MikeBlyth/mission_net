@@ -3,6 +3,7 @@ class Ability
   include SessionsHelper
     
   def initialize(user)
+puts "**** Ability#initialize user=#{user}"
 #    user ||= User.new # guest user (not logged in)
 
     # IMPORTANT NOTE: 

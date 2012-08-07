@@ -1,6 +1,9 @@
 module SessionsHelper
   def current_user
     @current_user ||= (Member.find(session[:user_id]) if session[:user_id])
+  puts "**** @current_user=#{@current_user}, session=#{session[:session_id][0..5]}"
+#binding.pry  
+    @current_user
   end
 
   # What is the higest privilege level contained in a set of groups (e.g. the groups a user belongs to)?

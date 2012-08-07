@@ -23,6 +23,7 @@ class ApplicationController < ActionController::Base
     puts "**** Access denied by CanCan: #{exception.message} ****"# if Rails.env == 'test'
     if !signed_in? 
       redirect_to sign_in_path
+      puts "**** Not signed in!"
     else  
      if (request.referer == request.url) # A rare occasion 
         redirect_to safe_page_path

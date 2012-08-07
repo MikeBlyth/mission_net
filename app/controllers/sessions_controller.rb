@@ -15,14 +15,26 @@ class SessionsController < ApplicationController
 # returning a lot of info (request.env['omniauth.auth']) including the name and email address. We use the email address
 # to match the member in the database (Member).
 
-def create
+def get_authorization
   auth_hash = request.env['omniauth.auth']
-  user_email = auth_hash['info']['email']
-puts "**** auth_hash=#{auth_hash}"
-#  alerts_group = Group.find_by_group_name('Security alerts')
-# Temporary authorization solution: only allow log in to those who are on the list (via omniauth) AND
-# who belong to one of these groups (members, sec, mod). Not including alerts group because this is 
-# a rather uncontrolled one.
+puts "**** (1) auth_hash=#{auth_hash}"
+  return auth_hash
+end
+
+def create
+  #********* HACK FOR TESTING ************************#
+  #******** SHOULD NOT BE IN PRODUCTION MODE UNLESS HARDENED
+  if (Rails.env == 'test') && (Member.count < 10)       # Trying to protect against running it with real data
+    member=Member.find_by_name('test')
+    user_email = member ? member.email_1 : 'bademailaddress'
+  else
+    # This is the only part that should remain for production!
+    auth_hash = get_authorization
+puts "**** (2) auth_hash=#{auth_hash}"
+    user_email = auth_hash['info']['email']
+  end
+  #*****************************************************
+
   user = login_allowed(user_email)
   unless user
     flash[:info] = "Sorry, that login is not authorized to use this application. Please try another or contact the system administrator."
@@ -41,6 +53,7 @@ puts "**** auth_hash=#{auth_hash}"
   else
     # Insert the user into the session
     session[:user_id] = user.id
+    puts "**** Successfully signed in"
   end
   redirect_to home_path
 end
@@ -55,6 +68,7 @@ end
   end
   
   def destroy
+puts "**** Session Destroyed ***"
     session[:user_id] = nil
     redirect_to sign_in_path
   end
