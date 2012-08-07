@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   ActiveScaffold.set_defaults do |config| 
     config.ignore_columns.add [:created_at, :updated_at, :lock_version]
     config.list.empty_field_text = '----'
+    config.security.default_permission = false
   end
 
   before_filter :require_https, :except => :update_status_clickatell #, :only => [:login, :signup, :change_password] 
@@ -20,7 +21,6 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     puts "**** Access denied by CanCan: #{exception.message} ****"# if Rails.env == 'test'
-
     if !signed_in? 
       redirect_to sign_in_path
     else  

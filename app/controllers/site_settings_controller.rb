@@ -4,7 +4,7 @@ class SiteSettingsController < ActionController::Base
 #  before_filter :authenticate_admin #, :only => [:edit, :update]
 #  include AuthenticationHelper
   include ApplicationHelper
-#  include SessionsHelper
+  include SessionsHelper
   load_and_authorize_resource
   
   layout 'application'

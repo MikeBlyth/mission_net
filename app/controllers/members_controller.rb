@@ -68,6 +68,7 @@ class MembersController < ApplicationController
      :confirm=>'This will download all the member data (most fields) for ' + 
        'use in your own spreadsheet or database, and may take a minute or two. Is this what you want to do?'
    config.update.link.page = true # At present, the jQuery multiselect widget doesn't work when edit is done inline
+#   config.update.link.security_method = :display_edit_link
   end
 
   # Given params hash, change :something_id to :something
@@ -137,5 +138,14 @@ protected
 #    puts "**** record=#{record}, #{record.id if record.is_a? Member}, ok = #{ok}, same-#{same_id}"
 #    return ok #|| !is_member
 #  end
+  def display_edit_link(record=nil)
+    is_member = (record.is_a? Member)
+    same_id = is_member ? current_user.id == record.id : false
+    ok = is_member && same_id
+    puts "**** record=#{record}, #{record.id if record.is_a? Member}, ok = #{ok}, same-#{same_id}"
+    return ok #|| !is_member
+  end
+    
+
 end
   
