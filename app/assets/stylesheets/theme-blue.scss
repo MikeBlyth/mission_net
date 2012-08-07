@@ -1,0 +1,429 @@
+/* This file is for generating CSS theme files. At present, themes only vary in color (not in
+   fonts, arrangement, sizing, etc. Thus you can create the color theme and leave it intact even
+   if the main CSS override file (project_style_overrides.scss) needs to be changed.
+   
+   Probably the best approach is to develop one color theme using this SASS file, then "freeze" 
+   the generated CSS file, renaming it, e.g., 'giraffe-theme.css' or whatever. (You should probably
+   save a copy of this file as 'giraffe-theme.scss' as well, in case it's needed for tweaking
+   the theme.) 
+
+   MOST OF THE COLOR STYLE VARIATIONS CAN BE ACCOMPLISHED BY CHANGING THE FOLLOWING FEW LINES
+   AS THE REST OF THE COLOR DEFINITIONS ARE BASED ON THEM.
+ 
+   IMAGES WILL STILL HAVE TO BE CREATED FOR EACH COLOR SCHEME IF NECESSARY      */
+
+@import "bourbon/bourbon";  // used for gradients -- nothing else??
+
+$hue: 210;
+$s: 40; /* base saturation to make it easy to change all at once */
+$l: 60;
+$base: hsl($hue, $s, $l);
+$background_menu: hsl($hue + 15, 100, 94);
+$background_top_bar: hsl($hue, 100, 85);
+$text_base: hsl($hue, 100, 5);
+$text_accent: hsl($hue, 50, 10);
+$accent_base: hsl($hue - 15, 50, 50);  // not the same as text accent
+$links_base: hsl(225, 75, 50);
+/* Button for submit etc. */
+$background_button: hsl(230, 70, 60);
+/******* Images **** */
+$widget-content: url(images/ui-bg-blue-textured.png);
+
+
+/**  THE REST OF THE STYLESHEET ONLY NEEDS TO BE EDITED IF TWEAKING IS REQUIRED ****/
+/*** Main Listings ***/
+/** Based on the light background, how much to darken and/or desaturate the odd rows? 
+    A gradient is used, so values are specified for the top and bottom of the odd rows **/
+$odd_top_darken: 10;
+$odd_top_desaturate: 10;
+$odd_bottom_darken: 20;
+$odd_bottom_desaturate: 10;
+$odd_gradient: 10;
+/** How much further should the *sorted* column be darkened and/or desaturated? **/
+$sorted_darken: 5;
+$sorted_desaturate: 5;
+
+
+$grey_20: hsl(0, 0, 20);
+$alert: red;
+$error_background: hsl(0, 90, 95);
+
+/* Backgrounds */
+$background_1: desaturate(lighten($base, 40), 5);    //hsl($hue, 45, 90);
+$background_alt: lighten(desaturate($base, 5), 50);    //hsl($hue, 45, 100);
+$background_content: lighten(saturate($base, 40), 40);    //hsl($hue, 90, 90);
+$background_form: lighten(saturate($base, 50), 27);    //hsl($hue, 100, 77);
+$background_form_2: lighten(saturate($base, 20), 20);    //hsl($hue, 70, 70);
+$background_form_3: lighten(desaturate($base, 0), 10);    //hsl($hue, 50, 60);
+/* Text */
+$body_text_default: $text_accent;   
+$body_text_light: lighten($text_base, 5);
+$body_text_dark: $text_base;
+$links_1: $links_base;
+$links_1_hover: $background_content;
+$headers_1_dark: lighten(saturate($text_accent, 50), 3);    //hsl($hue_2, 100, 13); 
+$headers_1_light: lighten(desaturate($text_accent, 10), 20);    //hsl($hue_2, 40, 30);
+$column_head_color: white;
+$notice_text: hsl(0, 0, 93);
+$error_text: hsl(0, 90, 40);
+/* -- widgets -- */
+$tabbed_form_background: $base;
+$widget_header: lighten(saturate($base, 50), 27);    //hsl($hue, 100, 77);
+/* -- tabular lists -- */
+$list_odd_row: lighten(saturate($base, 50), 27);    //hsl($hue, 100, 77);
+$list_even_row: white;
+$column_head: darken(saturate($base, 30), 20);    //hsl($hue, 80, 30);
+$column_head_sorted: darken(saturate($base, 25), 5);    //hsl($hue, 75, 45);
+$column_head_hover: darken(saturate($base, 37), 0);    //hsl($hue, 87, 50);
+$sorted_column: lighten(saturate($base, 50), 15);    //hsl($hue, 100, 65);
+$sorted_column_even: lighten(saturate($base, 50), 40);    //hsl($hue, 100, 90);
+$odd_gradient_top: darken(desaturate($background_content, $odd_top_desaturate), $odd_top_darken);
+$odd_gradient_bottom: darken(desaturate($background_content, $odd_bottom_desaturate), $odd_bottom_darken);
+$odd_sorted_gradient_top: darken(desaturate($odd_gradient_top, $sorted_desaturate), $sorted_darken);
+$odd_sorted_gradient_bottom: darken(desaturate($odd_gradient_bottom, $sorted_desaturate), $sorted_darken);
+/* -- menu -- */
+$menu_a_hover: lighten(saturate($base, 50), 30);    //hsl($hue, 100, 80);
+/* -- other backgrounds -- */
+$alert: red;
+$notice_background: darken(saturate($accent_base, 50), 15);    //hsl($hue_accent, 100, 35);
+$error_background: hsl(0, 90, 95);
+/* Borders */
+$border_1_light: lighten(saturate($base, 50), 27);    //hsl($hue, 100, 77);
+$border_1_medium: darken(saturate($base, 25), 17);    //hsl($hue, 75, 33);
+$border_1_dark: $base;
+$border_1_darker: darken(saturate($base, 0), 30);    //hsl($hue, 52, 20);
+$border_light_grey: hsl(0, 0, 90);
+$border_dark_grey: hsl(0, 0, 70);
+$border_3_dark: darken(saturate($accent_base, 30), 20);    //hsl($hue_accent, 80, 30);
+$border_3_darker: darken(saturate($accent_base, 25), 30);    //hsl($hue_accent, 75, 20);
+
+/********** Color info for CSS ***************** */
+.theme-blue {
+body {
+  color: $body_text_dark; }
+
+div#menu_toggle {
+    background: $background_top_bar;
+    }
+
+a {
+  &:visited {
+    color: $links_1; }
+  &:hover {
+    color: $links_1_hover; } }
+
+.active-scaffold .view {
+  background: $background_content;
+  border: 1px solid $border_1_dark; }
+
+.active-scaffold .active-scaffold td.inline-adapter-cell {
+  background: $background_content; }
+
+.as_form table {
+  background: $background_form; }
+
+.active-scaffold .active-scaffold .active-scaffold td.inline-adapter-cell {
+  border: 1px solid $border_1_dark; }
+
+.active-scaffold h3 {
+  color: $headers_1_light; }
+
+h1 {
+  color: $headers_1_dark; }
+
+h4, .active-scaffold h4 {
+  color: $headers_1_light; }
+
+h5, .active-scaffold h5 {
+  color: $headers_1_light; }
+
+.active-scaffold h5, .active-scaffold h2 {
+  color: $headers_1_dark; }
+
+.active-scaffold a, .active-scaffold a:visited {
+  color: $links_1; }
+
+.active-scaffold label, .active-scaffold p {
+  color: $headers_1_dark; }
+
+.active-scaffold form select {
+  border-color: $border_dark_grey; }
+
+div#content {
+  background: $background_content; }
+
+/* Listings */
+.active-scaffold th {
+  @include linear-gradient(lighten($column_head,15), $column_head);
+  font: bold 11px arial, sans-serif; 
+  color: white;}
+  
+.active-scaffold th a, .active-scaffold th p  { background: transparent;
+  color: $column_head_color;
+ }
+
+.active-scaffold th:hover, .active-scaffold th a:hover, .active-scaffold th.sorted a:hover {
+  background: $column_head_hover; }
+
+.active-scaffold th.asc a, .active-scaffold th.desc a:hover {
+    background: url("../images/active_scaffold/default/arrow_up.gif") no-repeat scroll right 50%;
+}
+    
+.active-scaffold th.desc a, .active-scaffold th.desc a:hover {
+    background: url("../images/active_scaffold/default/arrow_down.gif") no-repeat scroll right 50%;
+}
+    
+.active-scaffold .records tr.record {
+  background-color: $background_form;
+  @include linear-gradient($odd_gradient_top, $odd_gradient_bottom);
+ }
+
+.active-scaffold .records tr.even-record {
+  background: white; }
+
+.active-scaffold .records tr.record td.sorted {
+  @include linear-gradient($odd_sorted_gradient_top, $odd_sorted_gradient_bottom);
+}
+
+.active-scaffold .records tr.even-record td.sorted {
+  background: $sorted_column_even; }
+
+.active-scaffold tr.record td, .active-scaffold tr.record td.sorted {
+  border: 1px solid $border_1_light;
+  border-bottom-color: $border_1_dark;
+  border-left-color: $border_1_dark; }
+
+/* Warning that too many characters have been entered into input box */
+.exceeded {
+  background: yellow; }
+
+#menu {
+ background: $background_menu;
+ border-right: 1px solid $border_1_dark ;
+ a {
+   color: $headers_1_dark;
+     &:hover {
+     background-color: $menu_a_hover; } }
+}
+
+td.label {
+  color: blue; }
+
+label.required {
+  font-style: italic;
+  color: black; }
+
+div.new_travel, div.member_form {
+  background-color: $background_form;
+  div.col_1 {
+    background-color: $background_form; }
+  div.col_2 {
+    background-color: $background_form_2;
+    border-left: 1px solid $background_form; }
+  div.col_3 {
+    background-color: $background_form;
+    border-left: 1px solid $background_form; } }
+
+.list_line_odd {
+  background: $background_form; }
+
+.list_line_even {
+  background: white; }
+
+div.crosstab {
+  tr.odd {
+    background: $background_1; }
+  tr.even {
+    background: $background_alt; }
+  tr.total {
+    background: white; } }
+
+#notice {
+  border: 1px solid grey;
+  background: $notice_background;
+  color: $notice_text; }
+
+.whereis tr.new_location {
+  background: #0080fc; }
+
+.whereis .new_location td {
+  color: white;
+  font-style: italic; }
+
+.list_line_odd {
+  background: $background_form; }
+
+.list_line_even {
+  background: white; }
+
+table.children {
+  th {
+    background: $column_head; } }
+
+#content {
+  background: $background_alt; }
+
+/******** THEME FOR JQUERY-UI WIDGETS (COLOR AND IMAGES ONLY) ******* */
+/********* JQUERY-UI COMPONENTS ***** */
+/* Component containers
+ *---------------------------------- */
+
+
+/****** Colors ** */
+$hue_widget: $hue;
+$widget_borders_1: $border_3_dark;
+$widget_borders_2: $border_3_darker;
+$widget_borders_hover: hsl($hue_widget - 25, 70, 70);
+$widget_background_default: desaturate($background_content,20);
+$widget_background: $background_form;  // ??
+$widget_background_2: $background_form_2;
+$widget_background_3: $background_form_3;
+$widget_background_active: lighten(desaturate($widget_background, 20), 5); // hsl($hue_widget, 80, 80);
+$widget_background_highlight: lighten(desaturate($widget_background, 40), 20); //hsl($hue_widget, 60, 95);
+$widget_background_hover: darken($widget_background,10);
+$widget_text: $body_text_default;
+$widget_text_inactive: darken(desaturate($widget_background, 30), 30);
+$widget_text_hover: desaturate($body_text_default, 40);
+
+.ui-widget-content, #msg-form {
+  border: 1px solid $widget_borders_1;
+  background: $widget_background_2 $widget-content 0 0 repeat;
+  color: $headers_1_dark;
+  a {
+    color: $headers_1_dark; } }
+
+.ui-widget-header {
+  border: 1px solid $widget_borders_2;
+//  background: $background_form_3 $widget_header 50% 50% repeat-x;
+  @include linear-gradient($widget_background_3, darken($widget_background_3,25));
+  color: $headers_1_dark;
+  a {
+    color: $headers_1_dark; } }
+
+.ui-tabs-panel {
+  background: transparent;
+  table {
+    background: transparent; } }
+
+.active-scaffold .submit, .ui-datepicker-month, .ui-datepicker-year {
+//  background: $date_picker_selectors repeat-x scroll 50% 50% $widget_background_3;
+  @include linear-gradient($background_button, darken($background_button,20));
+  color: white;
+  border: 1px solid $border_1_darker;
+  &:hover {
+    background: $widget_background_2;
+    border-color: red;
+    color: $headers_1_dark; }
+  &:active {
+    background: $widget_background_2;
+    border: 1px dotted yellow;
+    color: $headers_1_dark; } }
+
+/****** Include message form here as it will be styled like the tabbed family form widget */
+
+#msg-followup, #msg-form {
+  #msg-top {}
+  .note {
+    border: 1px solid $alert;
+    margin-bottom: 1em; }
+  .msg-quote {
+    border: 1px solid $border_1_dark; } }
+
+#msg-followup #msg-top {
+  background-color: $background_alt; }
+
+#advanced #options {
+  background-color: $background_alt; }
+
+.as_form #msg-form table { background: transparent }
+
+/* Interaction states
+ *---------------------------------- */
+
+/* Background for things like "headers/selectors" for non-selected tabs, non-selected dates on calendar */
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+  border: 1px solid $border_1_light;
+  background: $widget_background_default ;
+  color: $widget_text_inactive; }
+
+.ui-state-default a {
+  color: $widget_text_inactive;
+  &:link, &:visited {
+    color: $widget_text_inactive; } }
+
+/*html body div#top div#content div#main div.active-scaffold div.create-view form#as_families-create--form.as_form div div#tabs.ui-tabs ul.ui-tabs-nav li.ui-state-hover a {
+background: red
+}*/
+
+.ui-state-hover, .ui-state-hover a, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+  border: 1px solid $widget_borders_hover;
+//  background: $widget_background_hover $state_hover_image 50% 50% repeat-x;
+  @include linear-gradient($widget_background, $widget_background_3, $widget_background);
+  color: $widget_text_hover; }
+
+.ui-state-hover a {
+  color: $widget_text_hover;
+  &:hover {
+    color: $widget_text_hover; } }
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+  border: 1px solid $border_3_dark;
+//  background: $widget_background_active $state_active_image 50% 50% repeat-x;
+  @include linear-gradient($widget_background_3, $widget_background);
+  color: $widget_text; }
+
+.ui-state-active a {
+  color: $widget_text;
+  &:link, &:visited {
+    color: $widget_text; } }
+
+/* Interaction Cues
+ *---------------------------------- */
+
+/* Use of this state includes highlighting today's date on the calendar. Anything else?? */
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
+  border: 1px solid darken($widget_background_3,30);
+//  background: $widget_background_highlight $state_highlight_image 50% 50% repeat-x;
+  background: $widget_background_2;
+  color: $grey_20; }
+
+.ui-state-highlight a, .ui-widget-content a, .ui-widget-header a {
+  color: $grey_20; }
+
+.ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
+  border: 1px solid $error_text;
+  background: $error_background;
+  color: $error_text; }
+
+.ui-state-error a, .ui-widget-content a, .ui-widget-header a, .ui-state-error-text, .ui-widget-content .ui-state-error-text, .ui-widget-header .ui-state-error-text {
+  color: $error_text; }
+
+/* Icons
+ *---------------------------------- */
+
+/* icons and icons w state */
+/* Each image is a whole collection of icons with different colors and backgrounds */
+/* Individual icons are sprites within a collection */
+
+.ui-icon {
+  background-image: url(images/ui-icons-base-grey.png); }
+
+.ui-widget-content .ui-icon, .ui-widget-header .ui-icon {
+  background-image: url(images/ui-icons-base-grey.png); }
+
+.ui-state-default .ui-icon {
+  background-image: url(images/ui-icons-gold-default.png); }
+
+.ui-state-hover .ui-icon, .ui-state-focus .ui-icon {
+  background-image: url(images/ui-icons-gold-hover.png); }
+
+.ui-state-active .ui-icon {
+  background-image: url(images/ui-icons-gold-active.png); }
+
+.ui-state-highlight .ui-icon {
+  background-image: url(images/ui-icons-gold-highlight.png); }
+
+.ui-state-error .ui-icon, .ui-state-error-text .ui-icon {
+  background-image: url(images/ui-icons-base-error.png); }
+
+}
