@@ -5,7 +5,7 @@ class Ability
   def initialize(user)
 puts "**** Ability#initialize: user=#{user}"
 puts "**** $redis.get(:current_user)=#{$redis.get(:current_user)}"
-ActiveRecord::Base.logger.level = Logger::DEBUG
+ActiveRecord::Base.logger.level = Logger::WARN
 #    user ||= User.new # guest user (not logged in)
 
     # IMPORTANT NOTE: 

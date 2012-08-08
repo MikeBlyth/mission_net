@@ -109,12 +109,32 @@ puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
   end
 
   def update
-    params[:record][:group_ids] = merge_group_ids
-    [:id, :updated_at, :created_at].each {|key| params[:record].delete(key)}
-    member = Member.find(params[:id])
-    # Changing the params in do_update, then "super" doesn't work
-    member.update_attributes(params[:record])
+    puts "****update: params=#{params[:record][:group_ids]}"
+    super
+    puts @record.group_ids
   end
+
+#  def do_update
+##puts "**** 1 params[:record][:group_ids]=#{params[:record][:group_ids]}" 
+##    params[:record][:group_ids] = [] # merge_group_ids
+##puts "**** 2 params[:record][:group_ids]=#{params[:record][:group_ids]}" 
+##    [:id, :updated_at, :created_at].each {|key| params[:record].delete(key)}
+##    @record = Member.find(params[:id])
+##    params[:record][:name] = 'Micky Mouse'
+##    super
+##    member = Member.find(params[:id])
+##    @record = member
+#    # Changing the params in do_update, then "super" doesn't work
+##    if member.update_attributes(params[:record])
+##      redirect_to members_path
+##      flash[:notice] = "Updates saved for #{member}"
+##    else
+##      @record = member
+##puts "**** @record.errors=#{@record.errors}"
+##      redirect_to edit_member_path
+##      flash[:notice] = "Errors -- please try again"
+##    end
+#   end
 
 #   Export CSV file. Exports ALL records, so will have to be modified if a subset is desired
 #   No params currently in effect
