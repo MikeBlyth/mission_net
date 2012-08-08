@@ -81,61 +81,6 @@ class MembersController < ApplicationController
     params
   end
 
-  def do_edit
-    super
-    if current_user.is_moderator?
-      @selectable = 'true'
-    else
-      @selectable = 'user_selectable'
-    end
-  end
-
-  # This solves the problem that
-  # * We want users to be able to select only certain groups when updating members and
-  # * We don't want to drop members from groups just because the returned update form doesn't include those groups
-  # This method returns the groups that the member should be assigned to by combining two groups:
-  # * The original groups which are not user_selectable and
-  # * The updates (from the form) that are selectable
-  def merge_group_ids(params=params, selectable=nil)
-    return if 
-   puts "**** params = #{params}" 
-puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
-    selectable ||= Group.where('user_selectable').map {|g| g.id.to_s}
-    original_groups = Member.find(params[:id]).groups.map {|g| g.id.to_s}
-    unchangeable = original_groups.map{|g| g.to_s unless selectable.include? g.to_s}
-    updates = params[:record][:group_ids] || []
-    valid_updates = updates & selectable
-    return (unchangeable + valid_updates).compact
-  end
-
-  def update
-    puts "****update: params=#{params[:record][:group_ids]}"
-    super
-    puts @record.group_ids
-  end
-
-#  def do_update
-##puts "**** 1 params[:record][:group_ids]=#{params[:record][:group_ids]}" 
-##    params[:record][:group_ids] = [] # merge_group_ids
-##puts "**** 2 params[:record][:group_ids]=#{params[:record][:group_ids]}" 
-##    [:id, :updated_at, :created_at].each {|key| params[:record].delete(key)}
-##    @record = Member.find(params[:id])
-##    params[:record][:name] = 'Micky Mouse'
-##    super
-##    member = Member.find(params[:id])
-##    @record = member
-#    # Changing the params in do_update, then "super" doesn't work
-##    if member.update_attributes(params[:record])
-##      redirect_to members_path
-##      flash[:notice] = "Updates saved for #{member}"
-##    else
-##      @record = member
-##puts "**** @record.errors=#{@record.errors}"
-##      redirect_to edit_member_path
-##      flash[:notice] = "Errors -- please try again"
-##    end
-#   end
-
 #   Export CSV file. Exports ALL records, so will have to be modified if a subset is desired
 #   No params currently in effect
   def export(params={})
@@ -184,6 +129,33 @@ puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
     redirect_to(:action => :index)
   end
 
+  def do_edit
+    super
+    if current_user.is_moderator?
+      @selectable = 'true'
+    else
+      @selectable = 'user_selectable'
+    end
+  end
+
+#  def update
+#    params[:record][:groups] = merge_group_ids
+#    [:id, :updated_at, :created_at].each {|key| params[:record].delete(key)}
+#    super
+#   end
+
+  def merge_group_ids(params=params, selectable=nil)
+    return if 
+   puts "**** params = #{params}" 
+puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
+    selectable ||= Group.where('user_selectable').map {|g| g.id.to_s}
+    original_groups = Member.find(params[:id]).groups.map {|g| g.id.to_s}
+    unchangeable = original_groups.map{|g| g.to_s unless selectable.include? g.to_s}
+    updates = params[:record][:groups] || []
+    valid_updates = updates & selectable
+    return (unchangeable + valid_updates).compact
+  end
+
 protected
 # Need to figure out how this works -- doesn't work as below! 
 #  def update_authorized?(record=nil)
@@ -193,6 +165,7 @@ protected
 #    puts "**** record=#{record}, #{record.id if record.is_a? Member}, ok = #{ok}, same-#{same_id}"
 #    return ok #|| !is_member
 #  end
+ 
   def display_edit_link(record=nil)
 puts "**** moderator = #{current_user.is_moderator?}"
     return true if current_user.is_moderator?
@@ -203,6 +176,7 @@ puts "**** moderator = #{current_user.is_moderator?}"
     return ok #|| !is_member
   end
     
+     
 
 end
   

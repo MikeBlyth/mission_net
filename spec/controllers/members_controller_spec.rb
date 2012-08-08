@@ -145,10 +145,12 @@ describe MembersController do
       it 'changes only the selectable groups in the database record' do
         test_sign_in(:moderator)
         member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
-        params = member.attributes.merge({:group_ids => ['2', '4']})
+        params = member.attributes.merge({:groups => ['2', '4']})
         put :update, :id => member.id, :record => params
         member.reload.group_ids.sort.should eq [2, 3]
+#        member.reload.group_ids.sort.should eq [2, 4]
       end
+
 
     end # merge_group_ids method yields valid new group_ids
         
