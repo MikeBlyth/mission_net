@@ -20,7 +20,7 @@ gem 'delayed_job_active_record'
 gem 'heroku-api'
 gem 'iron_worker_ng'
 gem 'cancan'
-#gem 'redis'
+gem 'redis'
 
 #gem 'active_scaffold_config_list_vho'
 
@@ -41,6 +41,7 @@ gem 'jquery-ui-rails'
 
 group :test do
   gem 'fakeweb'
+  gem 'faker', '~> 1.0.1'
   gem 'simplecov'
 end
 
@@ -54,6 +55,7 @@ group :development, :test do
   gem "guard-annotate"
   gem 'ruby_gntp'
   gem 'launchy'
+  gem 'shoulda-matchers'
   gem 'debugger'
   gem 'pry'
   gem 'pry-rails'

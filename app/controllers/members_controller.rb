@@ -81,6 +81,38 @@ class MembersController < ApplicationController
     params
   end
 
+  def do_edit
+    super
+    if current_user.is_moderator?
+      @selectable = 'true'
+    else
+      @selectable = 'user_selectable'
+    end
+  end
+
+  # This solves the problem that
+  # * We want users to be able to select only certain groups when updating members and
+  # * We don't want to drop members from groups just because the returned update form doesn't include those groups
+  # This method returns the groups that the member should be assigned to by combining two groups:
+  # * The original groups which are not user_selectable and
+  # * The updates (from the form) that are selectable
+  def merge_group_ids(params=params, selectable=nil)
+   puts "**** params = #{params}" 
+puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
+    selectable ||= Group.where('user_selectable').map {|g| g.id.to_s}
+    original_groups = Member.find(params[:id]).groups.map {|g| g.id.to_s}
+    unchangeable = original_groups.map{|g| g.to_s unless selectable.include? g.to_s}
+    updates = params[:record][:group_ids]
+    valid_updates = updates & selectable
+    return (unchangeable + valid_updates).compact
+  end
+
+  def do_update
+    params[:record][:group_ids] = merge_group_ids
+    binding.pry  
+    super
+  end
+
 #   Export CSV file. Exports ALL records, so will have to be modified if a subset is desired
 #   No params currently in effect
   def export(params={})
@@ -139,6 +171,8 @@ protected
 #    return ok #|| !is_member
 #  end
   def display_edit_link(record=nil)
+puts "**** moderator = #{current_user.is_moderator?}"
+    return true if current_user.is_moderator?
     is_member = (record.is_a? Member)
     same_id = is_member ? current_user.id == record.id : false
     ok = is_member && same_id

@@ -48,6 +48,8 @@ puts "**** SPORK LOADING PREFORK"
     # automatically. This will be the default behavior in future versions of
     # rspec-rails.
     config.infer_base_class_for_anonymous_controllers = false
+    
+    config.include FactoryGirl::Syntax::Methods
   end
 
   # Define a helper to directly sign in a test user
@@ -65,6 +67,13 @@ puts "**** SPORK LOADING PREFORK"
 
   def test_sign_out
     controller.sign_out
+  end
+
+  def create_signed_in_member(role=:member)
+    group = FactoryGirl.create(:group, role => true)
+    @user = FactoryGirl.create(:member, :groups => [group])
+    controller.stub(:current_user).and_return(@user)
+    return @user
   end
 
   def integration_test_sign_in(role=:administrator)

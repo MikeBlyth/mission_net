@@ -3,7 +3,9 @@ class Ability
   include SessionsHelper
     
   def initialize(user)
-puts "**** Ability#initialize user=#{user}"
+puts "**** Ability#initialize: user=#{user}"
+puts "**** $redis.get(:current_user)=#{$redis.get(:current_user)}"
+ActiveRecord::Base.logger.level = Logger::DEBUG
 #    user ||= User.new # guest user (not logged in)
 
     # IMPORTANT NOTE: 
@@ -19,7 +21,9 @@ puts "**** Ability#initialize user=#{user}"
     case 
       when user.is_administrator?
         can :manage, :all
+puts "**** user #{user} is administrator"        
       when user.is_moderator?
+puts "***** USER IS MODERATOR ****"
         can :manage, :all
         cannot [:create, :update, :delete], SiteSetting
       when user.is_member?
@@ -30,8 +34,11 @@ puts "***** USER IS MEMBER ****"
         can :create, Message
         can :update, Member, :id => user.id  # Allow user to edit own records
       when user.is_limited?
+puts "***** USER IS LIMITED ****"
         cannot :manage, :all
         can [:read, :update], Member, :id => user.id
+      else
+puts "**** USER HAS NO ROLES ****"        
     end
 
   end  # initialize

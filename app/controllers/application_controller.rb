@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
       redirect_to sign_in_path
       puts "**** Not signed in!"
     else  
-     if (request.referer == request.url) # A rare occasion 
+      if (request.referer == request.url) # A rare occasion 
         redirect_to safe_page_path
       else
         redirect_to request.referer || safe_page_path, :alert => exception.message

@@ -1,10 +1,10 @@
 # Before using this, have to figure out how to get its uri from ENV in production mode, since assets:precompile
 # runs in that mode. Could just disable this when running precompile? Awkward.
 
-#if Rails.env == 'production'
-#  uri = URI.parse(ENV["REDISTOGO_URL"])
-#  $redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-#else
-#  $redis = Redis.new(:host => 'localhost', :port => 6379) 
-#end
+if Rails.env == 'production'
+  uri = URI.parse(ENV["REDISTOGO_URL"])
+  $redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+else
+  $redis = Redis.new(:host => 'localhost', :port => 6379) 
+end
 

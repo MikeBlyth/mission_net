@@ -99,5 +99,54 @@ describe MembersController do
       response.headers['Content-Disposition'].should include("filename=\"members.csv\"")
     end
   end # Export
-     
+
+  describe 'updating groups' do
+    
+#    it 'merges form options with ones existing in model' do
+#      3.times {FactoryGirl.create(:group)}
+#      member = create(:member, :groups => Group.all)
+#      edited_member = member.clone
+#      edited_member.group_ids => [1]
+#      post :update, :record => member.attributes.merge.(:group_ids => [1], :selectable_groups => [
+#    end
+
+    it 'all groups are selectable by moderator' do
+      test_sign_in(:moderator)
+      2.times {FactoryGirl.create(:group)}
+      member = FactoryGirl.create(:member)
+      get :edit, :id => member.id, :record => member.attributes
+      assigns(:selectable).should eq 'true'  # Group.where('true') will find all groups
+    end
+
+    it 'only "user_selectable" groups are selectable by members' do
+      member = create_signed_in_member(:member)
+      selectable = FactoryGirl.create(:group, :user_selectable => true)
+      not_selectable = FactoryGirl.create(:group, :user_selectable => false)
+      get :edit, {:id => member.id, :record => member.attributes}
+      assigns(:selectable).should eq 'user_selectable'  # will find only groups with that attribute  
+    end
+    
+    describe 'merge_group_ids method yields valid new group_ids' do
+      before(:each) do  
+        @selectable_1 = FactoryGirl.create(:group, :id => 1, :user_selectable => true)
+        @selectable_2 = FactoryGirl.create(:group, :id => 2, :user_selectable => true)
+        @un_selectable_3 = FactoryGirl.create(:group, :id => 3, :user_selectable => false)
+        @un_selectable_4 = FactoryGirl.create(:group, :id => 4, :user_selectable => false)
+        @original_groups = [@selectable_1, @un_selectable_3] # One selectable and one un-selectable group are originally in record
+        Member.stub_chain(:find, :groups).and_return(@original_groups)
+      end             
+      
+      it 'tests setup' do
+        Member.find(1).groups.should == @original_groups
+      end
+      
+      it 'does not drop an assigned, unselectable group' do
+        controller.merge_group_ids({:record=>{:group_ids => ["1", '3']}, :id => 1}).sort.should == ['1', '3']
+        controller.merge_group_ids({:record=>{:group_ids => ["2", '4']}, :id => 1}).sort.should == ['2', '3']
+      end
+    end # merge_group_ids method yields valid new group_ids
+        
+
+
+  end # updating groups
 end
