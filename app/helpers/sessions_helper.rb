@@ -1,7 +1,7 @@
 module SessionsHelper
   def current_user
     @current_user ||= (Member.find(session[:user_id]) if session[:user_id])
-  puts "**** @current_user=#{@current_user}, session=#{session[:session_id][0..5]}"
+#  puts "**** @current_user=#{@current_user}, session=#{session[:session_id][0..5]}"
 #binding.pry  
     $redis.set(:current_user, @current_user)
     return @current_user

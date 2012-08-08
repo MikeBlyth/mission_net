@@ -97,19 +97,19 @@ class MembersController < ApplicationController
   # * The original groups which are not user_selectable and
   # * The updates (from the form) that are selectable
   def merge_group_ids(params=params, selectable=nil)
+    return if 
    puts "**** params = #{params}" 
 puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
     selectable ||= Group.where('user_selectable').map {|g| g.id.to_s}
     original_groups = Member.find(params[:id]).groups.map {|g| g.id.to_s}
     unchangeable = original_groups.map{|g| g.to_s unless selectable.include? g.to_s}
-    updates = params[:record][:group_ids]
+    updates = params[:record][:group_ids] || []
     valid_updates = updates & selectable
     return (unchangeable + valid_updates).compact
   end
 
   def do_update
     params[:record][:group_ids] = merge_group_ids
-    binding.pry  
     super
   end
 
