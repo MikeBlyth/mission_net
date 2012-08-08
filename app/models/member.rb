@@ -45,7 +45,7 @@ class Member < ActiveRecord::Base
       :location_detail, :location_id, :phone_1, :phone_2, 
       :receive_email, :receive_sms, :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
       :country_id, :blood_donor, :bloodtype_id, :groups, :group_ids,
-      :in_country, :comments      
+      :in_country, :comments, :phone_private, :email_private, :short_name    
   has_and_belongs_to_many :groups
   has_many :sent_messages
   has_many :messages, :through => :sent_messages

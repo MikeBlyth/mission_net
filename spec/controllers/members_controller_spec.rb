@@ -133,20 +133,26 @@ describe MembersController do
         @un_selectable_3 = FactoryGirl.create(:group, :id => 3, :user_selectable => false)
         @un_selectable_4 = FactoryGirl.create(:group, :id => 4, :user_selectable => false)
         @original_groups = [@selectable_1, @un_selectable_3] # One selectable and one un-selectable group are originally in record
-        Member.stub_chain(:find, :groups).and_return(@original_groups)
       end             
       
-      it 'tests setup' do
-        Member.find(1).groups.should == @original_groups
-      end
-      
       it 'does not drop an assigned, unselectable group' do
+        Member.stub_chain(:find, :groups).and_return(@original_groups)
+        Member.find(1).groups.should == @original_groups
         controller.merge_group_ids({:record=>{:group_ids => ["1", '3']}, :id => 1}).sort.should == ['1', '3']
         controller.merge_group_ids({:record=>{:group_ids => ["2", '4']}, :id => 1}).sort.should == ['2', '3']
       end
+
+      it 'changes only the selectable groups in the database record' do
+        test_sign_in(:moderator)
+        member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
+        params = member.attributes.merge({:group_ids => ['2', '4']})
+        put :update, :id => member.id, :record => params
+        member.reload.group_ids.sort.should eq [2, 3]
+      end
+
     end # merge_group_ids method yields valid new group_ids
         
-
+      
 
   end # updating groups
 end

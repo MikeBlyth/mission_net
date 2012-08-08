@@ -108,9 +108,12 @@ puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
     return (unchangeable + valid_updates).compact
   end
 
-  def do_update
+  def update
     params[:record][:group_ids] = merge_group_ids
-    super
+    [:id, :updated_at, :created_at].each {|key| params[:record].delete(key)}
+    member = Member.find(params[:id])
+    # Changing the params in do_update, then "super" doesn't work
+    member.update_attributes(params[:record])
   end
 
 #   Export CSV file. Exports ALL records, so will have to be modified if a subset is desired
