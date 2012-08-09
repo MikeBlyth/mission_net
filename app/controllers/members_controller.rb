@@ -131,26 +131,35 @@ class MembersController < ApplicationController
 
   def do_edit
     super
-    if current_user.is_moderator?
+    case
+    when current_user.is_administrator?
       @selectable = 'true'
+    when current_user.is_moderator?
+      @selectable = "administrator = 'f' OR administrator IS NULL"
     else
       @selectable = 'user_selectable'
     end
   end
 
   def update
-    unless current_user.is_moderator?
+    unless current_user.is_administrator?
       merged = merge_group_ids
+#puts "**** merged=#{merged}"
       params[:record][:groups] = merge_group_ids if merged.any?
     end
     super
   end
 
   def merge_group_ids(params=params, selectable=nil)
-    return if 
-   puts "**** params = #{params}" 
-puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
-    selectable ||= Group.where('user_selectable').map {|g| g.id.to_s}
+#puts "**** params = #{params}" 
+#puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
+    if current_user.is_moderator?
+      selectable ||= Group.where("administrator = ? OR administrator IS ?", false, nil).map {|g| g.id.to_s}
+# puts "**** Moderator selectable=#{selectable}"
+    else
+      selectable ||= Group.where("user_selectable").map {|g| g.id.to_s}
+# puts "**** Member selectable=#{selectable}"
+    end
     original_groups = Member.find(params[:id]).groups.map {|g| g.id.to_s}
     unchangeable = original_groups.map{|g| g.to_s unless selectable.include? g.to_s}
     updates = params[:record][:groups] || []

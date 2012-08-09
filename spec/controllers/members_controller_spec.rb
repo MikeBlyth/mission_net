@@ -100,60 +100,100 @@ describe MembersController do
     end
   end # Export
 
-  describe 'updating groups' do
+  describe 'Updating groups:' do
     
-#    it 'merges form options with ones existing in model' do
-#      3.times {FactoryGirl.create(:group)}
-#      member = create(:member, :groups => Group.all)
-#      edited_member = member.clone
-#      edited_member.group_ids => [1]
-#      post :update, :record => member.attributes.merge.(:group_ids => [1], :selectable_groups => [
-#    end
+    describe 'filter for group selection:' do
 
-    it 'all groups are selectable by moderator' do
-      test_sign_in(:moderator)
-      2.times {FactoryGirl.create(:group)}
-      member = FactoryGirl.create(:member)
-      get :edit, :id => member.id, :record => member.attributes
-      assigns(:selectable).should eq 'true'  # Group.where('true') will find all groups
-    end
+      it 'administrator gets unfiltered group list' do
+        test_sign_in(:administrator)
+        2.times {FactoryGirl.create(:group)}
+        member = FactoryGirl.create(:member)
+        get :edit, :id => member.id, :record => member.attributes
+        assigns(:selectable).should eq 'true'  # Group.where('true') will find all groups
+      end
 
-    it 'only "user_selectable" groups are selectable by members' do
-      member = create_signed_in_member(:member)
-      selectable = FactoryGirl.create(:group, :user_selectable => true)
-      not_selectable = FactoryGirl.create(:group, :user_selectable => false)
-      get :edit, {:id => member.id, :record => member.attributes}
-      assigns(:selectable).should eq 'user_selectable'  # will find only groups with that attribute  
-    end
+      it 'moderator gets an "anyone-but-administrator"' do
+        test_sign_in(:moderator)
+        2.times {FactoryGirl.create(:group)}
+        member = FactoryGirl.create(:member)
+        get :edit, :id => member.id, :record => member.attributes
+        assigns(:selectable).should eq "administrator = 'f' OR administrator IS NULL"  # Group.where('true') will find all groups
+      end
+
+      it 'member gets only "user_selectable" filter string' do
+        member = create_signed_in_member(:member)
+        selectable = FactoryGirl.create(:group, :user_selectable => true)
+        not_selectable = FactoryGirl.create(:group, :user_selectable => false)
+        get :edit, {:id => member.id, :record => member.attributes}
+        assigns(:selectable).should eq 'user_selectable'  # will find only groups with that attribute  
+      end
+    end # filter for group selection:
     
     describe 'merge_group_ids method yields valid new group_ids' do
+      # This method handles the incoming (from form) group ids and only allows changes to
+      # the groups allowed for the given user role (privilege).
       before(:each) do  
+        # Create 2 groups that are user selectable, 2 that are not, and 1 administrator group
         @selectable_1 = FactoryGirl.create(:group, :id => 1, :user_selectable => true)
         @selectable_2 = FactoryGirl.create(:group, :id => 2, :user_selectable => true)
         @un_selectable_3 = FactoryGirl.create(:group, :id => 3, :user_selectable => false)
         @un_selectable_4 = FactoryGirl.create(:group, :id => 4, :user_selectable => false)
+        @admin_group_5 = FactoryGirl.create(:group, :id => 5, :administrator => true)
         @original_groups = [@selectable_1, @un_selectable_3] # One selectable and one un-selectable group are originally in record
       end             
-      
-      it 'does not drop an assigned, unselectable group' do
+
+      it 'handles empty update list' do
+        test_sign_in(:administrator)
         Member.stub_chain(:find, :groups).and_return(@original_groups)
-        Member.find(1).groups.should == @original_groups
-        controller.merge_group_ids({:record=>{:groups => ["1", '3']}, :id => 1}).sort.should == ['1', '3']
-        controller.merge_group_ids({:record=>{:groups => ["2", '4']}, :id => 1}).sort.should == ['2', '3']
+        controller.merge_group_ids({:record=>{:groups => []}, :id => 1}).sort.should == []
+        controller.merge_group_ids({:record=>{:groups => ['']}, :id => 1}).sort.should == []
+        controller.merge_group_ids({:record=>{:id => 1}}).sort.should == []
       end
 
       describe 'with a member user' do
+      
+        it 'does not drop an assigned, unselectable group' do
+          # This just tests the merge_group_ids method directly without going through routing
+          test_sign_in(:member)
+          Member.stub_chain(:find, :groups).and_return(@original_groups)
+          Member.find(1).groups.should == @original_groups
+          controller.merge_group_ids({:record=>{:groups => ["1", '3']}, :id => 1}).sort.should == ['1', '3']
+          #          method          {incoming parameters from form},   record being edited})
+          controller.merge_group_ids({:record=>{:groups => ["2", '4']}, :id => 1}).sort.should == ['2', '3']
+          # i.e., (1 and 2) can be updated (from '1' to '2') but (3 and 4) are not (so 3 remains as 3)
+        end
         
         it 'changes only the selectable groups in the database record' do
           member = create_signed_in_member(:member)
           role_group = member.groups[0]  # This is one we had to create to give the member privilege
           member.groups << [@selectable_1, @un_selectable_3]
           member.is_member?.should be_true
-          params = member.attributes.merge({:groups => ['2', '4']})
+          params = member.attributes.merge({:groups => ['2', '4', '5']})
           put :update, :id => member.id, :record => params
           member.reload.group_ids.sort.should eq [2, 3, role_group.id].sort  # 4 doesn't appear, 3 doesn't disappear; role_group is left over from first line
         end
+
       end
+
+      describe 'with an moderator user' do
+        
+        it 'changes selectable and un-selectable groups in the database record' do
+          test_sign_in(:moderator)
+          member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
+          params = member.attributes.merge({:groups => ['2', '4']})
+          put :update, :id => member.id, :record => params
+          member.reload.group_ids.sort.should eq [2, 4]  # 4 does appear and 3 is dropped, even though un-selectable
+        end
+
+        it 'cannot add or remove member from administrator group' do
+          test_sign_in(:moderator)
+          member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
+          params = member.attributes.merge({:groups => ['2', '4', '5']})
+          put :update, :id => member.id, :record => params
+          member.reload.group_ids.sort.should eq [2, 4]  # 5 (admin) does not appear
+        end
+
+      end # with an administrator user
 
       describe 'with an administrator user' do
         

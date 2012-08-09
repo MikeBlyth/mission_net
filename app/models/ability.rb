@@ -3,8 +3,8 @@ class Ability
   include SessionsHelper
     
   def initialize(user)
-puts "**** Ability#initialize: user=#{user}"
-puts "**** $redis.get(:current_user)=#{$redis.get(:current_user)}"
+#puts "**** Ability#initialize: user=#{user}"
+#puts "**** $redis.get(:current_user)=#{$redis.get(:current_user)}"
 ActiveRecord::Base.logger.level = Logger::WARN
 #    user ||= User.new # guest user (not logged in)
 
@@ -21,13 +21,13 @@ ActiveRecord::Base.logger.level = Logger::WARN
     case 
       when user.is_administrator?
         can :manage, :all
-puts "**** user #{user} is administrator"        
+#puts "**** user #{user} is administrator"        
       when user.is_moderator?
-puts "***** USER IS MODERATOR ****"
+#puts "***** USER IS MODERATOR ****"
         can :manage, :all
         cannot [:create, :update, :delete], SiteSetting
       when user.is_member?
-puts "***** USER IS MEMBER ****"
+#puts "***** USER IS MEMBER ****"
         cannot [:manage], :all
         can [:read, :index, :search, :show_search, :search_field], :all
         cannot :read, [SiteSetting, AppLog]

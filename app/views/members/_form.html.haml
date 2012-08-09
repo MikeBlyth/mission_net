@@ -31,7 +31,8 @@ $( "#tabs" ).tabs();
             = member.label :group, "Groups"
             %br
             -#= member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>10         
-            = member.select :groups, group_choices(@member), {:include_blank => '(none)' },  :multiple => true, :size=>10, :class=>'multiselect'  
+            -#= member.select :groups, group_choices(@member), {:include_blank => '(none)' },  :multiple => true, :size=>10, :class=>'multiselect'  
+            = collection_select(:member, :group_ids, Group.where(@selectable), :id, :group_name, {}, {:multiple => true, :size=>10, :class=>'multiselect'})
         %tr
           %td
             = member.label :last_name, "", :class=>'required'
