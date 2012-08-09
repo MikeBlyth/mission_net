@@ -48,7 +48,7 @@ end
 group :development, :test do
   gem 'annotate', '~> 2.4.1.beta' 
   gem "rspec-rails"#, "2.5.0"
-  gem "capybara", "= 0.4.1.2"
+  gem "capybara"
   gem "guard"
   gem "guard-spork"
   gem "guard-rails"  # Restart development server when needed

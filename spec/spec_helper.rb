@@ -79,9 +79,13 @@ puts "**** SPORK LOADING PREFORK"
   end
 
   def integration_test_sign_in(role=:administrator)
-    role_group = FactoryGirl.create(:group, role => true)
-    user = FactoryGirl.create(:member, :name=>'test', :groups => [role_group], :email_1 => 'testemail')
-puts "****user created, user.id=#{user.id}"
+    if role.to_s.downcase == 'none'
+      user = FactoryGirl.create(:member, :name=>'test', :email_1 => 'testemail')
+    else
+      role_group = FactoryGirl.create(:group, role => true)
+      user = FactoryGirl.create(:member, :name=>'test', :groups => [role_group], :email_1 => 'testemail')
+    end
+#puts "****user created, user.id=#{user.id}"
     visit sign_out_path # log out previous user
     visit create_test_session_path
   end

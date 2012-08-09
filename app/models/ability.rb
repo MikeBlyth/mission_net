@@ -27,18 +27,18 @@ ActiveRecord::Base.logger.level = Logger::WARN
         can :manage, :all
         cannot [:create, :update, :delete], SiteSetting
       when user.is_member?
-puts "***** USER IS MEMBER ****"
+#puts "***** USER IS MEMBER ****"
         cannot [:manage], :all
         can [:read, :index, :search, :show_search, :search_field], :all
         cannot :read, [SiteSetting, AppLog]
         can :create, Message
         can :update, Member, :id => user.id  # Allow user to edit own records
       when user.is_limited?
-puts "***** USER IS LIMITED ****"
+#puts "***** USER IS LIMITED ****"
         cannot :manage, :all
         can [:read, :update], Member, :id => user.id
       else
-puts "**** USER HAS NO ROLES ****"        
+#puts "**** USER HAS NO ROLES ****"        
     end
 
   end  # initialize

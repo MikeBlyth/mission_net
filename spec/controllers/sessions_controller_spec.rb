@@ -47,6 +47,12 @@ describe SessionsController do
       admin_group = FactoryGirl.create(:group, :limited=>true)
       user = FactoryGirl.create(:member, :name=>'test', :groups => [admin_group], :email_1 => 'testemail')
       get :create
+      response.should redirect_to home_path
+    end
+
+    it 'Rejects user who has no roles' do
+      user = FactoryGirl.create(:member, :name=>'test', :email_1 => 'testemail')
+      get :create
       response.should redirect_to sign_in_path
     end
   end

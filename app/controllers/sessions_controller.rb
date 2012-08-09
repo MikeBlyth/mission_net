@@ -47,14 +47,14 @@ puts "**** (2) auth_hash=#{auth_hash}"
   #     (not sure yet how we get to that point!) (Not using this part now)
   # (2) For those not already logged in, (a) retrieve the authorization record (or create it) and
   #     (b) put the user (member) id into the session, effectively logging in the user.
-puts "**** session[:user_id]=#{session[:user_id]}"
+#puts "**** session[:user_id]=#{session[:user_id]}"
   if session[:user_id]
     # Means our user is signed in. Add the authorization to the user
     Member.find(session[:user_id]).add_authorization_provider(auth_hash)
   else
     # Insert the user into the session
     session[:user_id] = user.id
-    puts "**** Successfully signed in"
+# puts "**** Successfully signed in"
   end
   redirect_to home_path
 end
@@ -69,7 +69,7 @@ end
   end
   
   def destroy
-puts "**** Session Destroyed ***"
+#puts "**** Session Destroyed ***"
     session[:user_id] = nil
     redirect_to sign_in_path
   end

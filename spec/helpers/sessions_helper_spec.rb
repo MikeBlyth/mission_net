@@ -109,12 +109,12 @@ describe SessionsHelper do
       login_allowed('anything').should be false
     end
 
-    it 'rejects user with limited privileges' do
+    it 'accepts user with limited privileges' do
       limited_group = mock_model(Group, :limited => true)
       user = mock_model(Member, :groups => [limited_group])
       Group.stub(:find_by_group_name => limited_group)
       Member.stub(:find_by_email => [user])
-      login_allowed('anything').should be false
+      login_allowed('anything').should eq user
     end
 
     it 'rejects user with no groups' do
