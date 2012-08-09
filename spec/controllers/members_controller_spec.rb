@@ -200,9 +200,9 @@ describe MembersController do
         it 'changes selectable and un-selectable groups in the database record' do
           test_sign_in(:administrator)
           member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
-          params = member.attributes.merge({:groups => ['2', '4']})
+          params = member.attributes.merge({:groups => ['2', '4', '5']})
           put :update, :id => member.id, :record => params
-          member.reload.group_ids.sort.should eq [2, 4]  # 4 does appear and 3 is dropped, even though un-selectable
+          member.reload.group_ids.sort.should eq [2, 4, 5]  # 4 does appear and 3 is dropped, even though un-selectable
         end
       end # with an administrator user
 
