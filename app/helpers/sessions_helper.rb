@@ -85,6 +85,7 @@ module SessionsHelper
     members_with_email.each {|m| return m if administrator?(m)}
     members_with_email.each {|m| return m if moderator?(m)}
     members_with_email.each {|m| return m if member?(m)}
+    members_with_email.each {|m| return m if limited?(m)}
     AppLog.create(:code=>'Login', :severity => 'Warning', :description => "Login attempted with email #{user_email} but was rejected.")
     # Uncomment next line if you want users with "limited" privileges to be able to log in to web interface
     # members_with_email.each {|m| return m if limited?(m)}

@@ -28,6 +28,20 @@ describe "Members" do
       # Note that this depends on a specific message being visible on the page ... adjust if needed
       integration_test_sign_in(:member)
       page.should have_content 'Signed in as test'
+      page.should have_content 'Create new message'
+      page.should_not have_content 'Settings'
+      page.should_not have_content 'Locations'
+      page.should_not have_content 'Log'
+      page.should_not have_content 'Message list'
+    end
+
+    it "Signs in as limited with limited menu options" do
+      # Note that this depends on a specific message being visible on the page ... adjust if needed
+      integration_test_sign_in(:limited)
+save_and_open_page
+      page.should have_content 'Signed in as test'
+      page.should have_content 'Edit your user info'
+      page.should_not have_content 'Create new message'
       page.should_not have_content 'Settings'
       page.should_not have_content 'Locations'
       page.should_not have_content 'Log'
