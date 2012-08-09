@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'spork'
 
+#***** REMEMBER TO RESTART SPORK AFTER CHANGING THIS FILE! **
+
 ################  SPORK ########################
 #uncomment the following line to use spork with the debugger
 require 'spork/ext/ruby-debug'
@@ -79,6 +81,8 @@ puts "**** SPORK LOADING PREFORK"
   def integration_test_sign_in(role=:administrator)
     role_group = FactoryGirl.create(:group, role => true)
     user = FactoryGirl.create(:member, :name=>'test', :groups => [role_group], :email_1 => 'testemail')
+puts "****user created, user.id=#{user.id}"
+    visit sign_out_path # log out previous user
     visit create_test_session_path
   end
      

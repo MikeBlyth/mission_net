@@ -43,8 +43,8 @@ Joslink::Application.routes.draw do
 #    end
 #  end
 
-  get "/home", :to => "members#list", :as => :home
-  root :to => "members#list"
+  get "/home", :to => "members#index", :as => :home
+  root :to => "members#index"
   
   # The priority is based upon order of creation:
   # first created -> highest priority.

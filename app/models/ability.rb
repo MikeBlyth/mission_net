@@ -27,7 +27,7 @@ ActiveRecord::Base.logger.level = Logger::WARN
         can :manage, :all
         cannot [:create, :update, :delete], SiteSetting
       when user.is_member?
-#puts "***** USER IS MEMBER ****"
+puts "***** USER IS MEMBER ****"
         cannot [:manage], :all
         can [:read, :index, :search, :show_search, :search_field], :all
         cannot :read, [SiteSetting, AppLog]
