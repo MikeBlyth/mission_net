@@ -138,23 +138,35 @@ describe MembersController do
       it 'does not drop an assigned, unselectable group' do
         Member.stub_chain(:find, :groups).and_return(@original_groups)
         Member.find(1).groups.should == @original_groups
-        controller.merge_group_ids({:record=>{:group_ids => ["1", '3']}, :id => 1}).sort.should == ['1', '3']
-        controller.merge_group_ids({:record=>{:group_ids => ["2", '4']}, :id => 1}).sort.should == ['2', '3']
+        controller.merge_group_ids({:record=>{:groups => ["1", '3']}, :id => 1}).sort.should == ['1', '3']
+        controller.merge_group_ids({:record=>{:groups => ["2", '4']}, :id => 1}).sort.should == ['2', '3']
       end
 
-      it 'changes only the selectable groups in the database record' do
-        test_sign_in(:moderator)
-        member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
-        params = member.attributes.merge({:groups => ['2', '4']})
-        put :update, :id => member.id, :record => params
-        member.reload.group_ids.sort.should eq [2, 3]
-#        member.reload.group_ids.sort.should eq [2, 4]
+      describe 'with a member user' do
+        
+        it 'changes only the selectable groups in the database record' do
+          member = create_signed_in_member(:member)
+          role_group = member.groups[0]  # This is one we had to create to give the member privilege
+          member.groups << [@selectable_1, @un_selectable_3]
+          member.is_member?.should be_true
+          params = member.attributes.merge({:groups => ['2', '4']})
+          put :update, :id => member.id, :record => params
+          member.reload.group_ids.sort.should eq [2, 3, role_group.id].sort  # 4 doesn't appear, 3 doesn't disappear; role_group is left over from first line
+        end
       end
 
+      describe 'with an administrator user' do
+        
+        it 'changes selectable and un-selectable groups in the database record' do
+          test_sign_in(:administrator)
+          member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
+          params = member.attributes.merge({:groups => ['2', '4']})
+          put :update, :id => member.id, :record => params
+          member.reload.group_ids.sort.should eq [2, 4]  # 4 does appear and 3 is dropped, even though un-selectable
+        end
+      end # with an administrator user
 
     end # merge_group_ids method yields valid new group_ids
-        
-      
 
   end # updating groups
 end

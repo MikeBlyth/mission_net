@@ -139,13 +139,12 @@ class MembersController < ApplicationController
   end
 
   def update
-    merged = merge_group_ids
-    if merged.any?
-      params[:record][:groups] = merge_group_ids
-#puts "**** merge_group_ids=#{merge_group_ids}"
-    [:id, :updated_at, :created_at].each {|key| params[:record].delete(key)}
+    unless current_user.is_moderator?
+      merged = merge_group_ids
+      params[:record][:groups] = merge_group_ids if merged.any?
+    end
     super
-   end
+  end
 
   def merge_group_ids(params=params, selectable=nil)
     return if 
