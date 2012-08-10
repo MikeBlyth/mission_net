@@ -284,6 +284,7 @@ describe IncomingMailsController do
         Message.stub(:find_by_id).with(@responding_to).and_return(@message)
         @member = FactoryGirl.create(:member)
         @member.stub(:role => :member)
+        Member.stub(:find_by_email => [@member])
         @controller.stub(:login_allowed => @member)
         @subject_with_tag = 'Re: Important ' + 
           message_id_tag(:id=>@responding_to, :location => :subject, :action=>:generate)
@@ -320,8 +321,10 @@ describe IncomingMailsController do
       it 'for all members having same email' do
         @message = Message.create(:send_email=>true, :to_groups => '1', :body => 'test')
         @member_1 = FactoryGirl.create(:member)  # handy if not most efficient way to make a member with a contact
+        @member_1.stub :role => :member
         @member_2 = FactoryGirl.create(:member, :email_1 => @member_1.email_1) 
-        @message.members << [@member_1, @member_2]
+        Member.stub(:find_by_email => [@member_1, @member_2])
+        @message.members << [@member_1, @member_2]  # Message was sent to these 2 members
         @params['plain'] = "!#{@message.id}"  # e.g. #24 if @message.id is 24
         @params['from'] = @member_1.primary_email
         post :create, @params

@@ -7,7 +7,7 @@ class IncomingMailsController < ApplicationController
   def create  # need the name 'create' to conform with REST defaults, or change routes
 #puts "IncomingController create: params=#{params}"
     @from_address = params['from']
-    @possible_senders = from_member()
+    @possible_senders = Member.find_by_email(@from_address)
 #puts "**** Contacts=#{Contact.all.each {|c| c.email_1}.join(' ')}"
 #puts "**** @possible_senders=#{@possible_senders}"
     @from_member = login_allowed(@from_address)
@@ -55,6 +55,7 @@ class IncomingMailsController < ApplicationController
         user_reply = first_nonblank_line(@body)
 #puts "**** user_reply='#{user_reply}'"
         user_reply = user_reply.sub(search_target, ' ').strip if user_reply
+        # Mark all members with this email address as having responded to this message
         @possible_senders.each do |a_member|
           message.process_response(:member => a_member, :text => user_reply, :mode => 'email')
         end
@@ -66,12 +67,6 @@ class IncomingMailsController < ApplicationController
       end
     end
   end
-
-  # Is this message from someone in our database?
-  # (look for a contact record having an email_1 or email_2 matching the message From: header)
-  def from_member
-    Member.find_by_email(@from_address)
-  end  
 
 private
 
