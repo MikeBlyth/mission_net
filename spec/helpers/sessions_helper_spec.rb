@@ -20,109 +20,8 @@ describe SessionsHelper do
     @nothing_group = FactoryGirl.build_stubbed(:group)
   end
     
-
-  describe 'finds highest privilege level in an array of groups' do
-    it 'finds administrator' do
-      highest_role([@admin_group, @nothing_group, @member_group, @mod_group, @limited_group]).should == :administrator
-    end
+  describe 'Login_Allowed:' do
     
-    it 'finds moderator' do
-      highest_role( [@nothing_group, @member_group, @mod_group, @limited_group]).should == :moderator
-    end
-    
-    it 'finds member' do
-      highest_role([ @member_group,  @nothing_group, @limited_group]).should == :member
-    end
-    
-    it 'finds limited user' do
-      highest_role([@nothing_group, @limited_group]).should == :limited
-    end
-    
-    it 'finds "member" (person) with no privileges' do
-      highest_role([@nothing_group]).should be nil
-    end
-  end      
-
-  describe 'it determines whether user has privileges:' do
-    before(:each) do
-      @user = FactoryGirl.build_stubbed(:member)
-      Member.stub(:find => @user)  # so that current_user will return @user
-      @current_user = @user
-    end
-    
-    it 'administrator' do
-      @user.stub(:groups => [@admin_group, @mod_group])
-      administrator?(@user).should be true
-      moderator?(@user).should be true
-      member?(@user).should be true
-      limited?(@user).should be true
-    end
-
-    it 'moderator' do
-      @user.stub(:groups => [@mod_group])
-      administrator?(@user).should be false
-      moderator?(@user).should be true
-      member?(@user).should be true
-      limited?(@user).should be true
-    end
-
-    it 'member' do
-      @user.stub(:groups => [@member_group])
-      administrator?(@user).should be false
-      moderator?(@user).should be false
-      member?(@user).should be true
-      limited?(@user).should be true
-    end
-
-    it 'limited' do
-      @user.stub(:groups => [@limited_group])
-      administrator?(@user).should be false
-      moderator?(@user).should be false
-      member?(@user).should be false
-      limited?(@user).should be true
-    end
-
-    it 'nothing' do
-      @user.stub(:groups => [@nothing_group])
-      administrator?(@user).should be false
-      moderator?(@user).should be false
-      member?(@user).should be false
-      limited?(@user).should be false
-    end
-  end
-
-  describe 'Login_Allowed checks user for allowed groups' do
-    
-    it 'accepts user in an allowed group' do
-      sec_group = mock_model(Group, :member => true)
-      user = mock_model(Member, :groups => [sec_group])
-      Group.stub(:find_by_group_name => sec_group)
-      Member.stub(:find_by_email => [user])
-      login_allowed('anything').should == user
-    end
-
-    it 'rejects user with no privileges' do
-      unprivileged_group = mock_model(Group)
-      user = mock_model(Member, :groups => [unprivileged_group])
-      Group.stub(:find_by_group_name => unprivileged_group)
-      Member.stub(:find_by_email => [user])
-      login_allowed('anything').should be false
-    end
-
-    it 'accepts user with limited privileges' do
-      limited_group = mock_model(Group, :limited => true)
-      user = mock_model(Member, :groups => [limited_group])
-      Group.stub(:find_by_group_name => limited_group)
-      Member.stub(:find_by_email => [user])
-      login_allowed('anything').should eq user
-    end
-
-    it 'rejects user with no groups' do
-      user = mock_model(Member, :groups => [])
-      Member.stub(:find_by_email => [user])
-      login_allowed('anything').should be false
-    end
-
     it 'finds member with highest privileges when members share email address' do
       email = 'ok@test.com'
       sec_group = FactoryGirl.create(:group, :group_name => 'Security leaders', :moderator => true)
@@ -136,33 +35,36 @@ describe SessionsHelper do
       user.should == administrator
     end
       
+    it 'accepts login by administrator' do
+      user = mock_model(Member, :role => :administrator)
+      Member.stub(:find_by_email => [user])
+      login_allowed('anything').should == user
+    end
+
+    it 'accepts login by moderator' do
+      user = mock_model(Member, :role => :moderator)
+      Member.stub(:find_by_email => [user])
+      login_allowed('anything').should == user
+    end
+
+    it 'accepts accepts login by member' do
+      user = mock_model(Member, :role => :member)
+      Member.stub(:find_by_email => [user])
+      login_allowed('anything').should == user
+    end
+
+    it 'accepts accepts login by limited member' do
+      user = mock_model(Member, :role => :limited)
+      Member.stub(:find_by_email => [user])
+      login_allowed('anything').should == user
+    end
+
+    it 'accepts accepts login by member' do
+      user = mock_model(Member, :role => nil)
+      Member.stub(:find_by_email => [user])
+      login_allowed('anything').should == false
+    end
+
   end
        
-  describe 'Highest privilege by email' do
-    
-    it 'finds highest privilege (Admin) among all members sharing an email address' do
-      email = 'ok@test.com'
-      sec_group = FactoryGirl.create(:group, :group_name => 'Security leaders', :moderator => true)
-      admin_group = FactoryGirl.create(:group, :group_name => 'Administrators', :administrator => true)
-      non_member = FactoryGirl.create(:member, :email_1 => email) 
-      member = FactoryGirl.create(:member, :groups => [sec_group], :email_1 => email)     
-      administrator = FactoryGirl.create(:member, :groups => [sec_group, admin_group], :email_1 => email) 
-      Member.stub(:find_by_email => [non_member, member, administrator])
-      administrator.reload.groups.should include admin_group
-      highest_role_by_email(email).should == :administrator
-    end
-      
-    it 'finds highest privilege (member) among all members sharing an email address' do
-      email = 'ok@test.com'
-      limited_group = FactoryGirl.create(:group, :group_name => 'Limited', :limited => true)
-      member_group = FactoryGirl.create(:group, :group_name => 'Members', :member => true)
-      non_member = FactoryGirl.create(:member, :email_1 => email) 
-      member = FactoryGirl.create(:member, :groups => [member_group], :email_1 => email)     
-      limited = FactoryGirl.create(:member, :groups => [limited_group], :email_1 => email) 
-      Member.stub(:find_by_email => [non_member, member, limited])
-      highest_role_by_email(email).should == :member
-    end
-      
-  end
-
 end

@@ -16,6 +16,4 @@ describe SiteSettingsController do
     end
   
   end
-
-  
 end

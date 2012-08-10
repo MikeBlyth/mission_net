@@ -28,13 +28,16 @@ describe IncomingMailsController do
   describe 'filters based on member status' do
 
     it 'accepts mail from member (using email address)' do
-      Member.stub(:find_by_email).and_return([FactoryGirl.create(:member)])
+#      Member.stub(:find_by_email).and_return([FactoryGirl.create(:member)])
+      member = FactoryGirl.create(:member)
+      member.stub(:role => :administrator)
+      controller.stub(:login_allowed => member)
       post :create, @params
       response.status.should == 200
     end
     
     it 'rejects mail from strangers' do
-      Member.stub(:find_by_email).and_return([])
+      controller.stub(:login_allowed => false)
       post :create, @params
       response.status.should == 403
       response.body.should =~ /refused/i
@@ -44,7 +47,9 @@ describe IncomingMailsController do
 
   describe 'processes' do
     before(:each) do
-      controller.stub(:from_member).and_return([Member.new])   # have a contact record that matches from line
+      member = FactoryGirl.create(:member)
+      member.stub(:role => :administrator)
+      controller.stub(:login_allowed => member)
     end      
     
     it 'variety of "command" lines without crashing' do
@@ -93,7 +98,9 @@ describe IncomingMailsController do
 
   describe 'handles these commands:' do
     before(:each) do
-      controller.stub(:from_member).and_return([Member.new])   # have a contact record that matches from line
+      member = FactoryGirl.create(:member)
+      member.stub(:role => :administrator)
+      controller.stub(:login_allowed => member)
     end      
     
     describe 'info sends contact info' do
@@ -246,8 +253,9 @@ describe IncomingMailsController do
     
     describe 'when sender is forbidden' do
       before(:each) do
-        Member.stub(:find_by_email => [@member])
-        @member.stub(:groups => [mock_model(Group)] )
+        member = FactoryGirl.create(:member)
+        member.stub(:role => :limited)
+        controller.stub(:login_allowed => member)
         @mod_group = FactoryGirl.create(:group, :group_name => 'Moderators')
       end
       
@@ -274,8 +282,9 @@ describe IncomingMailsController do
         @responding_to = 25  # This is the id of the message being responded to
         @message = mock_model(Message, :deliver=>true, :process_response => nil)
         Message.stub(:find_by_id).with(@responding_to).and_return(@message)
-        @member = FactoryGirl.build_stubbed(:member)
-        Member.stub(:find_by_email).and_return([@member]) # Just says that this message is from a member
+        @member = FactoryGirl.create(:member)
+        @member.stub(:role => :member)
+        @controller.stub(:login_allowed => @member)
         @subject_with_tag = 'Re: Important ' + 
           message_id_tag(:id=>@responding_to, :location => :subject, :action=>:generate)
         @user_reply = "I'm in Kafanchan"

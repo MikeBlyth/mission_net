@@ -249,22 +249,6 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
     return self_index && queried_index && (self_index >= queried_index)
   end
   
-#  def is_administrator?
-#    administrator?(self)
-#  end
-
-#  def is_moderator?
-#    moderator?(self)
-#  end
-
-#  def is_member?
-#    member?(self)
-#  end
-
-#  def is_limited?
-#    limited?(self)
-#  end
-
   def add_authorization_provider(auth_hash)
     # Check if the provider already exists, so we don't add it twice
     unless authorizations.find_by_provider_and_uid(auth_hash["provider"], auth_hash["uid"])

@@ -10,13 +10,13 @@ class IncomingMailsController < ApplicationController
     @possible_senders = from_member()
 #puts "**** Contacts=#{Contact.all.each {|c| c.email_1}.join(' ')}"
 #puts "**** @possible_senders=#{@possible_senders}"
-    @from_member = @possible_senders.first
-    @privileges = highest_role_by_email(@from_address)
+    @from_member = login_allowed(@from_address)
 # puts "**** @from_member=#{@from_member}"
-    if @from_member.nil?
+    unless @from_member
       render :text => 'Refused--unknown sender', :status => 403, :content_type => Mime::TEXT.to_s
       return
     end
+    @privileges = @from_member.role
     @subject = params['subject']
     @body = params['plain']
     AppLog.create(:code => 'Message.create', :description => "Email from #{@from_address}, body = #{@body[0..99]}")
