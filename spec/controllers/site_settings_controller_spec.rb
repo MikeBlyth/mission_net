@@ -6,7 +6,7 @@ describe SiteSettingsController do
     
     it 'allows administrator to edit settings' do
       user = test_sign_in(:administrator)
-      user.is_administrator?.should eq true
+      user.role.should eq :administrator
       post :edit
     end
   

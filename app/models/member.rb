@@ -241,21 +241,29 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
     return myrole.nil? ? nil : myrole.downcase.to_sym      
   end
 
-  def is_administrator?
-    administrator?(self)
+  def roles_include?(queried_role)
+    return nil if queried_role.nil?
+    role_hierarchy = [:limited, :member, :moderator, :administrator]
+    self_index = role_hierarchy.index(self.role)
+    queried_index = role_hierarchy.index(queried_role)
+    return self_index && queried_index && (self_index >= queried_index)
   end
+  
+#  def is_administrator?
+#    administrator?(self)
+#  end
 
-  def is_moderator?
-    moderator?(self)
-  end
+#  def is_moderator?
+#    moderator?(self)
+#  end
 
-  def is_member?
-    member?(self)
-  end
+#  def is_member?
+#    member?(self)
+#  end
 
-  def is_limited?
-    limited?(self)
-  end
+#  def is_limited?
+#    limited?(self)
+#  end
 
   def add_authorization_provider(auth_hash)
     # Check if the provider already exists, so we don't add it twice

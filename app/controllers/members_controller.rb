@@ -131,10 +131,10 @@ class MembersController < ApplicationController
 
   def do_edit
     super
-    case
-    when current_user.is_administrator?
+    case current_user.role
+    when :administrator
       @selectable = 'true'
-    when current_user.is_moderator?
+    when :moderator
       @selectable = "administrator = 'f' OR administrator IS NULL"
     else
       @selectable = 'user_selectable'
@@ -142,7 +142,7 @@ class MembersController < ApplicationController
   end
 
   def update
-    unless current_user.is_administrator?
+    unless current_user.role == :administrator
       merged = merge_group_ids
 #puts "**** merged=#{merged}"
       params[:record][:groups] = merge_group_ids if merged.any?
@@ -150,15 +150,16 @@ class MembersController < ApplicationController
     super
   end
 
+  # Given (a) the incoming group_ids from the form (params[:record][:groups]), and
+  #       (b) the existing group_ids of the record (original_groups)
+  #       (c) the set of which groups are changeable for this user (selectable)
+  # return the set of group_ids as they should be after the update.
+  # 
   def merge_group_ids(params=params, selectable=nil)
-#puts "**** params = #{params}" 
-#puts "**** Member.find(params[:id]).groups=#{Member.find(params[:id]).groups}"
-    if current_user.is_moderator?
+    if current_user.role == :moderator
       selectable ||= Group.where("administrator = ? OR administrator IS ?", false, nil).map {|g| g.id.to_s}
-# puts "**** Moderator selectable=#{selectable}"
     else
       selectable ||= Group.where("user_selectable").map {|g| g.id.to_s}
-# puts "**** Member selectable=#{selectable}"
     end
     original_groups = Member.find(params[:id]).groups.map {|g| g.id.to_s}
     unchangeable = original_groups.map{|g| g.to_s unless selectable.include? g.to_s}
@@ -178,11 +179,11 @@ protected
 #  end
  
   def display_edit_link(record=nil)
-puts "**** moderator = #{current_user.is_moderator?}"
-    return true if current_user.is_moderator?
-    is_member = (record.is_a? Member)
-    same_id = is_member ? current_user.id == record.id : false
-    ok = is_member && same_id
+puts "**** moderator = #{current_user.role_include?(:moderator)}"
+    return true if current_user.role_include?(:moderator)
+    is_member_record = (record.is_a? Member)  # because record parameter can be other than the actual record being edited
+    same_id = is_member_record ? current_user.id == record.id : false
+    ok = is_member_record && same_id
     puts "**** record=#{record}, #{record.id if record.is_a? Member}, ok = #{ok}, same-#{same_id}"
     return ok #|| !is_member
   end

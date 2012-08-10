@@ -374,42 +374,30 @@ describe Member do
     describe 'gets roles from group and follow hierarchy so' do   
       it 'administrator includes all roles' do
         @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :administrator => true)])
-        @member.is_administrator?.should be true
-        @member.is_moderator?.should be true
-        @member.is_member?.should be true
-        @member.is_limited?.should be true
+        [:administrator, :moderator, :member, :limited].each {|role| @member.roles_include?(role).should be_true}
       end
 
       it 'moderator includes lower roles' do
         @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :moderator => true)])
-        @member.is_administrator?.should be false
-        @member.is_moderator?.should be true
-        @member.is_member?.should be true
-        @member.is_limited?.should be true
+        [:moderator, :member, :limited].each {|role| @member.roles_include?(role).should be_true}
+        [:administrator].each {|role| @member.roles_include?(role).should be_false}
       end
 
       it 'member includes lower roles' do
         @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :member => true)])
-        @member.is_administrator?.should be false
-        @member.is_moderator?.should be false
-        @member.is_member?.should be true
-        @member.is_limited?.should be true
+        [ :member, :limited].each {|role| @member.roles_include?(role).should be_true}
+        [:moderator, :administrator].each {|role| @member.roles_include?(role).should be_false}
       end
       
       it 'limited includes no other roles' do
         @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :limited => true)])
-        @member.is_administrator?.should be false
-        @member.is_moderator?.should be false
-        @member.is_member?.should be false
-        @member.is_limited?.should be true
+        @member.roles_include?(:limited).should be_true
+        [:moderator, :administrator, :member].each {|role| @member.roles_include?(role).should be_false}
       end
 
       it 'member with no privilege has no roles' do
         @member.stub(:groups => [FactoryGirl.build_stubbed(:group)])
-        @member.is_administrator?.should be false
-        @member.is_moderator?.should be false
-        @member.is_member?.should be false
-        @member.is_limited?.should be false
+        [:administrator, :moderator, :member, :limited].each {|role| @member.roles_include?(role).should be_false}
       end
     end  # gets roles from group and follow hierarchy
     

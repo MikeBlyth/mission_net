@@ -35,11 +35,10 @@ describe MessagesController do
 #      @user.stub(:is_administrator => true)
 #      controller.stub(:current_user=>@user)
       @user = test_sign_in
-        @user.is_moderator?.should eq true
-        @user.is_administrator?.should eq true
     end
     
     it 'does nothing' do
+      @user.role.should == :administrator
     end
       
     it 'admin can create message' do
