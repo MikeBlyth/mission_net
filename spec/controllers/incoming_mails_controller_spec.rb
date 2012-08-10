@@ -13,6 +13,15 @@ def rebuild_message
                          "#{@params['plain']}"
 end
 
+
+def test_sender(role=nil)
+  member = FactoryGirl.create(:member)
+  member.stub(:role => role) if role   # Role needed for some tests and not others
+  controller.stub(:login_allowed => member)
+  Member.stub(:find_by_email => [member])
+  return member
+end  
+
 describe IncomingMailsController do
   before(:each) do
     @params = HashWithIndifferentAccess.new(
@@ -28,10 +37,7 @@ describe IncomingMailsController do
   describe 'filters based on member status' do
 
     it 'accepts mail from member (using email address)' do
-#      Member.stub(:find_by_email).and_return([FactoryGirl.create(:member)])
-      member = FactoryGirl.create(:member)
-      member.stub(:role => :administrator)
-      controller.stub(:login_allowed => member)
+      test_sender
       post :create, @params
       response.status.should == 200
     end
@@ -47,9 +53,7 @@ describe IncomingMailsController do
 
   describe 'processes' do
     before(:each) do
-      member = FactoryGirl.create(:member)
-      member.stub(:role => :administrator)
-      controller.stub(:login_allowed => member)
+      test_sender
     end      
     
     it 'variety of "command" lines without crashing' do
@@ -98,9 +102,7 @@ describe IncomingMailsController do
 
   describe 'handles these commands:' do
     before(:each) do
-      member = FactoryGirl.create(:member)
-      member.stub(:role => :administrator)
-      controller.stub(:login_allowed => member)
+      test_sender
     end      
     
     describe 'info sends contact info' do
@@ -165,23 +167,14 @@ describe IncomingMailsController do
     before(:each) do
       @mock_message = mock_model(Message, :deliver=>true)
       Message.stub(:create).and_return(@mock_message)
-      @member = FactoryGirl.build_stubbed(:member)
-      controller.stub(:from_member).and_return([@member])   # have a contact record that matches from line
+      @member = test_sender(:member)
       @group_1 = FactoryGirl.create(:group)
       @group_2 = FactoryGirl.create(:group)
       @body = 'Test message'
       @params[:from] = 'test@test.com'
     end
     
-    it '(checks setup)' do
-      controller.from_member.should == [@member]
-    end
-    
     describe 'when sender is allowed' do
-      before(:each) do
-        Member.stub(:find_by_email => [@member])
-        @member.stub(:groups => [mock_model(Group, :administrator => true)] )
-      end
       
       it 'distributes email to groups when groups are found' do
         Message.should_receive(:create).with(hash_including({:send_sms=>false, :send_email=>true, 
@@ -253,9 +246,7 @@ describe IncomingMailsController do
     
     describe 'when sender is forbidden' do
       before(:each) do
-        member = FactoryGirl.create(:member)
-        member.stub(:role => :limited)
-        controller.stub(:login_allowed => member)
+        test_sender(:limited)    
         @mod_group = FactoryGirl.create(:group, :group_name => 'Moderators')
       end
       
@@ -282,10 +273,7 @@ describe IncomingMailsController do
         @responding_to = 25  # This is the id of the message being responded to
         @message = mock_model(Message, :deliver=>true, :process_response => nil)
         Message.stub(:find_by_id).with(@responding_to).and_return(@message)
-        @member = FactoryGirl.create(:member)
-        @member.stub(:role => :member)
-        Member.stub(:find_by_email => [@member])
-        @controller.stub(:login_allowed => @member)
+        @member = test_sender(:member)
         @subject_with_tag = 'Re: Important ' + 
           message_id_tag(:id=>@responding_to, :location => :subject, :action=>:generate)
         @user_reply = "I'm in Kafanchan"
@@ -323,12 +311,14 @@ describe IncomingMailsController do
         @member_1 = FactoryGirl.create(:member)  # handy if not most efficient way to make a member with a contact
         @member_1.stub :role => :member
         @member_2 = FactoryGirl.create(:member, :email_1 => @member_1.email_1) 
-        Member.stub(:find_by_email => [@member_1, @member_2])
+        Member.stub(:find_by_email => [@member_1, @member_2]) 
         @message.members << [@member_1, @member_2]  # Message was sent to these 2 members
         @params['plain'] = "!#{@message.id}"  # e.g. #24 if @message.id is 24
         @params['from'] = @member_1.primary_email
         post :create, @params
-        @message.sent_messages.each {|sm| sm.msg_status.should == MessagesHelper::MsgResponseReceived}
+        sent_messages = @message.sent_messages
+        sent_messages.should_not be_empty
+        sent_messages.each {|sm| sm.msg_status.should == MessagesHelper::MsgResponseReceived}
       end
     end # (w duplicate email addr)
   end #    handles email responses to group messages   
