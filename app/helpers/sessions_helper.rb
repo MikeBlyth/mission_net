@@ -7,11 +7,11 @@ module SessionsHelper
     return @current_user
   end
 
-  # What is the higest privilege level contained in a set of groups (e.g. the groups a user belongs to)?
+  # What is the higest role level contained in a set of groups (e.g. the groups a user belongs to)?
   # This assumes the scheme were privilege levels are hard coded as boolean columns in the group
   # The priority level is determined by the order of the "return" statements -- check for administrator
   # first since it's the highest level, and limited last since it's the lowest (other than none)
-  def highest_privilege(groups=[])
+  def highest_role(groups=[])
     admin = mod = memb = limited = nil
     groups.each do |g|
       admin ||= g.administrator
@@ -33,7 +33,7 @@ module SessionsHelper
   # because admin is higher than member)
 
   def administrator?(user)
-    highest_privilege(user.groups) == :administrator
+    highest_role(user.groups) == :administrator
   end
   
   def current_user_admin?
@@ -41,15 +41,15 @@ module SessionsHelper
   end
 
   def moderator?(user)
-    [:administrator, :moderator].include? highest_privilege(user.groups)
+    [:administrator, :moderator].include? highest_role(user.groups)
   end
 
   def member?(user)
-    [:administrator, :moderator, :member].include? highest_privilege(user.groups)
+    [:administrator, :moderator, :member].include? highest_role(user.groups)
   end
 
   def limited?(user)
-    [:administrator, :moderator, :member, :limited].include? highest_privilege(user.groups)
+    [:administrator, :moderator, :member, :limited].include? highest_role(user.groups)
   end
   
   # Other Methods
@@ -69,7 +69,7 @@ module SessionsHelper
   end
 
   # There is probably a much faster and elegant way to do this, but as it is rarely called I'm just leaving it
-  def highest_privilege_by_email(user_email)
+  def highest_role_by_email(user_email)
     members_with_email = Member.find_by_email(user_email)
     # Have to go through each group in priority order so that we return the member with the highest privileges
     members_with_email.each {|m| return :administrator if administrator?(m)}

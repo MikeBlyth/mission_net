@@ -359,56 +359,119 @@ describe Member do
     end # updating in_country status
   end
 
-  describe 'privilege (role) level:' do
-    before(:each) do
-      @admin_group = FactoryGirl.build_stubbed(:group, :administrator => true)
-      @mod_group = FactoryGirl.build_stubbed(:group, :moderator => true)
-      @member_group = FactoryGirl.build_stubbed(:group, :member => true)
-      @limited_group = FactoryGirl.build_stubbed(:group, :limited => true)
-      @nothing_group = FactoryGirl.build_stubbed(:group)
-      @member = FactoryGirl.build_stubbed(:member)
-    end
+  describe 'Roles (privilege levels):' do
+      before(:each) do
+        @admin_group = FactoryGirl.build_stubbed(:group, :administrator => true)
+        @mod_group = FactoryGirl.build_stubbed(:group, :moderator => true)
+        @member_group = FactoryGirl.build_stubbed(:group, :member => true)
+        @limited_group = FactoryGirl.build_stubbed(:group, :limited => true)
+        @nothing_group = FactoryGirl.build_stubbed(:group)
+        @member = FactoryGirl.build_stubbed(:member)
+      end
+
+      after(:each) {$redis.flushall}  # Clear database 
+
+    describe 'gets roles from group and follow hierarchy so' do   
+      it 'administrator includes all roles' do
+        @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :administrator => true)])
+        @member.is_administrator?.should be true
+        @member.is_moderator?.should be true
+        @member.is_member?.should be true
+        @member.is_limited?.should be true
+      end
+
+      it 'moderator includes lower roles' do
+        @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :moderator => true)])
+        @member.is_administrator?.should be false
+        @member.is_moderator?.should be true
+        @member.is_member?.should be true
+        @member.is_limited?.should be true
+      end
+
+      it 'member includes lower roles' do
+        @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :member => true)])
+        @member.is_administrator?.should be false
+        @member.is_moderator?.should be false
+        @member.is_member?.should be true
+        @member.is_limited?.should be true
+      end
+      
+      it 'limited includes no other roles' do
+        @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :limited => true)])
+        @member.is_administrator?.should be false
+        @member.is_moderator?.should be false
+        @member.is_member?.should be false
+        @member.is_limited?.should be true
+      end
+
+      it 'member with no privilege has no roles' do
+        @member.stub(:groups => [FactoryGirl.build_stubbed(:group)])
+        @member.is_administrator?.should be false
+        @member.is_moderator?.should be false
+        @member.is_member?.should be false
+        @member.is_limited?.should be false
+      end
+    end  # gets roles from group and follow hierarchy
     
-    it 'administrator includes all roles' do
-      @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :administrator => true)])
-      @member.is_administrator?.should be true
-      @member.is_moderator?.should be true
-      @member.is_member?.should be true
-      @member.is_limited?.should be true
-    end
+    describe "gets highest role among the user's groups" do
 
-    it 'moderator includes lower roles' do
-      @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :moderator => true)])
-      @member.is_administrator?.should be false
-      @member.is_moderator?.should be true
-      @member.is_member?.should be true
-      @member.is_limited?.should be true
-    end
+      def create_role_groups
+        [:administrator, :moderator, :member, :limited].each do |role|
+          instance_variable_set("@#{role}_group", FactoryGirl.create(:group, :group_name => role.to_s, role => true))
+        end
+        @no_role_group = FactoryGirl.create(:group, :group_name => 'no_role')
+        @administrator_group.administrator.should be_true
+      end # build_role_groups
+      
+      it "creates role groups" do 
+        create_role_groups
+        @administrator_group.administrator.should be_true
+      end  
 
-    it 'member includes lower roles' do
-      @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :member => true)])
-      @member.is_administrator?.should be false
-      @member.is_moderator?.should be false
-      @member.is_member?.should be true
-      @member.is_limited?.should be true
-    end
+      it "finds highest among roles" do
+        create_role_groups
+        user = FactoryGirl.build_stubbed(:member, :groups => [@administrator_group, @limited_group])
+        user.role.should eq :administrator
+        $redis.flushall
+        user.stub(:groups => [@moderator_group, @limited_group, @no_role_group])
+        user.role.should eq :moderator
+        $redis.flushall
+        user.stub(:groups => [@limited_group, @no_role_group])
+        user.role.should eq :limited
+        $redis.flushall
+        user.stub(:groups => [])
+        user.role.should eq nil
+        $redis.flushall
+        user.stub(:groups => [@no_role_group])
+        user.role.should eq nil
+      end
+      
+    end # gets highest role among the user's groups
+
+    describe 'uses Redis:' do
+
+      def set_redis_user_role(user, role=nil)
+        key = "user:#{user.id}"
+        $redis.hset(key, :role, role)
+        $redis.expire(key, 5)  # So database is cleaned after the whole run, if not sooner
+      end
     
-    it 'limited includes no other roles' do
-      @member.stub(:groups => [FactoryGirl.build_stubbed(:group, :limited => true)])
-      @member.is_administrator?.should be false
-      @member.is_moderator?.should be false
-      @member.is_member?.should be false
-      @member.is_limited?.should be true
-    end
-
-    it 'member with no privilege has no roles' do
-      @member.stub(:groups => [FactoryGirl.build_stubbed(:group)])
-      @member.is_administrator?.should be false
-      @member.is_moderator?.should be false
-      @member.is_member?.should be false
-      @member.is_limited?.should be false
-    end
-  end  # privilege (role) level
+      it 'uses role from Redis when it exists' do
+        user = FactoryGirl.build_stubbed(:member)
+        user.stub(:recalc_highest_role, 'Should not get this!')
+        set_redis_user_role(user, 'cantelope')
+        user.role.should eq :cantelope
+      end
+      
+      it 'uses recalulated role when Redis does not exist' do
+        user = FactoryGirl.build_stubbed(:member)
+        user.stub(:recalc_highest_role => 'Administrator')
+        user.role.should eq :administrator
+      end
+      
+      
+    end # uses Redis
+  end  # Roles (privilege levels):
 
 end
 

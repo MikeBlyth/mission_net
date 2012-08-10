@@ -23,23 +23,23 @@ describe SessionsHelper do
 
   describe 'finds highest privilege level in an array of groups' do
     it 'finds administrator' do
-      highest_privilege([@admin_group, @nothing_group, @member_group, @mod_group, @limited_group]).should == :administrator
+      highest_role([@admin_group, @nothing_group, @member_group, @mod_group, @limited_group]).should == :administrator
     end
     
     it 'finds moderator' do
-      highest_privilege( [@nothing_group, @member_group, @mod_group, @limited_group]).should == :moderator
+      highest_role( [@nothing_group, @member_group, @mod_group, @limited_group]).should == :moderator
     end
     
     it 'finds member' do
-      highest_privilege([ @member_group,  @nothing_group, @limited_group]).should == :member
+      highest_role([ @member_group,  @nothing_group, @limited_group]).should == :member
     end
     
     it 'finds limited user' do
-      highest_privilege([@nothing_group, @limited_group]).should == :limited
+      highest_role([@nothing_group, @limited_group]).should == :limited
     end
     
     it 'finds "member" (person) with no privileges' do
-      highest_privilege([@nothing_group]).should be nil
+      highest_role([@nothing_group]).should be nil
     end
   end      
 
@@ -149,7 +149,7 @@ describe SessionsHelper do
       administrator = FactoryGirl.create(:member, :groups => [sec_group, admin_group], :email_1 => email) 
       Member.stub(:find_by_email => [non_member, member, administrator])
       administrator.reload.groups.should include admin_group
-      highest_privilege_by_email(email).should == :administrator
+      highest_role_by_email(email).should == :administrator
     end
       
     it 'finds highest privilege (member) among all members sharing an email address' do
@@ -160,7 +160,7 @@ describe SessionsHelper do
       member = FactoryGirl.create(:member, :groups => [member_group], :email_1 => email)     
       limited = FactoryGirl.create(:member, :groups => [limited_group], :email_1 => email) 
       Member.stub(:find_by_email => [non_member, member, limited])
-      highest_privilege_by_email(email).should == :member
+      highest_role_by_email(email).should == :member
     end
       
   end

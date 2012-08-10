@@ -37,7 +37,9 @@ describe "Members" do
 
     it "Signs in as limited with limited menu options" do
       # Note that this depends on a specific message being visible on the page ... adjust if needed
+# puts "**** before signing in"
       integration_test_sign_in(:limited)
+# puts "**** signed in ****"
       page.should have_content 'Signed in as test'
       page.should have_content 'Edit your user info'
       page.should_not have_content 'Create new message'

@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
   end
 
   before_filter :require_https, :except => :update_status_clickatell #, :only => [:login, :signup, :change_password] 
+  before_filter :save_user_role
   check_authorization  
   
   def require_https
@@ -42,5 +43,12 @@ private
   def authorize
     redirect_to(sign_in_url, :notice => "Please log in") unless signed_in?
   end
-  
+
+  def save_user_role
+    user = current_user
+    return unless user
+#    puts "**** save user role for current_user=#{current_user}"
+    userkey = "user:#{user.id}"
+    $redis.hset(userkey, :role, user.highest_role)
+  end
 end

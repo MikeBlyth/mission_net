@@ -212,6 +212,33 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
 #    return nil
 #  end
 
+  # Use this member's groups to find the highest assigned role
+  # ToDo: This duplicates sessions_helper's highest_role(groups) method ... refactor to remove that one.
+  def recalc_highest_role
+    admin = mod = memb = limited = nil
+    self.groups.each do |g|
+      admin ||= g.administrator
+      mod ||= g.moderator
+      memb ||= g.member
+      limited ||= g.limited
+    end
+    return :administrator if admin
+    return :moderator if mod
+    return :member if memb
+    return :limited if limited
+    return nil
+  end
+    
+
+  def role
+    userkey = "user:#{self.id}"
+    unless myrole = $redis.hget(userkey, :role)  # This is INTENTIONALLY an assignment, not a "==" comparison
+      myrole = recalc_highest_role
+      $redis.hset(userkey, :role, myrole)
+    end
+    return myrole.nil? ? nil : myrole.downcase.to_sym      
+  end
+
   def is_administrator?
     administrator?(self)
   end
