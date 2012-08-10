@@ -216,6 +216,7 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
   # ToDo: This duplicates sessions_helper's highest_role(groups) method ... refactor to remove that one.
   def recalc_highest_role
     admin = mod = memb = limited = nil
+#puts "**** Member.recalc_highest_role self.groups=#{self.groups}"
     self.groups.each do |g|
       admin ||= g.administrator
       mod ||= g.moderator
@@ -228,13 +229,14 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
     return :limited if limited
     return nil
   end
-    
-
+ 
   def role
     userkey = "user:#{self.id}"
+#puts "**** Member.role: userkey=#{userkey}, retrieved = #{$redis.hget(userkey, :role)}"
     unless myrole = $redis.hget(userkey, :role)  # This is INTENTIONALLY an assignment, not a "==" comparison
       myrole = recalc_highest_role
       $redis.hset(userkey, :role, myrole)
+#puts "**** Member.role: redis #{userkey} set to #{myrole}"
     end
     return myrole.nil? ? nil : myrole.downcase.to_sym      
   end

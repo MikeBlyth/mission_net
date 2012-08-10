@@ -62,6 +62,7 @@ puts "**** SPORK LOADING PREFORK"
   def test_sign_in(role=:administrator)
     group = FactoryGirl.build_stubbed(:group, role => true)
     @user = FactoryGirl.build_stubbed(:member, :groups => [group], :id => 999)
+    @user.stub(:role => role)
     controller.stub(:current_user).and_return(@user)
     return @user
   end
@@ -84,6 +85,7 @@ puts "**** SPORK LOADING PREFORK"
     else
       role_group = FactoryGirl.create(:group, role => true)
       user = FactoryGirl.create(:member, :name=>'test', :groups => [role_group], :email_1 => 'testemail')
+#user.role.should eq role
     end
 #puts "****user created, user.id=#{user.id}"
     visit sign_out_path # log out previous user
