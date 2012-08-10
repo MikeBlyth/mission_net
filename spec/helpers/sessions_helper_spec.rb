@@ -47,19 +47,19 @@ describe SessionsHelper do
       login_allowed('anything').should == user
     end
 
-    it 'accepts accepts login by member' do
+    it 'accepts login by member' do
       user = mock_model(Member, :role => :member)
       Member.stub(:find_by_email => [user])
       login_allowed('anything').should == user
     end
 
-    it 'accepts accepts login by limited member' do
+    it 'accepts login by limited member' do
       user = mock_model(Member, :role => :limited)
       Member.stub(:find_by_email => [user])
       login_allowed('anything').should == user
     end
 
-    it 'accepts accepts login by member' do
+    it 'rejects login by user with no role' do
       user = mock_model(Member, :role => nil)
       Member.stub(:find_by_email => [user])
       login_allowed('anything').should == false
