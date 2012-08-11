@@ -22,4 +22,9 @@ class Bloodtype < ActiveRecord::Base
   def to_s
     "#{full}"
   end
+
+  def <=>(other)
+    self.full <=> other.full
+  end  
+
 end

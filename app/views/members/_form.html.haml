@@ -32,7 +32,9 @@ $( "#tabs" ).tabs();
             %br
             -#= member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>10         
             -#= member.select :groups, group_choices(@member), {:include_blank => '(none)' },  :multiple => true, :size=>10, :class=>'multiselect'  
-            = collection_select(:member, :group_ids, Group.where(@selectable), :id, :group_name, {}, {:multiple => true, :size=>10, :class=>'multiselect'})
+            - groups = Group.where(@selectable).select('id, group_name').order('group_name') 
+            - choices = options_from_collection_for_select(groups, :id, :group_name, @record.group_ids)
+            = select(:record, :groups, choices, {}, {:multiple => true, :size=>10, :class=>'multiselect'})
         %tr
           %td
             = member.label :last_name, "", :class=>'required'
@@ -127,7 +129,9 @@ $( "#tabs" ).tabs();
             %br
             = member.check_box :blood_donor
           %td
-            = member.label :blood_type
+            = member.label :bloodtype
             %br
-            = collection_select(:health_data, :bloodtype_id, Bloodtype.all, :id, :full, {:include_blank => true }, :class=>'medium-input')    
+            - types = Bloodtype.all.sort
+            - choices = options_from_collection_for_select(types, :id, :full, @record.bloodtype_id)
+            = select(:record, :bloodtype, choices, {:include_blank => true }, :class=>'medium-input')    
 
