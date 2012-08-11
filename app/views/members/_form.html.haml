@@ -28,7 +28,7 @@ $( "#tabs" ).tabs();
               - choices = options_from_collection_for_select(Country.where('include_in_selection').select('id, name').order('name'), :id, :name, @member[:country_id])
               = member.select(:country, choices, {:include_blank => true }, :class=>'wide-input')    
           %td
-            = member.label :group, "Groups"
+            = member.label :groups, "Groups"
             %br
             -#= member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>10         
             -#= member.select :groups, group_choices(@member), {:include_blank => '(none)' },  :multiple => true, :size=>10, :class=>'multiselect'  

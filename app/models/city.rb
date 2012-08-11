@@ -16,7 +16,7 @@ class City < ActiveRecord::Base
   before_destroy :check_for_linked_records
 
   has_many :locations
-  validates_presence_of :description
+  validates_presence_of :name
   validates_numericality_of :longitude, :allow_nil => true;
   validates_numericality_of :latitude, :allow_nil => true;
   # note we can't simply check for uniqueness of name since there can be cities w same name

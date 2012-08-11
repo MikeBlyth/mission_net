@@ -10,15 +10,15 @@ class MembersController < ApplicationController
     # Enable user-configurable listing (user can select and order columns)
 
     config.label = "Members"
-    list_columns = [:name, :last_name, :first_name, :middle_name, :country,
+    list_columns = [:name, :last_name, :first_name, :middle_name, :short_name, :country,
         :phone_1, :phone_2, :phone_private, 
         :email_1, :email_2, :email_private, 
         :location, :location_detail, 
         :in_country, :comments,
         :arrival_date, :departure_date, :groups, :blood_donor, :bloodtype]
-    list.columns = list_columns
 #    config.actions << :config_list
 #    config.config_list.default_columns = [:name, :country, :phone_1, :email_1, :location, :arrival_date, :departure_date] 
+    list.columns = list_columns
     config.columns[:name].sort_by :sql
     config.list.sorting = {:name => 'ASC'}
     create.columns = show.columns = update.columns = [:name, 
@@ -41,6 +41,7 @@ class MembersController < ApplicationController
     config.columns[:last_name].inplace_edit = true
     config.columns[:first_name].inplace_edit = true
     config.columns[:middle_name].inplace_edit = true
+    config.columns[:short_name].inplace_edit = true
     config.columns[:phone_1].inplace_edit = true
     config.columns[:email_1].inplace_edit = true
     config.columns[:phone_2].inplace_edit = true
@@ -142,12 +143,19 @@ class MembersController < ApplicationController
   end
 
   def update
+#puts "**** params=#{params}"
     unless current_user.role == :administrator
       merged = merge_group_ids
 #puts "**** merged=#{merged}"
       params[:record][:groups] = merge_group_ids if merged.any?
     end
     super
+#puts "**** params[:record][:short_name]=#{params[:record][:short_name]}, record has #{@record.reload.short_name}"
+@record.update_attributes(:short_name => params[:record][:short_name]) # For some reason it won't update :short_name!
+@record.update_attributes(:in_country => params[:record][:in_country]) # For some reason it won't update :short_name!
+@record.update_attributes(:phone_private => params[:record][:phone_private]) # For some reason it won't update :short_name!
+@record.update_attributes(:email_private => params[:record][:email_private]) # For some reason it won't update :short_name!
+#puts "**** params[:record][:short_name]=#{params[:record][:short_name]}, after manual update record has #{@record.reload.short_name}"
   end
 
   # Given (a) the incoming group_ids from the form (params[:record][:groups]), and

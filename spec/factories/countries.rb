@@ -2,9 +2,9 @@
 
 FactoryGirl.define do
   factory :country do
-    code "MyString"
-    name "MyString"
-    nationality "MyString"
-    include_in_selection "MyString"
+    sequence(:code) {|n| "country_#{n}" }
+    name "Narnia"
+    nationality "Narnian"
+    include_in_selection true
   end
 end

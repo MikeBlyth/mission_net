@@ -2,11 +2,8 @@
 
 FactoryGirl.define do
   factory :location do
-    name "MyString"
-    state "MyString"
-    city "MyString"
-    lga "MyString"
-    gps_latitude ""
-    gps_longitude ""
+    description "Friendly Guesthouse"
+    city_id "1"
+    code 'FGH'
   end
 end

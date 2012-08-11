@@ -90,6 +90,7 @@ puts "**** SPORK LOADING PREFORK"
 #puts "****user created, user.id=#{user.id}"
     visit sign_out_path # log out previous user
     visit create_test_session_path
+    return user
   end
      
 

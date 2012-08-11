@@ -42,10 +42,10 @@ class Member < ActiveRecord::Base
   extend ExportHelper
 
   attr_accessible :arrival_date, :departure_date, :email_1, :email_2, :name, :first_name, :last_name, :middle_name, 
-      :location_detail, :location_id, :phone_1, :phone_2, 
+      :short_name, :location_detail, :location_id, :phone_1, :phone_2, 
       :receive_email, :receive_sms, :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
-      :country_id, :blood_donor, :bloodtype_id, :groups, :group_ids,
-      :in_country, :comments, :phone_private, :email_private, :short_name, :country, :location   
+      :country_id, :blood_donor, :bloodtype_id, :bloodtype, :groups, :group_ids,
+      :in_country, :comments, :phone_private, :email_private, :country, :location   
   has_and_belongs_to_many :groups
   has_many :sent_messages
   has_many :messages, :through => :sent_messages
@@ -82,13 +82,6 @@ class Member < ActiveRecord::Base
     return result.uniq.compact
   end
 
-  # This stub satisfies the various name methods that assume a short_name may exist. If you want to actually
-  # include a model column for the short name, just define it and remove this stub. (Non-automatic views
-  # may have to be adjusted as well)
-  def short_name
-    nil
-  end
-  
   # This stub helps bridge from the larger program that uses separate contact records. It would be best for clarity to change 
   # all "member.primary_contact." to "member" but this accomplishes the same thing.
   def primary_contact

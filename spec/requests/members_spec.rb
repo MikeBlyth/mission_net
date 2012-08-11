@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe "Members" do
   describe "Signing in:" do
     
@@ -59,4 +58,74 @@ describe "Members" do
     end
 
   end
-end
+
+  describe 'Editing a member' do
+    
+    it 'successfully updates all fields' do
+      member = integration_test_sign_in(:moderator) # This also puts member into "Group 1"
+      FactoryGirl.create(:country, :name => 'Kenya')
+      FactoryGirl.create(:country, :name => 'Narnia')
+      admin_group = FactoryGirl.create(:group, :group_name => 'Administrators')
+      FactoryGirl.create(:group, :group_name => 'Members')
+      FactoryGirl.create(:group, :group_name => 'Limited')
+      FactoryGirl.create(:bloodtype, :full => 'A pos')
+      FactoryGirl.create(:bloodtype, :full => 'B neg')
+      city = FactoryGirl.create(:city)
+      FactoryGirl.create(:location, :description => 'Cair Paravel', :city => city)
+      click_link "Edit your user info"
+      fill_in "First name", :with => "Samuel"
+      fill_in "Last name", :with => "Berkhold"
+      fill_in "Middle name", :with => "Jonah"
+      fill_in "Short name", :with => "Sam"
+      fill_in "record_name", :with => "Berkhold, Sam"
+      select "Nar", :from=>'record_country' 
+      select "Adm", :from=>'record_groups' 
+      unselect "Group", :from=>'record_groups'
+      fill_in "record_phone_1", :with => '12345678'
+      fill_in "record_phone_2", :with => '88888888'
+      fill_in "record_email_1", :with => 'tom@test.com'
+      fill_in "record_email_2", :with => 'jane@test.com'
+      fill_in "record_emergency_contact_name", :with => 'Robin Hood'
+      fill_in "record_emergency_contact_phone", :with => '7094444444'
+      fill_in "record_emergency_contact_email", :with => 'griffin@zoo.com'
+      check "record_phone_private"
+      check "record_email_private"
+      select "Cair", :from => 'record_location'
+      fill_in "record_location_detail", :with => 'dungeon'
+      uncheck "record_in_country"
+      check "record_blood_donor"
+      select "A pos", :from => 'record_bloodtype'
+      select "2013", :from => 'record_arrival_date_1i'
+      select "Dec", :from => 'record_arrival_date_2i'
+      select "24", :from => 'record_arrival_date_3i'
+      select "2014", :from => 'record_departure_date_1i'
+      select "Nov", :from => 'record_departure_date_2i'
+      select "23", :from => 'record_departure_date_3i'
+      click_button 'Update'
+      #***************** NOW WE HAVE THE MEMBER LISTING WITH THE FLASH NOTICE THAT MEMBER HAS BEEN UPDATED
+      page.should have_content 'Updated Berkhold, Samuel'
+      values = member.reload.attributes
+      begin
+          {'first_name' => "Samuel", 'last_name'=> 'Berkhold', 'name'=> 'Berkhold, Sam', 'short_name' => 'Sam',
+             'country'=> 'Narnia', 'groups'=> [admin_group].to_s, 'phone_1'=> '12345678', 'phone_2'=> '88888888',
+             'email_1'=> 'tom@test.com', 'email_2'=> 'jane@test.com', 'emergency_contact_name'=> 'Robin Hood',
+             'emergency_contact_phone' => '7094444444', "emergency_contact_email" => 'griffin@zoo.com',
+             'phone_private' =>'true', 'email_private' => 'true',
+             'location' => 'Cair Paravel', 'location_detail' => 'dungeon', 'in_country' => 'false',
+             'blood_donor' => 'true', 'departure_date' => Date.new(2014, 11, 23).to_s(:default), 
+             'arrival_date' => Date.new(2013, 12, 24).to_s(:default)
+            }.each do |key, value| 
+              # Debugging line below
+              # puts "**** Entered field #{key} should=#{value}; record has #{member.send(key)}" 
+              member.send(key).to_s.should == value
+            end
+      rescue
+       puts "\n**************** TEST FAILED ... SEE THIS NOTE: ************************"  
+       puts     'Note: ActiveScaffold may not be updating some fields. See Member.update where some manual'
+       puts     'updates are made after call to "super". Failures may be a result of this. Also, this test '
+       puts     'uses string representations for comparison, which might change if formatting etc. is changed.'
+       raise
+      end                
+    end # it successfully updates all fields
+  end # Editing a member
+end  
