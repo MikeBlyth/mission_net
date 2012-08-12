@@ -430,9 +430,10 @@ describe Member do
       end
 
       it 'expires role after one minute' do
-        silence_warnings {Member.instance_eval {@@role_cache_duration = 1}}  # Change duration to 1 sec so we don't have to wait
         user = FactoryGirl.build_stubbed(:member)
         user.stub(:recalc_highest_role => 'Administrator')
+        user.role_cache_duration.should > 10 # Make sure it's in use
+        user.role_cache_duration = 1  # Change duration to 1 sec so we don't have to wait
         user.role.should eq :administrator
         $redis.hget("user:#{user.id}", 'role').should eq 'Administrator'
         sleep(2)

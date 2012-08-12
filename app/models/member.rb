@@ -45,7 +45,8 @@ class Member < ActiveRecord::Base
       :short_name, :location_detail, :location_id, :phone_1, :phone_2, 
       :receive_email, :receive_sms, :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
       :country_id, :blood_donor, :bloodtype_id, :bloodtype, :groups, :group_ids,
-      :in_country, :comments, :phone_private, :email_private, :country, :location   
+      :in_country, :comments, :phone_private, :email_private, :country, :location
+  attr_accessor :role_cache_duration  
   has_and_belongs_to_many :groups
   has_many :sent_messages
   has_many :messages, :through => :sent_messages
@@ -53,11 +54,14 @@ class Member < ActiveRecord::Base
   belongs_to :country
   belongs_to :location
   belongs_to :bloodtype
-  validates_uniqueness_of    :name
+  validates_uniqueness_of :name
   validates_presence_of :name
   
-@@role_cache_duration = 60 # seconds
-
+  def initialize(*args)
+    @role_cache_duration = 60 # seconds
+    super
+  end
+  
 # *************** Class methods *************
 
 #  def self.authorized_for_create?
@@ -227,11 +231,14 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
  
   def role
     userkey = "user:#{self.id}"
+# puts "**** Member.role $redis.hget(userkey, :role)=#{$redis.hget(userkey, :role)}"
     unless myrole = $redis.hget(userkey, :role)  # This is INTENTIONALLY an assignment, not a "==" comparison
       myrole = recalc_highest_role
       $redis.hset(userkey, :role, myrole) # Cache role so we don't have to check it a zillion times from the DB 
-      $redis.expire(userkey, @@role_cache_duration)  # keep cached for 60 seconds 
+      $redis.expire(userkey, @role_cache_duration)  # keep cached for 60 seconds 
+#puts "**** caching role for @role_cache_duration=#{@role_cache_duration} sec"
     end
+#puts "**** Member.role: user=[#{self.id}] #{self}, role=#{myrole}" 
     return myrole.nil? ? nil : myrole.downcase.to_sym      
   end
 

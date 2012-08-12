@@ -66,9 +66,9 @@ end
       member = integration_test_sign_in(:moderator) # This also puts member into "Group 1"
       FactoryGirl.create(:country, :name => 'Kenya')
       FactoryGirl.create(:country, :name => 'Narnia')
-      admin_group = FactoryGirl.create(:group, :group_name => 'Administrators')
-      FactoryGirl.create(:group, :group_name => 'Members')
-      FactoryGirl.create(:group, :group_name => 'Limited')
+      admin_group = FactoryGirl.create(:group, :group_name => 'Administrators', :administrator => true)
+      members_group = FactoryGirl.create(:group, :group_name => 'Members', :member => true)
+      FactoryGirl.create(:group, :group_name => 'Limited', :limited => true)
       FactoryGirl.create(:bloodtype, :full => 'A pos')
       FactoryGirl.create(:bloodtype, :full => 'B neg')
       city = FactoryGirl.create(:city)
@@ -80,7 +80,7 @@ end
       fill_in "Short name", :with => "Sam"
       fill_in "record_name", :with => "Berkhold, Sam"
       select "Nar", :from=>'record_country' 
-      select "Adm", :from=>'record_groups' 
+      select "Mem", :from=>'record_groups' 
       unselect "Group", :from=>'record_groups'
       fill_in "record_phone_1", :with => '12345678'
       fill_in "record_phone_2", :with => '88888888'
@@ -108,7 +108,7 @@ end
       values = member.reload.attributes
       begin
           {'first_name' => "Samuel", 'last_name'=> 'Berkhold', 'name'=> 'Berkhold, Sam', 'short_name' => 'Sam',
-             'country'=> 'Narnia', 'groups'=> [admin_group].to_s, 'phone_1'=> '12345678', 'phone_2'=> '88888888',
+             'country'=> 'Narnia', 'groups'=> [members_group].to_s, 'phone_1'=> '12345678', 'phone_2'=> '88888888',
              'email_1'=> 'tom@test.com', 'email_2'=> 'jane@test.com', 'emergency_contact_name'=> 'Robin Hood',
              'emergency_contact_phone' => '7094444444', "emergency_contact_email" => 'griffin@zoo.com',
              'phone_private' =>'true', 'email_private' => 'true',

@@ -144,12 +144,14 @@ class MembersController < ApplicationController
 
   def update
 #puts "**** params=#{params}"
+#puts "****in update, current_user=#{current_user.id}, role=#{current_user.role}"
     unless current_user.role == :administrator
       merged = merge_group_ids
 #puts "**** merged=#{merged}"
       params[:record][:groups] = merge_group_ids if merged.any?
     end
     super
+#puts "****after update, current_user=#{current_user.id}, role=#{current_user.role}, groups=#{current_user.groups}"
 #puts "**** params[:record][:short_name]=#{params[:record][:short_name]}, record has #{@record.reload.short_name}"
 @record.update_attributes(:short_name => params[:record][:short_name]) # For some reason it won't update :short_name!
 @record.update_attributes(:in_country => params[:record][:in_country]) # For some reason it won't update :short_name!
