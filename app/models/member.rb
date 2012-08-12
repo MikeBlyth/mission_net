@@ -56,6 +56,8 @@ class Member < ActiveRecord::Base
   validates_uniqueness_of    :name
   validates_presence_of :name
   
+@@role_cache_duration = 60 # seconds
+
 # *************** Class methods *************
 
 #  def self.authorized_for_create?
@@ -225,11 +227,10 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
  
   def role
     userkey = "user:#{self.id}"
-#puts "**** Member.role: userkey=#{userkey}, retrieved = #{$redis.hget(userkey, :role)}"
     unless myrole = $redis.hget(userkey, :role)  # This is INTENTIONALLY an assignment, not a "==" comparison
       myrole = recalc_highest_role
-      $redis.hset(userkey, :role, myrole)
-#puts "**** Member.role: redis #{userkey} set to #{myrole}"
+      $redis.hset(userkey, :role, myrole) # Cache role so we don't have to check it a zillion times from the DB 
+      $redis.expire(userkey, @@role_cache_duration)  # keep cached for 60 seconds 
     end
     return myrole.nil? ? nil : myrole.downcase.to_sym      
   end

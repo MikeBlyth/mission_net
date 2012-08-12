@@ -43,6 +43,7 @@ group :test do
   gem 'fakeweb'
   gem 'faker', '~> 1.0.1'
   gem 'simplecov'
+  gem 'timecop'
 end
 
 group :development, :test do

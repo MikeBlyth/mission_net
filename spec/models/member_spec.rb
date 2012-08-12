@@ -1,35 +1,7 @@
-# == Schema Information
-#
-# Table name: members
-#
-#  id                      :integer         not null, primary key
-#  last_name               :string(255)
-#  first_name              :string(255)
-#  middle_name             :string(255)
-#  name                    :string(255)
-#  country_id              :integer
-#  emergency_contact_phone :string(255)
-#  emergency_contact_email :string(255)
-#  emergency_contact_name  :string(255)
-#  phone_1                 :string(255)
-#  phone_2                 :string(255)
-#  email_1                 :string(255)
-#  email_2                 :string(255)
-#  location_id             :integer
-#  location_detail         :string(255)
-#  arrival_date            :date
-#  departure_date          :date
-#  receive_sms             :boolean
-#  receive_email           :boolean
-#  blood_donor             :boolean
-#  blood_type_id           :integer
-#  created_at              :datetime        not null
-#  updated_at              :datetime        not null
-#
-
 require 'spec_helper'
 require 'sim_test_helper'
 include SimTestHelper
+require 'timecop.rb'
 
 describe Member do
 
@@ -456,7 +428,17 @@ describe Member do
         user.stub(:recalc_highest_role => 'Administrator')
         user.role.should eq :administrator
       end
-      
+
+      it 'expires role after one minute' do
+        silence_warnings {Member.instance_eval {@@role_cache_duration = 1}}  # Change duration to 1 sec so we don't have to wait
+        user = FactoryGirl.build_stubbed(:member)
+        user.stub(:recalc_highest_role => 'Administrator')
+        user.role.should eq :administrator
+        $redis.hget("user:#{user.id}", 'role').should eq 'Administrator'
+        sleep(2)
+#        Timecop.travel(Time.now + 80.seconds)
+        $redis.hget("user:#{user.id}", 'role').should be_nil
+      end     
       
     end # uses Redis
   end  # Roles (privilege levels):
