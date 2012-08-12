@@ -248,5 +248,15 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
       authorizations.create :provider => auth_hash["provider"], :uid => auth_hash["uid"]
     end
   end
+  
+#Not working
+#  def authorized_for_read?
+#    false
+#  end
+
+#  def phone_1_authorized_for_read?
+#    $current_user.roles_include? :moderator
+#    false
+#  end
 
  end

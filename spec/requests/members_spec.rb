@@ -3,6 +3,7 @@ require 'spec_helper'
 describe "Members" do
   describe "Signing in:" do
     
+ActiveSupport::Deprecation.silence do
     it "Signs in as administrator with admin menu options" do
       # Note that this depends on a specific message being visible on the page ... adjust if needed
       integration_test_sign_in(:administrator)
@@ -12,7 +13,7 @@ describe "Members" do
       page.should have_content 'Message list'
       page.should have_content 'Hide menu'
     end
-
+end
     it "Signs in as moderator with moderator menu options" do
       # Note that this depends on a specific message being visible on the page ... adjust if needed
       integration_test_sign_in(:moderator)

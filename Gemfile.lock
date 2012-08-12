@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/activescaffold/active_scaffold.git
-  revision: f836ac4447ff66cbced054a6a49f6a07c7277707
+  revision: ac83e397c9d74f1ec74d28820fe11b9002a20514
   specs:
     active_scaffold (3.2.14)
       rails (~> 3.2.0)
@@ -124,7 +124,7 @@ GEM
     jquery-ui-rails (1.0.0)
       jquery-rails
       railties (>= 3.1.0)
-    json (1.7.3)
+    json (1.7.4)
     jwt (0.1.4)
       json (>= 1.2.4)
     launchy (2.1.0)

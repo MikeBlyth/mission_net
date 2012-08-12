@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
     config.ignore_columns.add [:created_at, :updated_at, :lock_version]
     config.list.empty_field_text = '----'
     config.security.default_permission = false
+    config.security.current_user_method = :current_user
   end
 
   before_filter :require_https, :except => :update_status_clickatell #, :only => [:login, :signup, :change_password] 
@@ -36,6 +37,12 @@ class ApplicationController < ActionController::Base
   def iron_worker
     @iron_worker_client ||= IronWorkerNG::Client.new
   end  
+
+  def current_user
+    current_user ||= (Member.find(session[:user_id]) if session[:user_id])
+    $current_user = current_user
+    return current_user
+  end
 
 private
 

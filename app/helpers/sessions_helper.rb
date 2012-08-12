@@ -1,8 +1,12 @@
 module SessionsHelper
+
   def current_user
-    @current_user ||= (Member.find(session[:user_id]) if session[:user_id])
-    return @current_user
+    current_user ||= (Member.find(session[:user_id]) if session[:user_id])
+    $current_user = current_user
+    return current_user
   end
+
+
 
   # What is the higest role level contained in a set of groups (e.g. the groups a user belongs to)?
   # This assumes the scheme were privilege levels are hard coded as boolean columns in the group

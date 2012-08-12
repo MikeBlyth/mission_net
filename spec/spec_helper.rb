@@ -64,6 +64,7 @@ puts "**** SPORK LOADING PREFORK"
     @user = FactoryGirl.build_stubbed(:member, :groups => [group], :id => 999)
     @user.stub(:role => role)
     controller.stub(:current_user).and_return(@user)
+    $current_user = @user
     return @user
   end
   alias test_sign_in_fast test_sign_in
@@ -76,6 +77,7 @@ puts "**** SPORK LOADING PREFORK"
     group = FactoryGirl.create(:group, role => true)
     @user = FactoryGirl.create(:member, :groups => [group])
     controller.stub(:current_user).and_return(@user)
+    $current_user = @user
     return @user
   end
 
@@ -90,6 +92,7 @@ puts "**** SPORK LOADING PREFORK"
 #puts "****user created, user.id=#{user.id}"
     visit sign_out_path # log out previous user
     visit create_test_session_path
+    $current_user = user
     return user
   end
      

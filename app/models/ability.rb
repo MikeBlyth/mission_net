@@ -3,7 +3,7 @@ class Ability
   include SessionsHelper
     
   def initialize(user)
-ActiveRecord::Base.logger.level = Logger::DEBUG
+ActiveRecord::Base.logger.level = Logger::WARN
 #    user ||= User.new # guest user (not logged in)
 
     # IMPORTANT NOTE: 
