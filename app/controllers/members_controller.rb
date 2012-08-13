@@ -153,10 +153,12 @@ class MembersController < ApplicationController
     super
 #puts "****after update, current_user=#{current_user.id}, role=#{current_user.role}, groups=#{current_user.groups}"
 #puts "**** params[:record][:short_name]=#{params[:record][:short_name]}, record has #{@record.reload.short_name}"
-@record.update_attributes(:short_name => params[:record][:short_name]) # For some reason it won't update :short_name!
-@record.update_attributes(:in_country => params[:record][:in_country]) # For some reason it won't update :short_name!
-@record.update_attributes(:phone_private => params[:record][:phone_private]) # For some reason it won't update :short_name!
-@record.update_attributes(:email_private => params[:record][:email_private]) # For some reason it won't update :short_name!
+    rec_params = params[:record]
+    @record.update_attributes(:short_name => rec_params[:short_name], # For some reason it won't update :short_name!
+      :in_country => rec_params[:in_country], 
+      :phone_private => rec_params[:phone_private], 
+      :comments => rec_params[:comments],
+      :email_private => rec_params[:email_private])
 #puts "**** params[:record][:short_name]=#{params[:record][:short_name]}, after manual update record has #{@record.reload.short_name}"
   end
 

@@ -102,6 +102,7 @@ end
       select "2014", :from => 'record_departure_date_1i'
       select "Nov", :from => 'record_departure_date_2i'
       select "23", :from => 'record_departure_date_3i'
+      fill_in 'record_comments', :with => 'Comments please'
       click_button 'Update'
       #***************** NOW WE HAVE THE MEMBER LISTING WITH THE FLASH NOTICE THAT MEMBER HAS BEEN UPDATED
       page.should have_content 'Updated Berkhold, Samuel'
@@ -114,7 +115,7 @@ end
              'phone_private' =>'true', 'email_private' => 'true',
              'location' => 'Cair Paravel', 'location_detail' => 'dungeon', 'in_country' => 'false',
              'blood_donor' => 'true', 'departure_date' => Date.new(2014, 11, 23).to_s(:default), 
-             'arrival_date' => Date.new(2013, 12, 24).to_s(:default)
+             'arrival_date' => Date.new(2013, 12, 24).to_s(:default), 'comments' => 'Comments please'
             }.each do |key, value| 
               # Debugging line below
               # puts "**** Entered field #{key} should=#{value}; record has #{member.send(key)}" 

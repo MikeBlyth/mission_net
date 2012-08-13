@@ -9,34 +9,35 @@ extend MembersHelper
 
     it 'hides private data from unprivileged user' do
       @member = FactoryGirl.build_stubbed(:member, :phone_private => true, :email_private => true)
-      test_sign_in(:member)
+      def current_user; test_sign_in(:member); end
       @privacy_columns.each do |column|
-        self.send(column.to_s + '_column', @member).should eq t(:private_data)
+        self.send(column.to_s + '_column', @member, nil).should eq t(:private_data)
       end
     end
 
     it 'shows non-private data to unprivileged user' do
       @member = FactoryGirl.build_stubbed(:member, :phone_private => false, :email_private => false)
-      test_sign_in(:member)
+      def current_user; test_sign_in(:member); end
       @privacy_columns.each do |column|
-        self.send(column.to_s + '_column', @member).should eq @member.send(column)
+        self.send(column.to_s + '_column', @member, nil).should eq @member.send(column)
       end
     end
 
     it 'shows private data to privileged user' do
       @member = FactoryGirl.build_stubbed(:member, :phone_private => true, :email_private => true)
-      test_sign_in(:moderator)
+      def current_user; test_sign_in(:moderator); end
       @privacy_columns.each do |column|
-        self.send(column.to_s + '_column', @member).should eq @member.send(column)
+        self.send(column.to_s + '_column', @member, nil).should eq @member.send(column)
       end
     end
 
     it 'shows private data to owner-user' do
       @member = test_sign_in(:moderator)
+      def current_user; @member; end
       @member.phone_private = true
       @member.email_private = true
       @privacy_columns.each do |column|
-        self.send(column.to_s + '_column', @member).should eq @member.send(column)
+        self.send(column.to_s + '_column', @member, nil).should eq @member.send(column)
       end
     end
   end # Filter private data
