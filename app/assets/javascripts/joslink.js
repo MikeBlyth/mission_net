@@ -9,6 +9,37 @@ $(function() {
 });
 
 
+/* Make column collapse */
+
+$(function() {
+//     $(".phone_2-column_heading").dblclick(function() {
+      $("h2").click(function() {
+      $(".phone_2-column").toggle();
+      $(".phone_2-column_heading").toggle();
+      $(".email_2-column").toggle();
+      $(".email_2-column_heading").toggle();
+      $(".email_private-column").toggle();
+      $(".email_private-column_heading").toggle();
+      $(".phone_private-column").toggle();
+      $(".phone_private-column_heading").toggle();
+      $(".middle_name-column").toggle();
+      $(".middle_name-column_heading").toggle();
+      $(".short_name-column").toggle();
+      $(".short_name-column_heading").toggle();
+      $(".country-column").toggle();
+      $(".country-column_heading").toggle();
+      });
+    // This one captures right click on column header and collapses it. Problem is getting it back!
+/*
+   $(".phone_2-column_heading").bind('contextmenu', function(e){
+      e.preventDefault();
+      $(".phone_2-column").toggle();
+      $(".phone_2-column_heading").toggle();
+      return false;
+      });
+*/
+});
+
 /* Make some things into buttons */
 
 $(function() {
