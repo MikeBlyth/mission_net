@@ -5,7 +5,7 @@ class SiteSettingsController < ActionController::Base
 #  include AuthenticationHelper
   include ApplicationHelper
   include SessionsHelper
-  load_and_authorize_resource
+#c#  load_and_authorize_resource
   
   layout 'application'
 

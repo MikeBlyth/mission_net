@@ -1,3 +1,4 @@
+include BasePermissionsHelper
 # == Schema Information
 #
 # Table name: app_logs
@@ -11,7 +12,7 @@
 #
 
 class AppLog < ActiveRecord::Base
-   attr_accessible :severity, :code, :description
+  attr_accessible :severity, :code, :description
   before_save :control_description_length
   def self.tail(lines=10)
     reply = ''

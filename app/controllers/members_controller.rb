@@ -1,10 +1,12 @@
 class MembersController < ApplicationController
   helper :countries
+  helper :base_permissions
 
   include ApplicationHelper
+  include BasePermissionsHelper
 
   skip_before_filter :authorize_privilege
-  load_and_authorize_resource
+#c#  load_and_authorize_resource
 
   active_scaffold :member do |config|
     # Enable user-configurable listing (user can select and order columns)
@@ -198,7 +200,11 @@ puts "**** moderator = #{current_user.role_include?(:moderator)}"
     return ok #|| !is_member
   end
     
-     
+ 
+  def list_authorized2?
+    current_user.roles_include?(:member)
+  end
+    
 
 end
   

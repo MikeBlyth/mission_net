@@ -1,3 +1,5 @@
+include BasePermissionsHelper
+
 # == Schema Information
 #
 # Table name: members
@@ -37,7 +39,6 @@
 class Member < ActiveRecord::Base
   include NameHelper
   require 'sessions_helper'
-  include SessionsHelper
   
   extend ExportHelper
 
@@ -259,12 +260,21 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
   
 #Not working
 #  def authorized_for_read?
-#    false
+#    puts "**** authorized_for_read?: true"
+#    true
 #  end
+#  
+#  def authorized_for_read?; true; end
+#  def authorized_for_update?; true; end
+#  def authorized_for_create?; true; end
+#  def authorized_for_destroy?; true; end
 
-#  def phone_1_authorized_for_read?
-#    $current_user.roles_include? :moderator
-#    false
-#  end
+  def authorized_for_read?
+    current_user.roles_include?(:member) || current_user.id == self.id
+  end    
+    
+  def authorized_for_update?
+    current_user.roles_include?(:moderator) || current_user.id == self.id
+  end    
 
  end

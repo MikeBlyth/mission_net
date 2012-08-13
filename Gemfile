@@ -19,7 +19,7 @@ gem 'omniauth-google-oauth2'
 gem 'delayed_job_active_record'
 gem 'heroku-api'
 gem 'iron_worker_ng'
-gem 'cancan'
+#c#gem 'cancan'
 gem 'redis'
 
 #gem 'active_scaffold_config_list_vho'

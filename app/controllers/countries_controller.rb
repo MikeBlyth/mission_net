@@ -12,5 +12,9 @@ class CountriesController < ApplicationController
     config.subform.columns.exclude :nationality, :code, :members
     config.columns[:include_in_selection].inplace_edit = true
   end
+
+  def list_authorized2?
+    current_user.roles_include?(:member)
+  end
 end  
 

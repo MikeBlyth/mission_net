@@ -1,3 +1,5 @@
+include BasePermissionsHelper
+
 # == Schema Information
 #
 # Table name: groups
@@ -84,7 +86,14 @@ class Group < ActiveRecord::Base
   def self.primary_group_abbrevs
      self.where(:primary=>true).map {|g| g.abbrev}.join(' ')
   end
+
+  def administrator_authorized_for_update?
+    current_user.roles_include?(:administratorx)
+  end
+    
 end
+
+
 
 
 

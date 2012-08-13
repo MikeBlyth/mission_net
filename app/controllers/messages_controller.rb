@@ -2,8 +2,7 @@ require 'sms_gateways_helper.rb'
 include SmsGatewaysHelper
 
 class MessagesController < ApplicationController
-  load_and_authorize_resource
-  
+
   active_scaffold :message do |config|
     config.list.columns = [:id, :created_at, :user, :body, :sms_only, :send_sms, :send_email, :to_groups, 
         :sent_messages, :importance, :status_summary]
@@ -58,6 +57,10 @@ class MessagesController < ApplicationController
     deliver_message(fu_message)
     flash[:notice] = 'Follow up message sent'
     redirect_to messages_path
+  end
+
+  def list_authorized2?
+    current_user.roles_include?(:member)
   end
 
 end 

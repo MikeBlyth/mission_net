@@ -1,7 +1,6 @@
 class SentMessagesController < ApplicationController
 
   skip_before_filter :verify_authenticity_token, :authorize
-  skip_authorization_check
 
   active_scaffold :sent_message do |config|
     config.list.columns = [:id, :message_id, :member, :msg_status, :phone, :confirmed_time, :confirmed_mode, :confirmation_message]
@@ -22,5 +21,9 @@ class SentMessagesController < ApplicationController
     @sent_message.update_attributes(parsed[:updates]) if @sent_message
     AppLog.create(:code => "SMS.clickatell.update", :description=>"params=#{params}")
     render :text => "Success", :status => 200
+  end
+
+  def list_authorized2?
+    current_user.roles_include?(:member)
   end
 end 

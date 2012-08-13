@@ -2,15 +2,15 @@ class GroupsController < ApplicationController
 #  before_filter :authenticate #, :only => [:edit, :update]
   include ApplicationHelper
   include SessionsHelper
+  include BasePermissionsHelper
 
-  load_and_authorize_resource
-  
   active_scaffold :group do |config|
     # list.columns.exclude :abo, :rh, :members
     config.columns = [:group_name, :abbrev, :primary, :user_selectable, 
       :administrator, :moderator, :member, :limited, :group_member_names,  :parent_group, :subgroups]
     list.sorting = {:group_name => 'ASC'}
     config.show.link = false
+#    config.create.link = false
     config.columns[:group_name].inplace_edit = true
     config.columns[:user_selectable].inplace_edit = true
     config.columns[:abbrev].inplace_edit = true
@@ -76,5 +76,8 @@ params[:subgroups] = nil  # Hack
      send_data Group.export(columns), :filename => "groups.csv"
   end
 
+  def list_authorized2?
+    current_user.roles_include?(:member)
+  end
 
 end

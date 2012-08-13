@@ -1,3 +1,5 @@
+include BasePermissionsHelper
+
 # == Schema Information
 #
 # Table name: sent_messages

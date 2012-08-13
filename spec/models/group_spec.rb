@@ -9,6 +9,11 @@
 #  primary         :boolean
 #  created_at      :datetime        not null
 #  updated_at      :datetime        not null
+#  user_selectable :boolean
+#  administrator   :boolean
+#  moderator       :boolean
+#  member          :boolean
+#  limited         :boolean
 #
 
 require 'spec_helper'

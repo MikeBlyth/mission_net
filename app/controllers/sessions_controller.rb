@@ -1,7 +1,7 @@
 class SessionsController < ApplicationController
 
   skip_before_filter :authorize, :only => [:new, :create, :update]
-  skip_authorization_check
+#c#  skip_authorization_check
   
   def new
     redirect_to(initialize_path) if Member.count == 0

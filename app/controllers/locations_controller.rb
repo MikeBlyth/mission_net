@@ -10,5 +10,9 @@ class LocationsController < ApplicationController
     config.show.link = false
     config.columns[:description].inplace_edit = true
   end
+
+  def list_authorized2?
+    current_user.roles_include?(:member)
+  end
 end
 

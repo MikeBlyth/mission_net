@@ -1,7 +1,5 @@
 class BloodtypesController < ApplicationController
 
-  load_and_authorize_resource
-
   active_scaffold :bloodtype do |config|
     # list.columns.exclude :abo, :rh, :members
     list.columns = [:full, :comment]
@@ -14,6 +12,10 @@ class BloodtypesController < ApplicationController
     association_join_text = "; " 
     config.subform.columns.exclude :abo, :rh, :comment
     config.list.pagination = false
+  end
+
+  def list_authorized2?
+    current_user.roles_include?(:member)
   end
 end
 

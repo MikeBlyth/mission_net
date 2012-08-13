@@ -1,3 +1,4 @@
+include BasePermissionsHelper
 # == Schema Information
 #
 # Table name: blood_types

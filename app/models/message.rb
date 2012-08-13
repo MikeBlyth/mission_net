@@ -1,3 +1,5 @@
+include BasePermissionsHelper
+
 # == Schema Information
 #
 # Table name: messages
@@ -297,5 +299,7 @@ puts "**** Trying to deliver SMS for message ##{self.id} but no phone numbers fo
       errors.add(:base,'Must select a message type (email, SMS, etc.) or "news update"')
     end
   end
-  
+
+  def body_authorized_for_read?; false; end  
+  def to_groups_authorized_for_read?; false; end  
 end
