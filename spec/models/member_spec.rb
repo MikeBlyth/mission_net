@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'sim_test_helper'
 include SimTestHelper
-require 'timecop.rb'
+#require 'timecop.rb'
 
 describe Member do
 
