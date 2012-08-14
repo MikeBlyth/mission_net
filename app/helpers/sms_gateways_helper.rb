@@ -1,4 +1,0 @@
-module SmsGatewaysHelper 
- 
-end   
-

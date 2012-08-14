@@ -1,6 +1,3 @@
-require 'sms_gateways_helper.rb'
-include SmsGatewaysHelper
-
 class MessagesController < ApplicationController
   load_and_authorize_resource
   

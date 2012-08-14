@@ -27,7 +27,6 @@
 #
 
 include MessagesHelper
-include SmsGatewaysHelper
 
 #require 'ironworker_twilio_gateway.rb'
 
@@ -64,6 +63,12 @@ class Message < ActiveRecord::Base
       where("keywords LIKE ? OR subject LIKE ? OR body LIKE ? OR sms_only LIKE ?", key_search_expr,key_search_expr, key_search_expr, key_search_expr).
       order('updated_at DESC').limit(options[:limit])
   end
+  
+  # This is not an automatic length checker! It needs to be changed if you change the length of the timestamp.
+  def self.timestamp_length
+    Date.today.day < 10 ? 9 : 10   # timestamp is shorter if day of month is one digit, like 9Mar1252p 
+  end
+
   # ********** End Class Methods ************************
 
   # Convert :to_groups=>["1", "2", "4"] or [1,2,4] to "1,2,4", as maybe 
@@ -141,9 +146,15 @@ class Message < ActiveRecord::Base
     deliver_sms(:sms_gateway=>options[:sms_gateway]) if send_sms
   end    
     
-  def timestamp
-    return nil if created_at.nil?
-    t = created_at.in_time_zone(Joslink::Application.config.time_zone)
+  # Create compact timestamp string from current time or the record's created_at time.
+  # If you change the length of the timestamp, be sure to adjust the self.timestamp_length method above!
+  def timestamp(current=false)
+    if current # Use current time rather than record's time.
+      t = Time.now
+    else
+      return nil if created_at.nil?
+      t = created_at.in_time_zone(Joslink::Application.config.time_zone)
+    end
     hour = t.hour
     if (0..9).include?(hour) || (13..21).include?(hour)
       str = (t.strftime('%e%b')+t.strftime('%l')[1]+t.strftime(':%M%P'))[0..9]

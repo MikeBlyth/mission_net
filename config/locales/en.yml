@@ -4,3 +4,4 @@
 en:
   hello: "Hello world"
   private_data: "**private**"
+  via: "via"

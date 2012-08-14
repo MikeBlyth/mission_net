@@ -1,6 +1,6 @@
 require 'spec_helper'
 include SimTestHelper
-#include ApplicationHelper
+include ApplicationHelper
 require 'messages_test_helper.rb' 
 include MessagesTestHelper  
 
@@ -128,7 +128,7 @@ describe SmsController do
       it 'limits response length to 160 chars' do
         @params['Body'] = "info #{'a'*170}"
         post :create, @params
-        response.body.length.should < 161
+        response.body.length.should <= MaxSmsLength
       end     
 
     end # 'info sends contact info'
@@ -183,9 +183,7 @@ describe SmsController do
     end # d (group deliver)
     
     describe 'help' do
-      before(:each) do
-      end
-      
+
       it 'responds to help by itself' do
         @params['Body'] = "help"
         post :create, @params   
@@ -196,6 +194,13 @@ describe SmsController do
         post :create, @params   
         response.body.should match /get contact info/
       end
+
+      it 'sends reply that is not too long' do
+        @params['Body'] = "?"
+        post :create, @params   
+        response.body.length.should <= MaxSmsLength
+      end     
+
     end  # help
     
     describe 'groups' do
@@ -207,6 +212,31 @@ describe SmsController do
         response.body.should  =~ /cat dog zebrafish/
       end
     end
+    
+    describe 'report' do
+      before(:each) do
+        @message = mock('Message', :deliver => true, :id => 999)
+      end
+
+      it 'creates a news update' do
+        update_body = 'Here is the latest update'
+        @params['Body'] = "report #{update_body}"
+        Message.should_receive(:new).with(hash_including(:user_id => @sender.id,
+            :send_sms=>false, :news_update => true, :sms_only=>"#{update_body}-#{@sender.shorter_name}", 
+            :body => "via #{@sender.shorter_name}: #{update_body}")).and_return(@message)
+        post :create, @params
+      end
+
+      it 'confirms w sender' do
+        update_body = 'Here is the latest update'
+        @params['Body'] = "report #{update_body}"
+        Message.stub(:new => @message)
+        post :create, @params
+        response.body.should  =~ /update, "Here is.*saved/
+      end
+
+    end
+        
  
     describe 'updates' do
       before(:each) do

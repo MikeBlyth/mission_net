@@ -1,5 +1,4 @@
 include MessagesHelper
-include SmsGatewaysHelper
 
 describe 'id tag helper (message_id_tag)' do
   # Of course these will have to be changed if you change the format of the tags

@@ -3,8 +3,6 @@ include ApplicationHelper
 require 'httparty'
 require 'uri'
 require 'sms_gateway'
-#include SessionHelper
-include SmsGatewaysHelper
 
 class SmsController < ApplicationController
   include HTTParty
@@ -62,6 +60,7 @@ private
        when 'info' then do_info(text)  
 #           when 'location' then do_location(text)  
        when 'update', 'updates' then send_updates(text)
+       when 'report', 'updates' then add_update(text)
        when '?', 'help' then do_help(text)
        when /\A!/ then process_response(command, text)
        # More commands go here ...
@@ -89,10 +88,11 @@ private
 
   # Return help
   # ToDo -- add specific help about commands
-  def do_help(text)
+  def do_help(text=nil)
     command_summary = [ ['d <group>', 'deliver msg to grp'], 
                         ['groups', 'list main grps'],
                         ['info <name>', 'get contact info'],
+                        ['report', 'post update'],
                         ['updates', 'get updates'],
 #                        ['location <place>', 'set current loc'],
                         ['!21 <reply>', 'reply to msg 21']
@@ -142,23 +142,40 @@ private
       return "#{member.contact_summary['Phone']} #{email}" 
   end
 
+  # append the short version of sender name, yielding a string of at most maxlength characters
+  def insert_sender_name(text, sender, maxlength=nil)
+    maxlength ||= MaxSmsLength-Message.timestamp_length
+    sender_name = @sender.shorter_name
+    text[0..(maxlength-2-sender_name.size)] + '-' + sender_name  # Truncate msg and add sender's name
+  end
+    
   def group_deliver(text)
 #puts "**** group_deliver"    
     target_group, body = text.sub(' ',"\x0").split("\x0") # just a way of stripping the first word as the group name
     group = Group.find(:first, 
       :conditions => [ "lower(group_name) = ? OR lower(abbrev) = ?", target_group.downcase, target_group.downcase])
     if group   # if we found the group requested by the sender
-      sender_name = @sender.shorter_name
-      body = body[0..148-sender_name.size] + '-' + sender_name  # Truncate msg and add sender's name
+      body = insert_sender_name(body, @sender)
       message = Message.new(:user_id => @sender.id, :send_sms=>true, :to_groups=>group.id, :sms_only=>body)
       message.deliver  # Don't forget to deliver!
       return("Your message ##{message.id} is being sent to #{group.group_name} (#{message.members.count} recipients)")
     else
       return( ("Error: no group #{target_group}. Send command 'groups' to list the main ones incl " +
-               Group.primary_group_abbrevs)[0..160] )
+               Group.primary_group_abbrevs)[0..MaxSmsLength] )
     end
   end
+  
+  # Post the sender's message as a news update, expiring in 4 hours (add code to make variable if desired)
+  def add_update(text)
+    body = "#{t(:via)} #{@sender.shorter_name}: #{text}"  # Will accept messages longer than 150, though I don't think gateways will do this
+    sms_only = insert_sender_name(text, @sender)
+    message = Message.new(:user_id => @sender.id, :send_sms=>false, :news_update => true, 
+      :sms_only => sms_only, :body => body, :expiration => 240) 
+    message.deliver  # Don't forget to deliver!
+    return("Your news update, \"#{text[0..15]},\" has been saved. It will expire in four hours.")
+  end  
 
+  # Return to the user the latest news updates
   def send_updates(text)
     # The regular expression is to look for keyword(s) and/or limit (integer) in either order
     if text+' ' =~ /\A\s*(\d+)\W*(.*)/

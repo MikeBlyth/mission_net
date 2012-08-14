@@ -2,47 +2,46 @@ module ApplicationHelper
 
   MaxReportedLocStaleness = 24 # 24 hours
   DefaultReportedLocDuration = 6 # 6 hours
+  MaxSmsLength = 160 # characters
   
+  def code_with_description
+    s = self.code.to_s + ' ' + self.description
+    return s
+  end
 
+  # Given an object (or nil) described by method description_method, return 
+  # * nil_value if object is nil or its description is missing or is "unspecified"
+  # * description_method otherwise
+  # Example:
+  #   given m = Member with status=>on_field_status, residence_location=>nil, country=>nil
+  #     description_or_blank(m.residence_location) returns nil
+  #     description_or_blank(m.residence_location, "Unknown") returns "Unknown"
+  #     description_or_blank(m.status) returns "On field"
+  #     description_or_blank(m.country, '?', :name) returns '?'
+  def description_or_blank(object, nil_value='', description_method=:description)
+    nil_value = nil if nil_value == :nil
+    return nil_value unless object
+    value = object.send description_method || 'unspecified'
+    return value.downcase == 'unspecified' ? nil_value : value
+  end
 
-    def code_with_description
-      s = self.code.to_s + ' ' + self.description
-      return s
-    end
+  # Return first non-blank line from string which may contain many lines.
+  def first_nonblank_line(str)
+    return nil if str.nil? || str.blank?
+    str.lines.find {|line| !line.blank?}.chomp
+  end
 
-    # Given an object (or nil) described by method description_method, return 
-    # * nil_value if object is nil or its description is missing or is "unspecified"
-    # * description_method otherwise
-    # Example:
-    #   given m = Member with status=>on_field_status, residence_location=>nil, country=>nil
-    #     description_or_blank(m.residence_location) returns nil
-    #     description_or_blank(m.residence_location, "Unknown") returns "Unknown"
-    #     description_or_blank(m.status) returns "On field"
-    #     description_or_blank(m.country, '?', :name) returns '?'
-    def description_or_blank(object, nil_value='', description_method=:description)
-      nil_value = nil if nil_value == :nil
-      return nil_value unless object
-      value = object.send description_method || 'unspecified'
-      return value.downcase == 'unspecified' ? nil_value : value
+  # Tries sending 'key' to object as method, then as hash key (string and symbol)
+  #   so a model, a hash, or other object can be accessed the same way
+  def method_or_key(object, key)
+    if object.respond_to? key 
+      return object.send(key)
+    elsif object.is_a? Hash
+      return object[key] || object[key.to_s] || object[key.to_sym]
+    else
+      return nil
     end
-
-    # Return first non-blank line from string which may contain many lines.
-    def first_nonblank_line(str)
-      return nil if str.nil? || str.blank?
-      str.lines.find {|line| !line.blank?}.chomp
-    end
- 
-    # Tries sending 'key' to object as method, then as hash key (string and symbol)
-    #   so a model, a hash, or other object can be accessed the same way
-    def method_or_key(object, key)
-      if object.respond_to? key 
-        return object.send(key)
-      elsif object.is_a? Hash
-        return object[key] || object[key.to_s] || object[key.to_sym]
-      else
-        return nil
-      end
-    end
+  end
 
   # Compare a string date with the date in object.method 
   # Return true if the string represents the same date in any "to_s" format
