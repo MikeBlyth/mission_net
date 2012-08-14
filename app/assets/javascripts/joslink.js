@@ -9,43 +9,14 @@ $(function() {
 });
 
 
-/* Make column collapse */
+/* Show/hide columns marked with class 'hideable' */
 
 $(function() {
 //     $(".phone_2-column_heading").dblclick(function() {
     $("h2").append("<span style='font-size: 0.6em'>&nbsp;&nbsp;Click here to show/hide columns</span>")
     $("h2").click(function() {
-        var hideable = new Array("email_2", "email_private", "phone_private",
-          "last_name", "first_name", "middle_name", "short_name",
-          "country", "blood_donor", "bloodtype", "location_detail" );
-        for (col in hideable) {
-          $("."+hideable[col]+"-column").toggle();
-          $("."+hideable[col]+"-column_heading").toggle();
-          };
-//        $(".phone_2-column").toggle();
-//        $(".phone_2-column_heading").toggle();
-//        $(".email_2-column").toggle();
-//        $(".email_2-column_heading").toggle();
-//        $(".email_private-column").toggle();
-//        $(".email_private-column_heading").toggle();
-//        $(".phone_private-column").toggle();
-//        $(".phone_private-column_heading").toggle();
-//        $(".middle_name-column").toggle();
-//        $(".middle_name-column_heading").toggle();
-//        $(".short_name-column").toggle();
-//        $(".short_name-column_heading").toggle();
-//        $(".country-column").toggle();
-//        $(".country-column_heading").toggle();
+        $(".hideable").toggle();
     });
-    // This one captures right click on column header and collapses it. Problem is getting it back!
-/*
-   $(".phone_2-column_heading").bind('contextmenu', function(e){
-      e.preventDefault();
-      $(".phone_2-column").toggle();
-      $(".phone_2-column_heading").toggle();
-      return false;
-      });
-*/
 });
 
 /* Make some things into buttons */

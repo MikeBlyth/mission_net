@@ -6,21 +6,22 @@ class MembersController < ApplicationController
   skip_before_filter :authorize_privilege
   load_and_authorize_resource
 
+  # CONFIGURE ACTIVE SCAFFOLD FOR THIS TABLE
   active_scaffold :member do |config|
-    # Enable user-configurable listing (user can select and order columns)
-
-    config.label = "Members"
+    config.label = "Members"  # Main title
+    # Columns that appear in the list view. This also determines their order across the page.
     list_columns = [:name, :last_name, :first_name, :middle_name, :short_name, :country,
-        :phone_1, :phone_2, :phone_private, 
-        :email_1, :email_2, :email_private, 
-        :location, :location_detail, 
-        :in_country, :comments,
+        :phone_1, :phone_2, :phone_private, :email_1, :email_2, :email_private, 
+        :location, :location_detail, :in_country, :comments,
         :arrival_date, :departure_date, :groups, :blood_donor, :bloodtype]
-#    config.actions << :config_list
-#    config.config_list.default_columns = [:name, :country, :phone_1, :email_1, :location, :arrival_date, :departure_date] 
     list.columns = list_columns
+
+    # Set default sorting
     config.columns[:name].sort_by :sql
     config.list.sorting = {:name => 'ASC'}
+
+    # These columns will be shown in the other views. Less important since
+    # these views are probably all overriden anyway.
     create.columns = show.columns = update.columns = [:name, 
           :last_name, :first_name, :middle_name,
           :country,
@@ -32,44 +33,38 @@ class MembersController < ApplicationController
         :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
         :blood_donor, :bloodtype,
           ]
-    config.columns[:country].actions_for_association_links = []
-    config.columns[:groups].clear_link
-    config.columns[:country].inplace_edit = true
+    config.columns[:country].actions_for_association_links = []  # Don't show link to country record
     config.columns[:country].form_ui = :select 
-    config.columns[:in_country].inplace_edit = true
-    config.columns[:name].inplace_edit = true
-    config.columns[:last_name].inplace_edit = true
-    config.columns[:first_name].inplace_edit = true
-    config.columns[:middle_name].inplace_edit = true
-    config.columns[:short_name].inplace_edit = true
-    config.columns[:phone_1].inplace_edit = true
-    config.columns[:email_1].inplace_edit = true
-    config.columns[:phone_2].inplace_edit = true
-    config.columns[:email_2].inplace_edit = true
-    config.columns[:phone_private].inplace_edit = true
-    config.columns[:email_private].inplace_edit = true
-    config.columns[:emergency_contact_phone].inplace_edit = true
-    config.columns[:emergency_contact_email].inplace_edit = true
-    config.columns[:emergency_contact_name].inplace_edit = true
-    config.columns[:arrival_date].inplace_edit = true
-    config.columns[:departure_date].inplace_edit = true
-    config.columns[:location].inplace_edit = true
     config.columns[:location].form_ui = :select 
-    config.columns[:location_detail].inplace_edit = true
-    config.columns[:bloodtype].inplace_edit = true
     config.columns[:bloodtype].form_ui = :select 
-    config.columns[:blood_donor].inplace_edit = true
-    config.columns[:comments].inplace_edit = true
     
-   config.actions.exclude :search
-   config.actions.add :field_search
-   config.field_search.human_conditions = true
-   config.field_search.columns = [:last_name, :groups, :location, :phone_1, :bloodtype, :blood_donor]
-   config.action_links.add 'export', :label => 'Export', :page => true, :type => :collection, 
+    # Any columns that should not be shown as links in the list view
+    config.columns[:groups].clear_link
+        
+    # Default is to allow in place editing of all list columns. Exclude any in next line
+    exclude_from_inplace_edit = []  # add any columns that should not be editable on the list view
+#binding.pry  
+    (list_columns-exclude_from_inplace_edit).each {|col| config.columns[col].inplace_edit = true}
+
+    # These columns will be hidden in the compact view
+    compact_view_columns = [:last_name, :first_name, :middle_name, :short_name, :country, :email_2, :email_private, :location_detail, 
+       :blood_donor, :bloodtype]
+    compact_view_columns.each {|col| config.columns[col].css_class = 'hideable'}
+    
+    # Use the field search instead of the undifferentiated search
+    config.actions.exclude :search
+    config.actions.add :field_search
+    config.field_search.human_conditions = true
+    config.field_search.columns = [:last_name, :groups, :location, :phone_1, :bloodtype, :blood_donor]
+
+    # Add the export link to top of page
+    config.action_links.add 'export', :label => 'Export', :page => true, :type => :collection, 
      :confirm=>'This will download all the member data (most fields) for ' + 
        'use in your own spreadsheet or database, and may take a minute or two. Is this what you want to do?'
-   config.update.link.page = true # At present, the jQuery multiselect widget doesn't work when edit is done inline
-#   config.update.link.security_method = :display_edit_link
+
+    # Any links that should open in their own page rather than inline with JS/Ajax
+    config.update.link.page = true # At present, the jQuery multiselect widget doesn't work when edit is done inline
+
   end
 
   # Given params hash, change :something_id to :something
