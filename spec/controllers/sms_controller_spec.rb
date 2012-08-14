@@ -235,6 +235,19 @@ describe SmsController do
         response.body.should  =~ /update, "Here is.*saved/
       end
 
+      it 'forwards message to moderators' do
+        update_body = 'Here is the latest update'
+        @params['Body'] = "report #{update_body}"
+        moderator_group = FactoryGirl.build_stubbed(:group)
+        Group.stub(:find_by_group_name => moderator_group)
+        Message.should_receive(:new).with(hash_including(:user_id => @sender.id,
+            :send_sms=>false)).and_return(@message)
+        Message.should_receive(:new).with(hash_including(:user_id => @sender.id,
+            :send_sms=>true, :send_email => true, 
+            :news_update => false, :sms_only=>"#{@sender.shorter_name} rprts: #{update_body}", 
+            :body => "#{@sender.shorter_name} reports: #{update_body}")).and_return(@message)
+        post :create, @params
+      end
     end
         
  

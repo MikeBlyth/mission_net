@@ -60,7 +60,7 @@ private
        when 'info' then do_info(text)  
 #           when 'location' then do_location(text)  
        when 'update', 'updates' then send_updates(text)
-       when 'report', 'updates' then add_update(text)
+     when 'report', 'rep' then report_update(text)
        when '?', 'help' then do_help(text)
        when /\A!/ then process_response(command, text)
        # More commands go here ...
@@ -166,12 +166,20 @@ private
   end
   
   # Post the sender's message as a news update, expiring in 4 hours (add code to make variable if desired)
-  def add_update(text)
+  def report_update(text)
     body = "#{t(:via)} #{@sender.shorter_name}: #{text}"  # Will accept messages longer than 150, though I don't think gateways will do this
     sms_only = insert_sender_name(text, @sender)
     message = Message.new(:user_id => @sender.id, :send_sms=>false, :news_update => true, 
       :sms_only => sms_only, :body => body, :expiration => 240) 
     message.deliver  # Don't forget to deliver!
+    moderator_group = Group.find_by_group_name('Moderators')
+    if moderator_group
+      message = Message.new(:user_id => @sender.id, :send_sms=>true, :send_email => true, :to_groups => moderator_group.id,
+        :news_update => false, :sms_only => "#{@sender.shorter_name} rprts: #{text}", 
+        :body => "#{@sender.shorter_name} reports: #{text}") 
+      message.deliver
+    end  
+        
     return("Your news update, \"#{text[0..15]},\" has been saved. It will expire in four hours.")
   end  
 
