@@ -125,6 +125,12 @@ a, a:visited {
   float: right;
   }
 
+#notices {
+  background-color: #FFCC99;
+  border: 1px solid red;
+  font-size: small;
+  padding: 2px;  }
+  
 a.show_menu {
   font-size: smaller;
   &:hover {

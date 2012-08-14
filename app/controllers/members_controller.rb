@@ -67,6 +67,11 @@ class MembersController < ApplicationController
 
   end
 
+  def index
+    @notices = "Bug warning: columns are not aligned right after you use the new or edit form to add or change a member, so refresh the page before trying to edit in those new/updated"
+    super
+  end
+  
   # Given params hash, change :something_id to :something
   def convert_keys_to_id(params, *keys_to_change)
     return params if keys_to_change.nil? || params.nil?

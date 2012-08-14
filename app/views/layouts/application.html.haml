@@ -14,6 +14,8 @@
       = signed_in? ? "Signed in as #{current_user.name}" : "Not signed in" 
     #menu
       = render 'shared/side_menu' 
+      - if @notices
+        #notices= @notices
     #content  
       - if flash.any?  
         #notice
