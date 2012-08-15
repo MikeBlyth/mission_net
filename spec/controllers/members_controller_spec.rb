@@ -85,6 +85,46 @@ describe MembersController do
     
   end # describe "authentication before controller access"
 
+  describe 'Create' do
+    before(:each) {test_sign_in_fast}
+        
+    it 'creates new member with all attributes' do
+#      Location.stub(:find).and_return(mock('location'))
+location = FactoryGirl.create(:location)
+country = FactoryGirl.create(:country)
+bloodtype = FactoryGirl.create(:bloodtype)
+      member = FactoryGirl.build(:member, :location => location, :country => country, :bloodtype => bloodtype)
+      attributes = member.attributes.clone
+      attributes.delete_if {|k,v| ['created_at', 'updated_at', 'id'].include? k}
+      related_attributes = {}
+      date_attributes = {}
+      attributes.each do |k, v| 
+        date_attributes[k] = v.to_s(:long) if k =~ /_date\Z/
+        related_attributes[k[0..-4]] = v.to_s if k =~ /_id\Z/
+      end
+      ordinary_attributes = attributes.clone.delete_if {|k,v| date_attributes.has_key?(k) || related_attributes.has_key?(k+'_id')}
+#puts "**** attributes=#{attributes}"
+#puts "**** date_attributes=#{date_attributes}"
+#puts "**** related_attributes=#{related_attributes}"
+#puts "**** ordinary_attributes=#{ordinary_attributes}"      
+      post :create, :record => ordinary_attributes.merge(date_attributes).merge(related_attributes)
+      created = Member.last
+      ordinary_attributes.each  do |k, v| 
+        puts "**** sent #{k}=#{v}, got #{created.attributes[k]}" unless created.attributes[k] == v 
+        created.attributes[k].should == v 
+      end
+      date_attributes.each do |k, v|
+        puts "**** sent #{k}=#{v}, got #{created.attributes[k].to_s}" unless created.attributes[k].to_s(:long) == v
+        created.attributes[k].to_s(:long).should == v
+      end
+      related_attributes.each do |k, v|
+        puts "**** sent #{k}=#{v}, got #{created.attributes[k+'_id']}" unless created.attributes[k+'_id'] == v.to_i
+        created.attributes[k+'_id'].should == v.to_i
+      end
+    end  
+    
+  end # Create  
+
   describe 'Export' do
       before(:each) do
 #        @user = FactoryGirl.create(:user, :admin=>true)

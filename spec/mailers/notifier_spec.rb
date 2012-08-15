@@ -33,7 +33,7 @@ describe Notifier do
 
   describe 'send member summary' do
     before(:each) do 
-      @member = FactoryGirl.create(:member)
+      @member = FactoryGirl.create(:member, :country => nil)
     end
     
     it 'creates a summary for a family' do

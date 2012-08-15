@@ -22,17 +22,17 @@ class MembersController < ApplicationController
 
     # These columns will be shown in the other views. Less important since
     # these views are probably all overriden anyway.
-    create.columns = show.columns = update.columns = [:name, 
-          :last_name, :first_name, :middle_name,
-          :country,
-        :phone_1, :phone_2, :email_1, :email_2, 
-        :location, :location_detail, 
-        :arrival_date, 
-        :departure_date, 
-        :groups,
-        :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
-        :blood_donor, :bloodtype,
-          ]
+#    create.columns = show.columns = update.columns = [:name, 
+#          :last_name, :first_name, :middle_name,
+#          :country,
+#        :phone_1, :phone_2, :email_1, :email_2, 
+#        :location, :location_detail, 
+#        :arrival_date, 
+#        :departure_date, 
+#        :groups,
+#        :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
+#        :blood_donor, :bloodtype,
+#          ]
     config.columns[:country].actions_for_association_links = []  # Don't show link to country record
     config.columns[:country].form_ui = :select 
     config.columns[:location].form_ui = :select 
@@ -141,7 +141,7 @@ class MembersController < ApplicationController
       @selectable = 'user_selectable'
     end
   end
-
+  
   def update
 #puts "**** params=#{params}"
 #puts "****in update, current_user=#{current_user.id}, role=#{current_user.role}"
@@ -153,12 +153,12 @@ class MembersController < ApplicationController
     super
 #puts "****after update, current_user=#{current_user.id}, role=#{current_user.role}, groups=#{current_user.groups}"
 #puts "**** params[:record][:short_name]=#{params[:record][:short_name]}, record has #{@record.reload.short_name}"
-    rec_params = params[:record]
-    @record.update_attributes(:short_name => rec_params[:short_name], # For some reason it won't update :short_name!
-      :in_country => rec_params[:in_country], 
-      :phone_private => rec_params[:phone_private], 
-      :comments => rec_params[:comments],
-      :email_private => rec_params[:email_private])
+#    rec_params = params[:record]
+#    @record.update_attributes(:short_name => rec_params[:short_name], # For some reason it won't update :short_name!
+#      :in_country => rec_params[:in_country], 
+#      :phone_private => rec_params[:phone_private], 
+#      :comments => rec_params[:comments],
+#      :email_private => rec_params[:email_private])
 #puts "**** params[:record][:short_name]=#{params[:record][:short_name]}, after manual update record has #{@record.reload.short_name}"
   end
 
