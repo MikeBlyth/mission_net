@@ -1,5 +1,7 @@
 Joslink::Application.routes.draw do
 
+  resources :system_notes do as_routes end
+
   resources :cities do as_routes end
 
   get "sessions/new"
