@@ -17,7 +17,7 @@
       - if @notices
         #notices= @notices
       - if @compact == 'true'
-        = link_to 'Click to show all columns', params_for(:action => :index).merge(:compact => false), :id => :compact
+        = link_to 'Click to show more columns', params_for(:action => :index).merge(:compact => false), :id => :compact
       - elsif @compact == 'false'
         = link_to 'Click to hide some columns', params_for(:action => :index).merge(:compact => true), :id => :compact
     #content  
