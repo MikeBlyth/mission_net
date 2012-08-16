@@ -9,11 +9,45 @@ $(function() {
 });
 
 
-/* Show/hide columns marked with class 'hideable' */
+/* Example of using the element_updated event */
+/*
+$(function() {
+    $("#as_members-active-scaffold").bind('as:element_updated', function(e) {
+        alert('Updated');
+      });
+});
+*/
 
+/* Create check_box input for collapsing columns */
+/*
+$(function() {
+    var current_page = $('.as_paginate.current').text();
+    var pathname = window.location.pathname;
+    $("#as_members-active-scaffold").bind('as:element_updated', function(e) {
+        alert('Updated on page '+ pathname);
+      });
+    $(".messages-container").html("<p>Hi</p><input type='checkbox' value='' name='show_all_columns'>");
+});
+*/
+
+/* Show/hide columns marked with class 'hideable'  Version A using JS to hide*/
+/*
 $(function() {
 //     $(".phone_2-column_heading").dblclick(function() {
     $("h2").append("<span style='font-size: 0.6em'>&nbsp;&nbsp;Click here to show/hide columns</span>")
+    $("h2").click(function() {
+        $(".hideable").toggle();
+    });
+});
+*/
+
+/* Show/hide columns marked with class 'hideable'  Version B using controller to hide*/
+$(function() {
+    var current_page = $('.as_paginate.current').text();
+    var pathname = window.location.pathname;
+    var pagepath = pathname + "?toggle=true&page=" + current_page;
+    var anchor = "<a id='collapse_link' href='" + pagepath + "'>Click here to show/hide columns</a>";
+    $("h2").append(anchor);
     $("h2").click(function() {
         $(".hideable").toggle();
     });

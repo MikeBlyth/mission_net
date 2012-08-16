@@ -7,14 +7,23 @@ class MembersController < ApplicationController
   load_and_authorize_resource
 
   # CONFIGURE ACTIVE SCAFFOLD FOR THIS TABLE
-  active_scaffold :member do |config|
-    config.label = "Members"  # Main title
-    # Columns that appear in the list view. This also determines their order across the page.
-    list_columns = [:name, :last_name, :first_name, :middle_name, :short_name, :country,
+  ListColumnsFull = [:name, :last_name, :first_name, :middle_name, :short_name, :country,
         :phone_1, :phone_2, :phone_private, :email_1, :email_2, :email_private, 
         :location, :location_detail, :in_country, :comments,
         :arrival_date, :departure_date, :groups, :blood_donor, :bloodtype]
-    list.columns = list_columns
+  ListColumnsCompact = [:name, 
+        :phone_1, :phone_2, :email_1, 
+        :location, :location_detail, :in_country, :comments,
+        :arrival_date, :departure_date]
+
+  active_scaffold :member do |config|
+    config.label = "Members"  # Main title
+    # Columns that appear in the list view. This also determines their order across the page.
+#    list_columns = [:name, :last_name, :first_name, :middle_name, :short_name, :country,
+#        :phone_1, :phone_2, :phone_private, :email_1, :email_2, :email_private, 
+#        :location, :location_detail, :in_country, :comments,
+#        :arrival_date, :departure_date, :groups, :blood_donor, :bloodtype]
+    list.columns = ListColumnsFull
 
     # Set default sorting
     config.columns[:name].sort_by :sql
@@ -44,12 +53,12 @@ class MembersController < ApplicationController
     # Default is to allow in place editing of all list columns. Exclude any in next line
     exclude_from_inplace_edit = []  # add any columns that should not be editable on the list view
 #binding.pry  
-    (list_columns-exclude_from_inplace_edit).each {|col| config.columns[col].inplace_edit = true}
+    (ListColumnsFull-exclude_from_inplace_edit).each {|col| config.columns[col].inplace_edit = true}
 
-    # These columns will be hidden in the compact view
-    compact_view_columns = [:last_name, :first_name, :middle_name, :short_name, :country, :email_2, :email_private, :location_detail, 
-       :blood_donor, :bloodtype]
-    compact_view_columns.each {|col| config.columns[col].css_class = 'hideable'}
+#    # These columns will be hidden in the compact view
+#    compact_view_columns = [:last_name, :first_name, :middle_name, :short_name, :country, :email_2, :email_private, :location_detail, 
+#       :blood_donor, :bloodtype]
+#    compact_view_columns.each {|col| config.columns[col].css_class = 'hideable'}
     
     # Use the field search instead of the undifferentiated search
     config.actions.exclude :search
@@ -69,6 +78,10 @@ class MembersController < ApplicationController
 
   def index
     @notices = "Bug warning: columns are not aligned right after you use the new or edit form to add or change a member, so refresh the page before trying to edit in those new/updated"
+    session[:compact] = true if session[:compact].nil?   # Start with compact view. Make false to start with full view
+    session[:compact] = !session[:compact] if params[:toggle]
+    active_scaffold_config.list.columns = session[:compact] ? ListColumnsCompact : ListColumnsFull
+#binding.pry  
     super
   end
   
