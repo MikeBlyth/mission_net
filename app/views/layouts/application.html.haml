@@ -16,6 +16,10 @@
       = render 'shared/side_menu' 
       - if @notices
         #notices= @notices
+      - if @compact
+        = link_to 'Click to show all columns', params_for(:action => :index).merge(:compact => false), :id => :compact
+      - elsif @compact == false
+        = link_to 'Click to hide some columns', params_for(:action => :index).merge(:compact => true), :id => :compact
     #content  
       - if flash.any?  
         #notice

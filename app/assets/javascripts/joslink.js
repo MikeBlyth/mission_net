@@ -43,15 +43,20 @@ $(function() {
 
 /* Show/hide columns marked with class 'hideable'  Version B using controller to hide*/
 $(function() {
-    var current_page = $('.as_paginate.current').text();
-    var pathname = window.location.pathname;
-    var pagepath = pathname + "?toggle=true&page=" + current_page;
-    var anchor = "<a id='collapse_link' href='" + pagepath + "'>Click here to show/hide columns</a>";
-    $("h2").append(anchor);
-    $("h2").click(function() {
-        $(".hideable").toggle();
-    });
+    $("h2").append($('#compact'));
 });
+
+///* Show/hide columns marked with class 'hideable'  Version B using controller to hide*/
+//$(function() {
+//    var current_page = $('.as_paginate.current').text();
+//    var pathname = window.location.pathname;
+//    var pagepath = pathname + "?toggle=true&page=" + current_page;
+//    var anchor = "<a id='collapse_link' href='" + pagepath + "'>Click here to show/hide columns</a>";
+//    $("h2").append(anchor);
+//    $("h2").click(function() {
+//        $(".hideable").toggle();
+//    });
+//});
 
 /* Make some things into buttons */
 

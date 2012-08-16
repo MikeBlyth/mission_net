@@ -77,10 +77,11 @@ class MembersController < ApplicationController
   end
 
   def index
-    @notices = "Bug warning: columns are not aligned right after you use the new or edit form to add or change a member, so refresh the page before trying to edit in those new/updated"
-    session[:compact] = true if session[:compact].nil?   # Start with compact view. Make false to start with full view
-    session[:compact] = !session[:compact] if params[:toggle]
-    active_scaffold_config.list.columns = session[:compact] ? ListColumnsCompact : ListColumnsFull
+    @notices = "Bug fixed. Hiding/showing columns should be stable now. Please make a note if there are still problems."
+#    session[:compact] = true if session[:compact].nil?   # Start with compact view. Make false to start with full view
+    @compact = params[:compact]
+    session[:compact] = @compact
+    active_scaffold_config.list.columns = @compact ? ListColumnsCompact : ListColumnsFull
 #binding.pry  
     super
   end
