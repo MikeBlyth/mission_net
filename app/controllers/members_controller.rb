@@ -79,9 +79,9 @@ class MembersController < ApplicationController
   def index
     @notices = "Bug fixed. Hiding/showing columns should be stable now. Please make a note if there are still problems."
 #    session[:compact] = true if session[:compact].nil?   # Start with compact view. Make false to start with full view
-    @compact = params[:compact]
+    @compact = params[:compact] || true # Making the compact view the default
     session[:compact] = @compact
-    active_scaffold_config.list.columns = @compact ? ListColumnsCompact : ListColumnsFull
+    active_scaffold_config.list.columns = @compact == 'true' ? ListColumnsCompact : ListColumnsFull
 #binding.pry  
     super
   end
