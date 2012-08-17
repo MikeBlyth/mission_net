@@ -8,7 +8,7 @@ class MembersController < ApplicationController
 
   # CONFIGURE ACTIVE SCAFFOLD FOR THIS TABLE
   # Add/remove columns to these two arrays to have them appear in the full or compact list views
-  ListColumnsFull = [:name, :last_name, :first_name, :middle_name, :short_name, :country,
+  ListColumnsFull = [:name, :last_name, :first_name, :middle_name, :short_name, :wife, :country,
         :phone_1, :phone_2, :phone_private, :email_1, :email_2, :email_private, 
         :location, :location_detail, :in_country, :comments,
         :arrival_date, :departure_date, :groups, :blood_donor, :bloodtype]
@@ -26,9 +26,10 @@ class MembersController < ApplicationController
     config.list.sorting = {:name => 'ASC'}
 
     config.columns[:country].actions_for_association_links = []  # Don't show link to country record
-    config.columns[:country].form_ui = :select 
-    config.columns[:location].form_ui = :select 
-    config.columns[:bloodtype].form_ui = :select 
+    # Set which columns are to use a selection box
+    [:country, :location, :wife, :bloodtype].each {|col| config.columns[col].form_ui = :select }
+    
+#    config.columns[:sex].options= {:options => [['M', 'm'], ['F', 'f']], :include_blank => '---'}
     
     # Any columns that should not be shown as links in the list view
     config.columns[:groups].clear_link

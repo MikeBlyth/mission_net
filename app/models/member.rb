@@ -48,6 +48,8 @@ class Member < ActiveRecord::Base
       :in_country, :comments, :phone_private, :email_private, :country, :location
   attr_accessor :role_cache_duration  
   has_and_belongs_to_many :groups
+  has_one :husband, :class_name => 'Member', :foreign_key => :wife_id
+  belongs_to :wife, :class_name => 'Member'
   has_many :sent_messages
   has_many :messages, :through => :sent_messages
   has_many :authorizations

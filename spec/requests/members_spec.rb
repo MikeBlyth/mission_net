@@ -12,6 +12,7 @@ ActiveSupport::Deprecation.silence do
       page.should have_content 'Locations'
       page.should have_content 'Message list'
       page.should have_content 'Hide menu'
+      page.should have_content "Click to hide some columns"
     end
 end
     it "Signs in as moderator with moderator menu options" do

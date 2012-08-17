@@ -3,5 +3,7 @@
 
 en:
   hello: "Hello world"
+  Male: "Male"
+  Female: "Female"
   private_data: "**private**"
   via: "via"
