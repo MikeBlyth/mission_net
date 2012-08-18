@@ -24,6 +24,7 @@ class MembersController < ApplicationController
     # Set default sorting
     config.columns[:name].sort_by :sql
     config.list.sorting = {:name => 'ASC'}
+    config.columns[:wife].sort = false
 
     config.columns[:country].actions_for_association_links = []  # Don't show link to country record
     # Set which columns are to use a selection box
