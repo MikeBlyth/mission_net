@@ -1,0 +1,34 @@
+$(function() {
+  $("td.wife-column").click(function(e){
+      e.preventDefault();
+      // set the choices if we are NOT clicking inside the select control
+      sel = $(e.target).closest('select')
+      if (sel.length == 0 || sel[0].name != 'inplace_value') {
+        set_spouse_choices($(this))
+      }      
+    })
+});
+
+function set_spouse_choices (cell){
+//  var select_control = $('select.spouse-input',as_form);
+  var id = /[0-9]+/.exec(cell.closest('tr').attr('id'));
+  var head = $('#record_wife_'); /* This is where AS puts the choices */
+    $("#record_wife_ option:not(:selected)").remove();
+//    $.getJSON("members/wife_select.js", 
+//        {to_groups: id},
+//    function(data) {
+////      alert("Returned "+data.options); 
+//      head.append(data.options);               
+//    }            
+//    ); 
+    $.ajax({
+      async: false,
+      url: "members/wife_select.js",
+      dataType: "json",
+      success: function(data) {
+        head.append(data.options);
+        }
+    });
+    id = 1
+}; 
+

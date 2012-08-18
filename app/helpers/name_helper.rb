@@ -83,7 +83,6 @@ module NameHelper
   # * :initial => _boolean_ default false; use the initial instead of whole _middle_ name
   # * :middle => _boolean_ default true; include the middle name (or initial)
   def last_name_first(options={})
-#    return nil if last_name.nil? || first_name.nil?
     return (last_name || '') + (first_name || '') if last_name.nil? || first_name.nil?
     options[:short] = false if options[:paren_short] # paren_short overrides the short option
     if options[:short] && !short_name.blank?   # use the short form of first name if it's defined

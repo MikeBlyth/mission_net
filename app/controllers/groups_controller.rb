@@ -40,8 +40,7 @@ class GroupsController < ApplicationController
     else
       count = 0
     end
-    @json_resp =  Member.new(:name=>'Jane')
-    @json_resp = count # {:member=>'John'}
+    @json_resp = count
     respond_to do |format|
       format.js { render :json => @json_resp }
     end

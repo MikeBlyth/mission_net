@@ -23,6 +23,7 @@ Joslink::Application.routes.draw do
     match "sent_messages/clickatell_status",  :to => "sent_messages#update_status_clickatell"
     get "messages/:id/followup", :to => "messages#followup"
     match "messages/:id/followup_send", :to => "messages#followup_send"
+  get "members/wife_select", :to => 'members#wife_select'
   resources :members do as_routes end
   resources :messages do as_routes end
   resources :sent_messages do as_routes end

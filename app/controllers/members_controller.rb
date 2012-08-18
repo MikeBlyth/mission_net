@@ -31,7 +31,7 @@ class MembersController < ApplicationController
     [:country, :location, :wife, :bloodtype].each {|col| config.columns[col].form_ui = :select }
     
 #    config.columns[:sex].options= {:options => [['M', 'm'], ['F', 'f']], :include_blank => '---'}
-    
+    config.columns[:wife].options = {:include_blank => '---'}
     # Any columns that should not be shown as links in the list view
     config.columns[:groups].clear_link
         
@@ -172,6 +172,15 @@ class MembersController < ApplicationController
     valid_updates = updates & selectable
     return (unchangeable + valid_updates).compact
   end
+
+  def wife_select
+    @json_resp = {:options => "<option value='1'>Mary</option><option value='2'>Martha</option>".html_safe}
+puts "**** @json_resp=#{@json_resp}"
+    respond_to do |format|
+      format.js { render :json => @json_resp }
+    end
+  end    
+    
 
 protected
 # Need to figure out how this works -- doesn't work as below! 

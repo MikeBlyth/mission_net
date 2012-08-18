@@ -65,104 +65,101 @@ $(function() {
 });
 
 // Toggle Menu Visibility
-    $(function() {
-      $(".show_menu").click(function() {
-        if ($("#menu").is(':visible')) {
-          $("#menu").hide('500');
-          $('#content').css('left','0');            
-          $('#show_hide').text('Show menu');
-          }
-        else {
-          $("#menu").show('500');
-          $('#content').css('left','156px');            
-          $('#show_hide').text('Hide menu');
-          }
-        });
+$(function() {
+  $(".show_menu").click(function() {
+    if ($("#menu").is(':visible')) {
+      $("#menu").hide('500');
+      $('#content').css('left','0');            
+      $('#show_hide').text('Show menu');
+      }
+    else {
+      $("#menu").show('500');
+      $('#content').css('left','156px');            
+      $('#show_hide').text('Hide menu');
+      }
     });
+});
 
 // Hide any ActiveScaffold links we don't want
 
-    $(function() {
-        $('a#as_field_terms-new--link.new').hide();
-    });
+$(function() {
+    $('a#as_field_terms-new--link.new').hide();
+});
 
 // Message page
 
-    $(function() { 
-        $("#record_sms_only").charCount({
-            allowed: 149,	
-            warning: 20,
-            counterText: "Signature not automatically added. \nCharacters left for one SMS message: "	
-            });      
-        $('<div><p class="msg-info for-sms">About <span id="msg-count">0</span> SMS messages will be sent</p></div>')
-        .insertAfter('#record_to_groups');
-     toggle_sms_display();  
-     toggle_email_display();  
-     $('#as_messages-create--form .submit').val('Save/Send message');
-     });
+$(function() { 
+    $("#record_sms_only").charCount({
+        allowed: 149,	
+        warning: 20,
+        counterText: "Signature not automatically added. \nCharacters left for one SMS message: "	
+        });      
+    $('<div><p class="msg-info for-sms">About <span id="msg-count">0</span> SMS messages will be sent</p></div>')
+    .insertAfter('#record_to_groups');
+ toggle_sms_display();  
+ toggle_email_display();  
+ $('#as_messages-create--form .submit').val('Save/Send message');
+ });
 
 // Email Selection
-    $('#record_send_email').live("change", function(){
+$('#record_send_email').live("change", function(){
     toggle_email_display()
-    });
+});
 
-    function toggle_email_display() {
-        if ($('#record_send_email').is(':checked')) {
-   //       $('.for-email').css('display','inline')
-          $('.for-email').show('blind', 500)
-          }
-        else {
-          $('.for-email').effect('blind', 500)
+function toggle_email_display() {
+    if ($('#record_send_email').is(':checked')) {
+//       $('.for-email').css('display','inline')
+      $('.for-email').show('blind', 500)
+      }
+    else {
+      $('.for-email').effect('blind', 500)
 //          $('.for-email').css('display','none')
-        } 
-    } ;
+    } 
+} ;
 
 // SMS Selection
-    $('#record_send_sms').live("change", function(){
-        if ($(this).is(':checked')) {
-          $('.for-sms').css('display','inline')
-          }
-        else {
-          $('.for-sms').css('display','none')
-        }  
-      });
+$('#record_send_sms').live("change", function(){
+    if ($(this).is(':checked')) {
+      $('.for-sms').css('display','inline')
+      }
+    else {
+      $('.for-sms').css('display','none')
+    }  
+  });
 
-    function toggle_sms_display() {
-        if ($('#record_send_sms').is(':checked')) {
-          $('.for-sms').css('display','inline')
-          }
-        else {
-          $('.for-sms').css('display','none')
-        } 
-    } ;
+function toggle_sms_display() {
+    if ($('#record_send_sms').is(':checked')) {
+      $('.for-sms').css('display','inline')
+      }
+    else {
+      $('.for-sms').css('display','none')
+    } 
+} ;
 
-    $('#adv-toggle').live("click", function(){
-var display = $('#options').css('display');
-console.log(display);
-      if (display == 'block') {
-        $(this).text('Show advanced options')
-        }
-      else {
-        $(this).text('Hide advanced options')
-      }        
-      $('#advanced #options').toggle('blind',{},'fast');
-    });
+$('#adv-toggle').live("click", function(){
+    var display = $('#options').css('display');
+    console.log(display);
+    if (display == 'block') {
+     $(this).text('Show advanced options')
+     }
+    else {
+     $(this).text('Hide advanced options')
+    }        
+    $('#advanced #options').toggle('blind',{},'fast');
+});
 
-    $('#as_messages-create--messages .submit').text('Send message')
+$('#as_messages-create--messages .submit').text('Send message')
 
-    $('#record_to_groups').live("change", function(){
- //       alert("Selected groups = " + $(this).val());
-        $.getJSON("../groups/member_count.js", 
-            {to_groups: $(this).val()
-            },
-        function(data) {
- //       alert('Those groups include ' + data + ' members' );
-        $('#msg-count').text(data);                
-        }            
-   
-        ); 
-      });
-      
+$('#record_to_groups').live("change", function(){
+//       alert("Selected groups = " + $(this).val());
+    $.getJSON("../groups/member_count.js", 
+        {to_groups: $(this).val()},
+    function(data) {
+      $('#msg-count').text(data);                
+    }            
+    ); 
+});
+  
 
 // ******************* MULTISELECT WIDGET 
 $(function(){
@@ -170,13 +167,13 @@ $(function(){
 });
 
 // ****************** DATEPICKER **************************************  
-	$(function() {
-    $(".datepicker").live("click", function(){
-        $(this).datepicker();
-      });
-   });
-  
-    
+$(function() {
+$(".datepicker").live("click", function(){
+    $(this).datepicker();
+  });
+});
+
+
       
 /*
  * 	Character Count Plugin - jQuery plugin
