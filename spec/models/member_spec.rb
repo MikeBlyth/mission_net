@@ -135,6 +135,19 @@ describe Member do
       
   end
   
+  describe 'spouses' do
+    it 'correctly relates husband and wife' do
+      @husband = FactoryGirl.create(:member)
+      @wife = FactoryGirl.create(:member)
+      @husband.update_attributes(:wife => @wife)
+      @husband.wife.should == @wife
+      @husband.husband.should be_nil
+      @wife.husband.should == @husband
+      @wife.wife.should be_nil
+    end
+  end
+      
+
   describe 'contact information' do
     before(:each) do
       @member = FactoryGirl.build(:member)

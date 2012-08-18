@@ -45,7 +45,7 @@ class Member < ActiveRecord::Base
       :short_name, :location_detail, :location_id, :phone_1, :phone_2, 
       :receive_email, :receive_sms, :emergency_contact_phone, :emergency_contact_email, :emergency_contact_name,
       :country_id, :blood_donor, :bloodtype_id, :bloodtype, :groups, :group_ids,
-      :in_country, :comments, :phone_private, :email_private, :country, :location
+      :in_country, :comments, :phone_private, :email_private, :country, :location, :wife, :wife_id
   attr_accessor :role_cache_duration  
   has_and_belongs_to_many :groups
   has_one :husband, :class_name => 'Member', :foreign_key => :wife_id
