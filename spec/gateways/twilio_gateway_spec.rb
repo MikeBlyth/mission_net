@@ -41,8 +41,8 @@ describe TwilioGateway do
       @gateway = TwilioGateway.new
       @gateway.deliver(["99"],'Test message')
       rq = FakeWeb.last_request.body
-      rq.should match("To=%2b99")
-      rq.should match("Body=Test%20message")
+      rq.should match /To=%2b99/i
+      rq.should match /Body=Test\+message/
     end
   end
 

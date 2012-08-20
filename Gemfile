@@ -21,6 +21,8 @@ gem 'heroku-api'
 gem 'iron_worker_ng'
 gem 'cancan'
 gem 'redis'
+gem 'rb-readline'
+#gem 'sqlite3'
 
 #gem 'active_scaffold_config_list_vho'
 
