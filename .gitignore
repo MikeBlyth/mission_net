@@ -31,3 +31,5 @@ database.yml
 config/database.yml
 .env
 dump.rdb
+*~
+.sass-cache
