@@ -56,7 +56,7 @@ class MembersController < ApplicationController
   end
 
   def index
-    @notices = "Bug fixed. Hiding/showing columns should be stable now. Please make a note if there are still problems."
+    @notices = "New field added for wife (not spouse!) This will allow printing a nice directory w the couple together."
 #    session[:compact] = true if session[:compact].nil?   # Start with compact view. Make false to start with full view
     @compact = params[:compact] || 'true' # Making the compact view the default
     session[:compact] = @compact
@@ -175,6 +175,7 @@ class MembersController < ApplicationController
 
   def wife_select
     id = params[:id]
+puts "**** params=#{params}"
     husband = Member.find id
     same_name = Member.where("last_name = ? and id != ?", husband.last_name, id)
     current = husband.wife_id

@@ -1,5 +1,16 @@
+//$(function() {
+//  $("td.wife-column").click(function(e){
+//      e.preventDefault();
+//      // set the choices if we are NOT clicking inside the select control
+//      sel = $(e.target).closest('select')
+//      if (sel.length == 0 || sel[0].name != 'inplace_value') {
+//        set_spouse_choices($(this))
+//      }      
+//    })
+//});
+
 $(function() {
-  $("td.wife-column").click(function(e){
+  $("#as_members-active-scaffold").on('click', "td.wife-column", function(e){
       e.preventDefault();
       // set the choices if we are NOT clicking inside the select control
       sel = $(e.target).closest('select')
@@ -8,6 +19,7 @@ $(function() {
       }      
     })
 });
+
 
 function set_spouse_choices (cell){
 //  var select_control = $('select.spouse-input',as_form);

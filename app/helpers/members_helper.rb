@@ -31,5 +31,12 @@ module MembersHelper
     filter_private_data(record, :email_2, :email_private)
   end
 
+  def options_for_association_conditions(association)
+    if association.name == :wife
+      'false'
+    else
+      super
+    end
+  end
 
 end
