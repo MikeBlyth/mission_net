@@ -31,5 +31,7 @@ database.yml
 config/database.yml
 .env
 dump.rdb
+temporary_backup.dump
+.rvmrc.*
 *~
 .sass-cache

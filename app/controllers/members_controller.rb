@@ -31,7 +31,7 @@ class MembersController < ApplicationController
     [:country, :location, :wife, :bloodtype].each {|col| config.columns[col].form_ui = :select }
     
 #    config.columns[:sex].options= {:options => [['M', 'm'], ['F', 'f']], :include_blank => '---'}
-    config.columns[:wife].options = {:include_blank => '---'}
+    config.columns[:wife].options = { :options => [], :include_blank => '---'}
     # Any columns that should not be shown as links in the list view
     config.columns[:groups].clear_link
         
@@ -174,8 +174,19 @@ class MembersController < ApplicationController
   end
 
   def wife_select
-    @json_resp = {:options => "<option value='1'>Mary</option><option value='2'>Martha</option>".html_safe}
-puts "**** @json_resp=#{@json_resp}"
+    id = params[:id]
+    husband = Member.find id
+    same_name = Member.where("last_name = ? and id != ?", husband.last_name, id)
+    current = husband.wife_id
+    options = same_name.map do |m| 
+      if m.id == current || (m.husband.nil? && m.wife.nil?) # Do not include people who already have husbands
+        "<option value='#{m.id}' #{m.id == current ? "selected='selected'" : ''}>#{m.first_name}</option>"
+      end
+    end.compact
+    options.unshift "<option>---</option>"
+puts "**** options=#{options}"
+    @json_resp = {:options => options.join('').html_safe}
+#puts "**** @json_resp=#{@json_resp}"
     respond_to do |format|
       format.js { render :json => @json_resp }
     end

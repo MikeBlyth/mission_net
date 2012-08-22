@@ -13,17 +13,13 @@ function set_spouse_choices (cell){
 //  var select_control = $('select.spouse-input',as_form);
   var id = /[0-9]+/.exec(cell.closest('tr').attr('id'));
   var head = $('#record_wife_'); /* This is where AS puts the choices */
-    $("#record_wife_ option:not(:selected)").remove();
-//    $.getJSON("members/wife_select.js", 
-//        {to_groups: id},
-//    function(data) {
-////      alert("Returned "+data.options); 
-//      head.append(data.options);               
-//    }            
-//    ); 
+    $("#record_wife_ option").remove();
     $.ajax({
       async: false,
+      type: 'GET',
+      cache: false,
       url: "members/wife_select.js",
+      data: 'id='+id,
       dataType: "json",
       success: function(data) {
         head.append(data.options);

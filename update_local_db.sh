@@ -6,7 +6,7 @@
 # Follow me: @jackkinsella
 
 function LastBackupName () { 
-  heroku pgbackups | tail -n 1 | cut -d"|" -f 1
+  heroku pgbackups | tail -n 1 | cut -d" " -f 1
 }
 
 # This part assumes you have a low limit on no. of backups allowed
@@ -16,5 +16,5 @@ function LastBackupName () {
 heroku pgbackups:capture 
 new_backup=$(LastBackupName)
 curl $(heroku pgbackups:url $new_backup) > temporary_backup.dump
-pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d joslink_development temporary_backup.dump 
-rm -f temporary_backup.dump
+pg_restore --verbose --clean --no-acl --no-owner -h localhost -U joslink -d joslink_development temporary_backup.dump 
+#rm -f temporary_backup.dump
