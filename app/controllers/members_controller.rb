@@ -12,7 +12,7 @@ class MembersController < ApplicationController
         :phone_1, :phone_2, :phone_private, :email_1, :email_2, :email_private, 
         :location, :location_detail, :in_country, :comments,
         :arrival_date, :departure_date, :groups, :blood_donor, :bloodtype]
-  ListColumnsCompact = [:name, 
+  ListColumnsCompact = [:name, :wife,
         :phone_1, :phone_2, :email_1, 
         :location, :location_detail, :in_country, :comments,
         :arrival_date, :departure_date]
