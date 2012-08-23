@@ -4,31 +4,23 @@ class DirectoryDoc < Prawn::Document
   include ReportsHelper
   include ApplicationHelper
     
-  # Return the data to be inserted into table from family f
-  def family_data_line(f, options = {})
-    formatted = family_data_formatted(f)
-    location_string = case options[:location]
-      when 'long' then  "\n<i>" +  f.current_location + "</i>"
-      when 'short' then " (#{f.residence_location})"
-      when 'modifiers' then "\n<i>" +  f.current_location(:with_residence=>false, :with_work=>false) + "</i>"
-      else              ''  # when nil, don't include location at all
-    end
-    name_column = formatted[:couple] + 
-                  (f.status.code == 'field' ? '' : " (#{f.status.description})") +
-                  (formatted[:children].blank? ? '' : "\n\u00a0\u00a0<i>#{formatted[:children]}</i>" ) +
-                  location_string
+  # Return the data to be inserted into table from member
+  def family_data_line(member, options = {})
+    formatted = family_data_formatted(member)
+    location_string = options[:location].nil? ? '' : description_or_blank(member.location)
+    name_column = formatted[:couple] + location_string
     return [ name_column, smart_join(formatted[:emails], "\n"), smart_join(formatted[:phones], "\n") ]
   end
 
   def to_pdf(families, visitors=[], options = {})
     options[:location] ||= 'short'
-    location_col = default_true(options[:location_column]) # make separate column for locations? Default=true
+    location_col = options[:location_column] # make separate column for locations? 
 
     # Part 1 -- Sorted by location
     page_header(:title=>"Where Is Everyone?")#, :left => comments)
     families_by_location = families.sort do |x,y| 
-      (description_or_blank(x.residence_location,'') + x[:name]) <=> 
-      (description_or_blank(y.residence_location,'') +y[:name])
+      (description_or_blank(x.location,'') + x[:name]) <=> 
+      (description_or_blank(y.location,'') +y[:name])
     end
     if location_col
       table_data = [['Location','Name', 'Email', 'Phone']]
@@ -64,15 +56,6 @@ class DirectoryDoc < Prawn::Document
                       :cell_style => { :size => 10, :inline_format => true}) do 
         row(0).style :background_color => 'CCCC00', :font => 'Times-Roman'
       end
-      visitors_string = ''
-      if ! visitors.empty?
-        visitors_string = "\n<b>Visitors:</b>\n\n"
-        a = visitors.map {|v| "#{v[:names]}: #{v[:contacts]} arrived #{v[:arrival_date].to_s(:short)}, " + 
-          (v[:departure_date] ? " depart #{v[:departure_date].to_s(:short)}." : '')
-          }
-        visitors_string << a.join("\n")
-        group {text visitors_string, :size=>9, :inline_format=>true}
-      end
       
       # Part 2 -- Sorted by family
       table_data = [['<i>Name</i>', 'Email', 'Phone']]
@@ -86,8 +69,6 @@ class DirectoryDoc < Prawn::Document
         row(0).style :background_color => 'CCCC00', :font => 'Times-Roman'
         column(1).style :width=>150
       end
-      group {text visitors_string, :size=>9, :inline_format=>true} unless visitors_string.empty?
- 
 
     end # bounding_box
 

@@ -1,12 +1,11 @@
 # For generating different kinds of reports output to PDF
 # Perhaps should be refactored so that each report is inside its own main model's controller?
 class ReportsController < ApplicationController
-  include AuthenticationHelper
   include ApplicationHelper
-  include StatisticsHelper
 
+#  load_and_authorize_resource
 
-  before_filter :authenticate 
+skip_authorization_check  # TEMPORARY -- what kind of control is actually needed if any?
 
   def index
     # this just displays a view that lets the user select from reports
@@ -19,7 +18,8 @@ class ReportsController < ApplicationController
     # include_active = params[:include_active]
 #puts "ReportsController#whereis report, params=#{params}"
     include_groups = [Group.find_by_group_name('Mission community')]  # Temporary just to get one group going
-    members = members_in_multiple_groups(group_ids)
+    # Get "families", i.e. members who don't have husbands
+    @families = Group.members_in_multiple_groups(include_groups).keep_if {|m| m.husband.nil?}
     @title = "Mission Contacts"
     respond_to do |format|
       format.html do 
@@ -31,7 +31,7 @@ class ReportsController < ApplicationController
       end
       format.pdf do
         output = DirectoryTable.new(:page_size=>Settings.reports.page_size).
-             to_pdf(members, @visitors, params)
+             to_pdf(@families, @visitors, params)
         if params[:mail_to] then
 #puts "Mailing report, params=#{params}"
           Notifier.send_report(params[:mail_to], @title, output).deliver

@@ -1,0 +1,11 @@
+%h4 Reports
+%p Choose a report from those listed below
+%ul
+  %li#directory
+    "Directory" 
+    %ul 
+      %li= link_to 'By family (HTML)', '/reports/directory.html?by=family', :id=>'directory-family'
+      %li= link_to 'By location (HTML)', '/reports/directory.html?by=location', :id=>'directory-location'
+      %li= link_to 'By family and location--basic (PDF)', '/reports/directory.pdf', :id=>'directory-pdf'
+      %li= link_to 'By family and location--detailed (PDF)', '/reports/directory.pdf?location=true', :id=>'directory-detailed-pdf'
+

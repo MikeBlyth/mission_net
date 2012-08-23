@@ -7,6 +7,7 @@
     - if current_user.roles_include? :member
       %li= link_to 'Members', members_path 
       %li= link_to 'Create new message', new_message_path
+      %li= link_to 'Reports', reports_path
       %li= link_to 'System notices, bug reports, requests...', system_notes_path
     - if current_user.roles_include? :moderator
       %h5 Moderators

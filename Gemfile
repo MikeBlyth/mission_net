@@ -23,6 +23,7 @@ gem 'cancan'
 gem 'redis'
 gem 'rb-readline'
 gem 'thin'
+gem 'prawn', "0.11.1"# , :git => "git://github.com/sandal/prawn" #, :submodules => true
 #gem 'sqlite3'
 
 #gem 'active_scaffold_config_list_vho'

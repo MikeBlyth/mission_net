@@ -20,14 +20,16 @@ Joslink::Application.routes.draw do
   resources :groups do as_routes end
   resources :incoming_mails do as_routes end
   resources :locations do as_routes end
-    match "sent_messages/clickatell_status",  :to => "sent_messages#update_status_clickatell"
-    get "messages/:id/followup", :to => "messages#followup"
-    match "messages/:id/followup_send", :to => "messages#followup_send"
+  match "sent_messages/clickatell_status",  :to => "sent_messages#update_status_clickatell"
+  get "messages/:id/followup", :to => "messages#followup"
+  match "messages/:id/followup_send", :to => "messages#followup_send"
   get "members/wife_select", :to => 'members#wife_select'
   resources :members do as_routes end
   resources :messages do as_routes end
   resources :sent_messages do as_routes end
   resources :sms
+  match 'reports/index' => 'reports#index', :as => 'reports'
+  match 'reports/directory' => 'reports#directory', :as => 'directory'
 
   get   '/login', :to => 'sessions#new', :as => :sign_in
   get   '/signin', :to => 'sessions#new', :as => :sign_in  # signin is just an alias for login

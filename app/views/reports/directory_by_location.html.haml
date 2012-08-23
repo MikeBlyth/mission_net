@@ -1,0 +1,23 @@
+.active_scaffold
+%h2 #{@title}
+%table.whereis
+  %th Location
+  %th Name
+  %th Email
+  %th Phone
+  %tbody
+    - location=''
+    - @families.sort! do |x,y| 
+      - (description_or_blank(x.residence_location,'') + x[:name]) <=> (description_or_blank(y.residence_location,'') +y[:name])
+    - @families.each do |f|
+      %tr{:class=> cycle('list_line_odd' , 'list_line_even' )}
+        - formatted = family_data_formatted(f)
+        - if location != f.residence_location
+          -  location = f.residence_location
+          %td= "#{location}"
+        - else
+          %td= ""
+        %td= "#{formatted[:couple]}" + (f.status.code == 'field' ? '' : " (#{f.status.description})") + f.current_location(:with_residence=>false)
+        %td= smart_join(formatted[:emails], "; ")
+        %td= smart_join(formatted[:phones], "; ")
+
