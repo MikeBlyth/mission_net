@@ -73,9 +73,13 @@ class Message < ActiveRecord::Base
 
   # Convert :to_groups=>["1", "2", "4"] or [1,2,4] to "1,2,4", as maybe 
   #    simpler than converting with YAML
+  # ToDo this probably isn't necessary as Rails should serialize the array. Try getting rid of some of it
   def convert_groups_to_string   
     if self.to_groups.is_a? Array
-      self.to_groups = self.to_groups.map {|g| g.to_i}.join(",")
+      self.to_groups = self.to_groups.map do |g| 
+        i = g.to_i
+        Group.exists?(i) ? i : nil
+      end.compact.join(",")
     else
       self.to_groups = self.to_groups.to_s
     end

@@ -41,6 +41,8 @@ describe Message do
       SiteSetting.stub(:default_sms_outgoing_gateway => 'Clickatell')
       SiteSetting.stub(:background_queuing => '')
       FakeWeb.allow_net_connect = false
+      FactoryGirl.create(:group, :id => 1)
+      FactoryGirl.create(:group, :id => 4)
     end
 
   describe 'initialization' do
@@ -113,9 +115,15 @@ describe Message do
       @message.to_groups.should == "1,4"
     end          
 
-    it "should have convert_groups_to_string defined as a before_save callback" do
+    it "defines convert_groups_to_string as a before_save callback" do
       Message._save_callbacks.select { |cb| cb.kind.eql?(:before) }.map(&:raw_filter).include?(:convert_groups_to_string).should == true
     end    
+    
+    it 'filters out non-existant groups' do
+      @message.to_groups = ['', '0', "1", "4"]
+      @message.convert_groups_to_string
+      @message.to_groups.should == "1,4"
+    end
     
   end # to_groups field
 

@@ -23,6 +23,11 @@ class MessagesController < ApplicationController
     deliver_message(record) # This delivers the message "automatically" when created in this controller, 
   end
   
+  def update
+    params[:record][:to_groups] = params[:record][:to_groups].map {|g| !g.blank?}
+    super
+    end
+
   def deliver_message(record)
     flash[:notice] = 'Message is being delivered'
     record.deliver  # Note that Message#deliver uses DelayedJob to run the actual delivery in the background.
