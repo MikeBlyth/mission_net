@@ -144,15 +144,6 @@ class MembersController < ApplicationController
       params[:record][:groups] = merge_group_ids if merged.any?
     end
     super
-#puts "****after update, current_user=#{current_user.id}, role=#{current_user.role}, groups=#{current_user.groups}"
-#puts "**** params[:record][:short_name]=#{params[:record][:short_name]}, record has #{@record.reload.short_name}"
-#    rec_params = params[:record]
-#    @record.update_attributes(:short_name => rec_params[:short_name], # For some reason it won't update :short_name!
-#      :in_country => rec_params[:in_country], 
-#      :phone_private => rec_params[:phone_private], 
-#      :comments => rec_params[:comments],
-#      :email_private => rec_params[:email_private])
-#puts "**** params[:record][:short_name]=#{params[:record][:short_name]}, after manual update record has #{@record.reload.short_name}"
   end
 
   # Given (a) the incoming group_ids from the form (params[:record][:groups]), and
@@ -170,7 +161,7 @@ class MembersController < ApplicationController
     unchangeable = original_groups.map{|g| g.to_s unless selectable.include? g.to_s}
     updates = params[:record][:groups] || []
     valid_updates = updates & selectable
-    return (unchangeable + valid_updates).compact
+    return (unchangeable + valid_updates).compact.uniq
   end
 
   def wife_select

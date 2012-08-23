@@ -10,10 +10,26 @@ task :unduplicate_group_members => :environment do
         group.members = []
         group.members = members
       end
-      puts "#{group.group_name}: #{dups} duplications removed"
+      puts "Group #{group.group_name}: #{dups} duplications removed"
     else
-      puts "#{group.group_name}: OK"
+      puts "Group #{group.group_name}: OK"
     end
   end
+  Member.all.each do |member|
+    groups = member.groups.clone
+    original_count = groups.count
+    groups.uniq!
+    dups = original_count - groups.count
+    if dups > 0
+      Member.transaction do 
+        member.groups = []
+        member.groups = groups
+      end
+      puts "#{member.name}: #{dups} duplications removed"
+    else
+      puts "#{member.name}: OK"
+    end
+  end
+
 end
 
