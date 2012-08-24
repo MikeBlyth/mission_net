@@ -103,10 +103,10 @@ bloodtype = FactoryGirl.create(:bloodtype)
         related_attributes[k[0..-4]] = v.to_s if k =~ /_id\Z/
       end
       ordinary_attributes = attributes.clone.delete_if {|k,v| date_attributes.has_key?(k) || k[-3..-1] == '_id'}
-puts "**** attributes=#{attributes}"
-puts "**** date_attributes=#{date_attributes}"
-puts "**** related_attributes=#{related_attributes}"
-puts "**** ordinary_attributes=#{ordinary_attributes}"      
+#puts "**** attributes=#{attributes}"
+#puts "**** date_attributes=#{date_attributes}"
+#puts "**** related_attributes=#{related_attributes}"
+#puts "**** ordinary_attributes=#{ordinary_attributes}"      
       post :create, :record => ordinary_attributes.merge(date_attributes).merge(related_attributes)
       created = Member.last
       ordinary_attributes.each  do |k, v| 

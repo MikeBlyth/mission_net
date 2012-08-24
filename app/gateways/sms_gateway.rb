@@ -73,9 +73,9 @@ class SmsGateway
   end
     
   def deliver(numbers=@numbers, body=@body, log=false)
+    @numbers=numbers
+    @body=body
     if log
-      @numbers=numbers
-      @body=body
       log_numbers = numbers_to_string_list
       log_numbers = log_numbers[0..49]+'...' if log_numbers.length > 50
       AppLog.create(:code => "SMS.sent.#{@gateway_name}", :description=>"to #{@numbers}: #{@body[0..30]}, resp=#{@gateway_reply}")

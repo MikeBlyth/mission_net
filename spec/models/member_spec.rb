@@ -159,8 +159,8 @@ describe Member do
 
       it 'includes phone and email' do
         summary = @member.contact_summary
-        summary['Phone'].should match @member.phone_1
-        summary['Phone'].should match @member.phone_2
+        summary['Phone'].should match format_phone(@member.phone_1)
+        summary['Phone'].should match format_phone(@member.phone_2)
         summary['Email'].should match @member.email_1
         summary['Email'].should match @member.email_2
       end  
@@ -179,8 +179,8 @@ describe Member do
 
       it 'shows private phone number if override_private is selected' do
         @member.phone_private = true
-        @member.contact_summary(:override_private=>true)['Phone'].should match @member.phone_1
-        @member.contact_summary(:override_private=>true)['Phone'].should match @member.phone_2
+        @member.contact_summary(:override_private=>true)['Phone'].should match format_phone @member.phone_1
+        @member.contact_summary(:override_private=>true)['Phone'].should match format_phone @member.phone_2
         @member.contact_summary(:override_private=>true)['Phone'].should match 'private'
       end
 
@@ -272,8 +272,8 @@ describe Member do
     describe 'contact_summary_text' do
       it 'includes phone and email' do
         summary = @member.contact_summary_text
-        summary.should match @member.phone_1
-        summary.should match @member.email_1
+        summary.should match format_phone @member.phone_1
+        summary.should match format_phone @member.email_1
       end
     end # 'contact_summary_text'
   end   # contact information 
