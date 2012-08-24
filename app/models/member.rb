@@ -90,6 +90,11 @@ class Member < ActiveRecord::Base
     return result.uniq.compact
   end
 
+  def <=>(other)
+    self.name <=> other.name
+  end  
+
+
   # This stub helps bridge from the larger program that uses separate contact records. It would be best for clarity to change 
   # all "member.primary_contact." to "member" but this accomplishes the same thing.
   def primary_contact

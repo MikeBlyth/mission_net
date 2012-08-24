@@ -1,6 +1,8 @@
 require 'spec_helper'
 require 'sim_test_helper'
 include SimTestHelper
+include MembersHelper
+require 'application_helper'
 #require 'timecop.rb'
 
 describe Member do
@@ -188,6 +190,82 @@ describe Member do
         @member.contact_summary(:override_private=>true)['Email'].should match @member.email_2
         @member.contact_summary(:override_private=>true)['Email'].should match 'private'
       end
+
+      describe "combining couple's data" do
+
+        def phones_formatted(p)
+          @member.phone_1, @member.phone_2, @wife.phone_1, @wife.phone_2 = p
+          return family_data_formatted(@member)[:phones]
+        end
+        
+        before(:each) do
+          @phones = ['2341111111111', '2342222222222', '2343333333333', '2344444444444']
+          @formatted = @phones.map {|p| format_phone(p)}
+          @formatted_w_names = "#{@formatted[0]} (#{@member.short_name})"
+          @wife = FactoryGirl.build_stubbed(:member, :short_name=>'Pixie')
+          @member = FactoryGirl.build_stubbed(:member)
+          @member.stub(:wife=>@wife)
+          @formatted_w_names = ["#{@formatted[0]} (#{@member.short_name})",
+                                "#{@formatted[1]} (#{@member.short_name})",
+                                "#{@formatted[2]} (#{@wife.short_name})",
+                                "#{@formatted[3]} (#{@wife.short_name})"
+                                ]
+          @both = I18n.t(:both_have_phone)
+          @private = I18n.t(:private_dir)
+        end
+
+        it 'setup tests ok' do
+          result = phones_formatted @phones
+          [@member.phone_1, @member.phone_2, @member.wife.phone_1, @member.wife.phone_2].should == @phones
+        end
+
+        it 'returns single phone for single member' do
+          @phones = @phones[0]
+          @member.stub(:wife=>nil)
+          phones_formatted(@phones).should eq @formatted[0..0]
+        end
+
+        it "returns two phones for single member" do
+          @member.stub(:wife=>nil)
+          phones_formatted(@phones).should eq @formatted[0..1]
+        end          
+
+        it 'returns two phones for wife' do
+          @phones[0] = @phones[1] = nil
+          phones_formatted(@phones).should eq @formatted_w_names[2..3]
+        end
+
+        it 'returns one phone each for husband and wife' do
+          @phones[1] = @phones[3] = nil
+          phones_formatted(@phones).should eq [@formatted_w_names[0], @formatted_w_names[2]]
+        end
+
+        it 'returns two phones each for husband and wife' do
+          phones_formatted(@phones).should eq @formatted_w_names
+        end
+
+        it 'returns "both" when one phone belongs to both' do
+          @phones[3] = @phones[1]
+          phones_formatted(@phones).should eq [@formatted_w_names[0], "#{@formatted[1]} #@both", @formatted_w_names[2]]
+        end
+
+        it "returns private-string when member's phone is private" do
+          @member.phone_private = true
+          phones_formatted(@phones).should eq ["#@private (#{@member.short_name})", @formatted_w_names[2], @formatted_w_names[3]]
+        end
+
+        it "returns private-string when wife's phone is private" do
+          @wife.phone_private = true
+          phones_formatted(@phones).should eq [@formatted_w_names[0], @formatted_w_names[1],"#@private (#{@wife.short_name})"]
+        end
+
+        it "returns only private-string when both phones are private" do
+          @wife.phone_private = true
+          @member.phone_private = true
+          phones_formatted(@phones).should eq ["#@private #@both"]
+        end
+
+      end # combining couple's data
 
     end # 'contact_summary hash'
 

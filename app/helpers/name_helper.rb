@@ -6,6 +6,7 @@ module NameHelper
 # full_name:        Michael John Blyth
 # full_name_short:  Mike Blyth
 # full_name_with_short_name: Michael John Blyth (Mike)
+# short             Mike (short name if it exists, otherwise first name)
 # shorter_name        M Blyth
 # last_name_first:  Blyth, Michael John    (default)
 #  :initial=>true   Blyth, Michael J.

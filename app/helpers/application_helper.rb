@@ -188,7 +188,7 @@ class String
     if Settings.formatting.format_phone_numbers && !self.blank? 
       delim_1 = options[:delim_1] || " "
       delim_2 = options[:delim_2] || " "
-      squished = self.ljust(7).gsub(/[^\+0-9]/,'').gsub('+234','0')
+      squished = self.ljust(7).gsub(/[^\+0-9]/,'').gsub(/\A+?234/,'0')
       if squished.length == 11 && squished[0]=='0'
         return squished.insert(7,delim_2).insert(4,delim_1)
       end
@@ -221,6 +221,18 @@ class String
     short = self[0..len-1]
     short += '...' if self > short
     return short
+  end
+end
+
+# Array method to remove blanks and nil. Might be a bit inefficient for large arrays 
+# since it clones the array first rather than building another from scratch
+class Array
+  def not_blank
+    self.clone.keep_if {|a| !a.blank?} 
+  end
+
+  def not_blank!
+    self.keep_if {|a| !a.blank?} 
   end
 end
 

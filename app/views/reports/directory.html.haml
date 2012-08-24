@@ -9,8 +9,8 @@
   - @families.each do |f|
     - formatted = family_data_formatted(f)
     %tr{:class=> cycle('list_line_odd' , 'list_line_even' )}
-      %td= "#{formatted[:couple]}" + (f.status.code == 'field' ? '' : " (#{f.status.description})") + f.current_location(:with_residence=>false)
-      %td= "#{f.residence_location}"
+      %td= "#{formatted[:couple]}" 
+      %td= "#{f.location}"
       %td= smart_join(formatted[:emails], "; ")
       %td= smart_join(formatted[:phones], "; ")
 

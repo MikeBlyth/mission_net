@@ -47,25 +47,48 @@ module MembersHelper
   def family_data_formatted(member, options={:show_private=>false, :include_contacts=>true})
     formatted = {}
     wife = member.wife
-    phones = []
     emails = []
     formatted[:couple]= member.last_name_first(:short=>true, :middle=>false) + (wife ? " & #{wife.short}" : '')
     return formatted unless options[:include_contacts]
-    phones[0] = member.phone_private ? '---' : format_phone(member.phone_1) || '---'
     emails[0] = member.email_1 || '---'
     if wife # if there IS a wife
-      phones[1] = format_phone(wife.phone_1) if wife.phone_1 &&
-          ! wife.phone_private &&
-          wife.phone_1 != member.phone_1
       emails[1] = wife.email_1 if wife.email_1 &&
           wife.email_1 != member.email_1
     end
     # Add a second phone & email if they exist and only one has been used already
-    phones[1] = format_phone(member.phone_2) if member.phone_2 && phones.length < 2 
     emails[1] = member.email_2 if member.email_2 && emails.length < 2
-    formatted[:phones] = phones
+    formatted[:phones] = phone_string_couple(member)
     formatted[:emails] = emails
     return formatted
   end
 
+private
+
+  def person_has_phone?(member, phone)
+    (member.phone_1 == phone || member.phone_2 == phone) ||
+    (member.phone_private && phone == I18n.t(:private_dir))
+  end
+
+  def phone_string_couple(member, options={})
+    private_string = I18n.t(:private_dir)
+    wife = member.wife
+    if wife.nil?
+      return [private_string] if member.phone_private
+      return [format_phone(member.phone_1), format_phone(member.phone_2)].not_blank!
+    end
+    all_phones = member.phone_private ? [private_string] : [member.phone_1, member.phone_2]
+    all_phones += (wife.phone_private  ? [private_string] : [wife.phone_1, wife.phone_2])
+    formatted = all_phones.not_blank!.uniq.map do |p|
+      whose_phone = case
+        when person_has_phone?(member, p) && person_has_phone?(wife, p)
+          I18n.t(:both_have_phone)
+        when person_has_phone?(member, p)
+          "(#{member.short})"
+        when person_has_phone?(wife, p)
+          "(#{wife.short})"
+      end
+      format_phone(p) + ' ' + whose_phone
+    end
+    return formatted
+  end # phone_string_couple
 end

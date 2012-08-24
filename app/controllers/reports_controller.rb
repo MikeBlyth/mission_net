@@ -20,6 +20,7 @@ skip_authorization_check  # TEMPORARY -- what kind of control is actually needed
     include_groups = [Group.find_by_group_name('Mission community')]  # Temporary just to get one group going
     # Get "families", i.e. members who don't have husbands
     @families = Group.members_in_multiple_groups(include_groups).keep_if {|m| m.husband.nil?}
+    @families = @families.sort
     @title = "Mission Contacts"
     respond_to do |format|
       format.html do 
@@ -30,7 +31,7 @@ skip_authorization_check  # TEMPORARY -- what kind of control is actually needed
         end
       end
       format.pdf do
-        output = DirectoryTable.new(:page_size=>Settings.reports.page_size).
+        output = DirectoryDoc.new(:page_size=>Settings.reports.page_size).
              to_pdf(@families, @visitors, params)
         if params[:mail_to] then
 #puts "Mailing report, params=#{params}"

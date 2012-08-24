@@ -2,8 +2,11 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  both_have_phone: "(both)"
   hello: "Hello world"
   Male: "Male"
   Female: "Female"
   private_data: "**private**"
+  private_dir: "---"     # Filler for private data in reports
   via: "via"
+  unspecified_location: "Location not listed"

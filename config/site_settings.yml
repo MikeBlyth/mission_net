@@ -100,6 +100,11 @@ sendgrid_password:
   name: Sendgrid Password
   type: password
  
+directory_title:
+  name: Title for Directory Listing
+  type: string
+  default: Directory
+
 contact_update_recipients:
   name: Contact Update Recipients
   type: string
