@@ -21,8 +21,8 @@ class DirectoryDoc < Prawn::Document
     # Part 1 -- Sorted by location
     page_header(:title=>SiteSetting.directory_title)#, :left => comments)
     families_by_location = families.sort do |x,y| 
-      (description_or_blank(x.location,'ZZ') + x[:name]) <=> 
-      (description_or_blank(y.location,'ZZ') +y[:name])
+      (description_or_blank(x.location,'Zz') + x[:name]) <=> 
+      (description_or_blank(y.location,'Zz') +y[:name])
     end
     if location_col
       table_data = [['Location','Name', 'Email', 'Phone']]
@@ -56,7 +56,8 @@ class DirectoryDoc < Prawn::Document
 
       table(table_data, :header => true, 
                       :row_colors => ["F0F0F0", "FFFFCC"],
-                      :cell_style => { :size => 10, :inline_format => true}) do 
+                      :cell_style => { :size => 10, :inline_format => true},
+                      :column_widths => {1=> 200, 2 => 170}) do 
         row(0).style :background_color => 'CCCC00', :font => 'Times-Roman'
       end
       
@@ -68,7 +69,8 @@ class DirectoryDoc < Prawn::Document
       start_new_page
       table(table_data, :header => true, 
                       :row_colors => ["F0F0F0", "FFFFCC"],
-                      :cell_style => { :size => 10, :inline_format => true}) do 
+                      :cell_style => { :size => 10, :inline_format => true},
+                      :column_widths => {1=> 200, 2 => 170}) do 
         row(0).style :background_color => 'CCCC00', :font => 'Times-Roman'
         column(1).style :width=>150
       end
