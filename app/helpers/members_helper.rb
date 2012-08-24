@@ -48,7 +48,17 @@ module MembersHelper
     formatted = {}
     wife = member.wife
     emails = []
-    formatted[:couple]= member.last_name_first(:short=>true, :middle=>false) + (wife ? " & #{wife.short}" : '')
+    member_name = member.last_name_first(:short=>true, :middle=>false)
+    wife_name = wife ? " & #{wife.short}" : ''
+    formatted[:couple]= member_name + wife_name
+    if member.in_country 
+      away_string = ''
+    else
+      away_string = "*"
+      away_string << " (return ~ #{member.arrival_date})" if 
+            (member.arrival_date && member.arrival_date >= Date.today)
+    end
+    formatted[:couple_w_status] = member_name + wife_name + away_string
     return formatted unless options[:include_contacts]
     emails[0] = member.email_1 || '---'
     if wife # if there IS a wife

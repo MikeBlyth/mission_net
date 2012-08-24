@@ -10,7 +10,7 @@ class DirectoryDoc < Prawn::Document
   def family_data_line(member, options = {})
     formatted = family_data_formatted(member)
     location_string = options[:location].nil? ? '' : description_or_blank(member.location)
-    name_column = formatted[:couple] + location_string
+    name_column = formatted[:couple_w_status] + location_string
     return [ name_column, smart_join(formatted[:emails], "\n"), smart_join(formatted[:phones], "\n") ]
   end
 
@@ -64,7 +64,7 @@ class DirectoryDoc < Prawn::Document
       # Part 2 -- Sorted by family
       table_data = [['<i>Name</i>', 'Email', 'Phone']]
       families.each do |f|
-        table_data << family_data_line(f, options)
+        table_data << family_data_line(f, {:location => nil}.merge(options))
       end      
       start_new_page
       table(table_data, :header => true, 
