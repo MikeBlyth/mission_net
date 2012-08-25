@@ -99,6 +99,11 @@ $border_3_darker: darken(saturate($accent_base, 25), 30);    //hsl($hue_accent, 
 
 /********** Color info for CSS ***************** */
 
+.pdf_directory_form {
+  background: $background_form;
+  border:  1px solid $border_1_dark;
+}
+
 body {
   color: $body_text_dark; }
 

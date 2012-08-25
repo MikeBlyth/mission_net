@@ -162,8 +162,20 @@ $('#record_to_groups').live("change", function(){
   
 
 // ******************* MULTISELECT WIDGET 
+// See http://www.erichynds.com/jquery/jquery-ui-multiselect-widget/
+
 $(function(){
    jQuery(".multiselect").multiselect().multiselectfilter();
+});
+
+$(function(){
+   jQuery(".multiselect-groups").multiselect({
+    autoOpen: true,
+    noneSelectedText: 'Choose groups',
+    selectedList: '2',
+    minWidth: '250',
+    beforeclose: function(){return(false);}
+   }).multiselectfilter();
 });
 
 // ****************** DATEPICKER **************************************  

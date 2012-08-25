@@ -15,6 +15,7 @@ class DirectoryDoc < Prawn::Document
   end
 
   def to_pdf(families, visitors=[], options = {})
+puts "**** options=#{options}"
     options[:location] ||= 'short'
     location_col = options[:location_column] # make separate column for locations? 
 
@@ -51,33 +52,36 @@ class DirectoryDoc < Prawn::Document
         table_data << family_data_line(f, options.merge({:location=>nil}))
       end
     end
-
+    font_size = options[:font_size].to_i
+    font_size = 8 if font_size < 8
     bounding_box [0, cursor-20], :width => bounds.right-bounds.left, :height=> (cursor-20)-bounds.bottom-20 do
-
+    if options[:report_sorted_by_location]
       table(table_data, :header => true, 
                       :row_colors => ["F0F0F0", "FFFFCC"],
-                      :cell_style => { :size => 10, :inline_format => true},
+                      :cell_style => { :size => font_size, :inline_format => true},
                       :column_widths => {1=> 200, 2 => 170}) do 
         row(0).style :background_color => 'CCCC00', :font => 'Times-Roman'
       end
-      
-      # Part 2 -- Sorted by family
+    end
+
+    # Part 2 -- Sorted by family
+    if options[:report_sorted_by_name]
+      start_new_page if options[:report_sorted_by_location]
       table_data = [['<i>Name</i>', 'Email', 'Phone']]
       families.each do |f|
         table_data << family_data_line(f, {:location => nil}.merge(options))
       end      
-      start_new_page
       table(table_data, :header => true, 
                       :row_colors => ["F0F0F0", "FFFFCC"],
-                      :cell_style => { :size => 10, :inline_format => true},
+                      :cell_style => { :size => font_size, :inline_format => true},
                       :column_widths => {1=> 200, 2 => 170}) do 
         row(0).style :background_color => 'CCCC00', :font => 'Times-Roman'
         column(1).style :width=>150
       end
+    end
+  end # bounding_box
 
-    end # bounding_box
 
-
-    render
+  render
   end
 end

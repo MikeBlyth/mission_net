@@ -217,7 +217,7 @@ table.new_family {
 a.big-link {
   font: bold 14px arial, sans-serif; }
 
-div.new_travel, div.member_form {
+div.member_form {
   position: relative;
   $height: 470px;
   height: $height;
@@ -252,6 +252,44 @@ div.new_travel, div.member_form {
     border: 0px solid red;
     border-bottom: 0px solid red;
     border-left: 0px solid red; } }
+
+/********** Group Selector *********/
+$pdf_dir_form_height: 325px;
+$pdf_top_margin: 10px;
+$pdf_left_margin: 10px;
+$pdf_inner_height: 280px;
+$pdf_groups_width: 275px;
+$pdf_options_left: $pdf_groups_width + 10px;
+$pdf_options_width: 220px;
+$pdf_dir_form_width: $pdf_options_left + $pdf_options_width + 10px;
+div.pdf_directory_form {
+  position: relative;
+  margin-left: 20px;
+  margin-top: 15px;
+  $height_gs: 280px;
+  height: $pdf_dir_form_height;
+  width: $pdf_dir_form_width;
+  div.multiselect-groups-container{
+    position: absolute;
+    top: $pdf_top_margin;
+    left: $pdf_left_margin;
+    width: $pdf_groups_width;
+    height: $pdf_inner_height;
+    }
+  div.options-container{
+    position: absolute;
+    top: $pdf_top_margin;
+    left: $pdf_options_left;
+    height: $pdf_inner_height;
+    width: $pdf_options_width;
+    .font_size {width: 30px}
+    }
+  #download {
+    position: absolute;
+    top: $pdf_inner_height + 10px;
+    left: $pdf_left_margin;
+    }
+  }
 
 div.member_form {
   $height2: 340px;

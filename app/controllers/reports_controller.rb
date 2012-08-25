@@ -17,7 +17,13 @@ skip_authorization_check  # TEMPORARY -- what kind of control is actually needed
     # include_home_assignment = params[:include_home_assignment]
     # include_active = params[:include_active]
 #puts "ReportsController#whereis report, params=#{params}"
-    include_groups = [Group.find_by_group_name('Mission community')]  # Temporary just to get one group going
+# TEMPORARY -- what kind of control is actually needed if any?
+unless current_user.role_include?(:moderator)
+  flash[:notices] = 'Sorry, only moderators can generate reports at this time.'
+  redirect_to home_path
+  return
+end
+    include_groups = params[:record][:to_groups]
     # Get "families", i.e. members who don't have husbands
     @families = Group.members_in_multiple_groups(include_groups).keep_if {|m| m.husband.nil?}
     @families = @families.sort

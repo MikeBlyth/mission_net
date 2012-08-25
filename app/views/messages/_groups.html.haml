@@ -1,8 +1,6 @@
 = fields_for :record do |form|
-  %table{:style=>'width: 300px'}
-    %tr
-      %td
-        = form.label :to_groups, "Destination groups"
-        %br
-        = form.select :to_groups, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>15          
+  .multiselect-groups-container
+    = form.label :to_groups, "Destination groups"
+    %br
+    = form.select :to_groups, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>15, :class=>'multiselect-groups'            
 
