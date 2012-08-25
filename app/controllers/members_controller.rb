@@ -56,7 +56,7 @@ class MembersController < ApplicationController
   end
 
   def index
-    @notices = "Directory (email/phone list) is (oops -- not quite) ready to roll. Click on link to reports on side menu."
+    @notices = "Directory (email/phone list) is (I think!) ready to roll. Click on link to reports on side menu."
 #    session[:compact] = true if session[:compact].nil?   # Start with compact view. Make false to start with full view
     @compact = params[:compact] || 'true' # Making the compact view the default
     session[:compact] = @compact
