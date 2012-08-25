@@ -18,7 +18,7 @@ skip_authorization_check  # TEMPORARY -- what kind of control is actually needed
     # include_active = params[:include_active]
 #puts "ReportsController#whereis report, params=#{params}"
 # TEMPORARY -- what kind of control is actually needed if any?
-unless current_user.role_include?(:moderator)
+unless current_user.roles_include?(:moderator)
   flash[:notices] = 'Sorry, only moderators can generate reports at this time.'
   redirect_to home_path
   return

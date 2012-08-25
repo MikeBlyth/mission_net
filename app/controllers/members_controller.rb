@@ -196,8 +196,8 @@ protected
 #  end
  
   def display_edit_link(record=nil)
-puts "**** moderator = #{current_user.role_include?(:moderator)}"
-    return true if current_user.role_include?(:moderator)
+puts "**** moderator = #{current_user.roles_include?(:moderator)}"
+    return true if current_user.roles_include?(:moderator)
     is_member_record = (record.is_a? Member)  # because record parameter can be other than the actual record being edited
     same_id = is_member_record ? current_user.id == record.id : false
     ok = is_member_record && same_id
