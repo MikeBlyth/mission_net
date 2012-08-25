@@ -13,6 +13,7 @@
 
 class City < ActiveRecord::Base
   include ModelHelper
+  attr_accessible :name, :state, :latitude, :longitude
   before_destroy :check_for_linked_records
 
   has_many :locations
