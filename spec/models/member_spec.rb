@@ -21,6 +21,12 @@ describe Member do
 
   end # basic validation
 
+  it 'formats phone numbers before save' do
+    @member = FactoryGirl.create(:member, :phone_1 => '08033333333', :phone_2 => '+234816-555.55 55')
+    @member.reload.phone_1.should eq '2348033333333'
+    @member.reload.phone_2.should eq '2348165555555'
+  end
+  
   describe "names: " do
     before(:each) do
       @member = Member.new
@@ -113,26 +119,27 @@ describe Member do
   end
   
   describe 'finds members by phone' do
+    before(:each) do
+      @phone = std_phone '2345551112222'
+    end
+
     it 'using phone_1' do
-      phone = 'sample@test.com'
-      member = FactoryGirl.create(:member, :phone_1 => phone)
-      Member.find_by_phone(phone).should == [member]
+      member = FactoryGirl.create(:member, :phone_1 => @phone)
+      Member.find_by_phone(@phone).should == [member]
     end
 
     it 'using phone_2' do
-      phone = 'sample@test.com'
-      member = FactoryGirl.create(:member, :phone_2 => phone)
-      Member.find_by_phone(phone).should == [member]
+      member = FactoryGirl.create(:member, :phone_2 => @phone)
+      Member.find_by_phone(@phone).should == [member]
     end
     
     it 'when two share same number' do
-      phone = 'sample@test.com'
-      member = FactoryGirl.create(:member, :phone_1 => 'something else', :phone_2 => phone)
-      member2 = FactoryGirl.create(:member, :phone_1 => phone)
+      member = FactoryGirl.create(:member, :phone_1 => 'something else', :phone_2 => @phone)
+      member2 = FactoryGirl.create(:member, :phone_1 => @phone)
       unrelated = FactoryGirl.create(:member, :phone_1 => 'watermelon')
-      Member.find_by_phone(phone).should include member
-      Member.find_by_phone(phone).should include member2
-      Member.find_by_phone(phone).should_not include unrelated
+      Member.find_by_phone(@phone).should include member
+      Member.find_by_phone(@phone).should include member2
+      Member.find_by_phone(@phone).should_not include unrelated
     end
       
   end

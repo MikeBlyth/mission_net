@@ -90,10 +90,11 @@ class TwilioGateway < SmsGateway
           AppLog.create(:code => "SMS.error.twilio", :description=>"#{$!}, #{$!.backtrace[0..2]}", :severity=>'Warning')  
           reply[number] = {:status => MessagesHelper::MsgError}
         else
-          AppLog.create(:code => "SMS.sent.#{@gateway_name}", :description=>"from=#{@phone_number}, to=#{number}, msg=#{@body[0..30]}")
           reply[number] = {:status => MessagesHelper::MsgSentToGateway}
        end     
     end
+    AppLog.create(:code => "SMS.sent.#{@gateway_name}", 
+      :description=>"#{@numbers.count} messages sent from=#{@phone_number}, msg=#{@body[0..30]}")
     @gateway_reply = reply
   end
 end  

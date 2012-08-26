@@ -24,7 +24,7 @@ defaults: &defaults
   contacts:
     primary_contact_type_code: 1  # Contact records of this type are the one used as primary contacts. Usually field.
     updates_window: 14 # days -- default window for reporting updates to contacts.
-    local_country_code: '+234'
+    local_country_code: '234'
   travel:
     # Travel to these airports will be reported as arrivals, from them = departures.
     airports_local: ['Kano', 'Lagos', 'Abuja']

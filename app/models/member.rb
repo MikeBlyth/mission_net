@@ -38,6 +38,7 @@ class Member < ActiveRecord::Base
   include NameHelper
   require 'sessions_helper'
   include SessionsHelper
+  include ApplicationHelper
   
   extend ExportHelper
 
@@ -58,6 +59,7 @@ class Member < ActiveRecord::Base
   belongs_to :bloodtype
   validates_uniqueness_of :name
   validates_presence_of :name
+  before_save :format_phone_numbers
   
   def initialize(*args)
     @role_cache_duration = 60 # seconds
@@ -264,6 +266,10 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
     end
   end
   
+  
+  def format_phone_numbers
+    self.phone_1, self.phone_2 = std_phone(phone_1), std_phone(phone_2)
+  end
 #Not working
 #  def authorized_for_read?
 #    false

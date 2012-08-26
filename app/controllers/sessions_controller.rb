@@ -65,7 +65,7 @@ end
 
   # This gets called by the auth provider (e.g. Facebook) when the signin with the provider didn't work
   def failure
-    render :text => "Sorry, but that didn't work!"
+    render :text => "Sorry, but that didn't work! Sometimes it takes the program just a bit longer to get started, so try once more."
   end
   
   def destroy

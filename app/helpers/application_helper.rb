@@ -113,6 +113,11 @@ module ApplicationHelper
       return s.phone_format(options)
     end
 
+    def std_phone(s)
+      return s unless s.respond_to? :phone_std
+      return s.phone_std
+    end
+
 #    # Standardize phone number string to "+2349999999" format
 #    def phone_std(s,options={})
 #      return s unless s.respond_to? :phone_std
@@ -197,11 +202,14 @@ class String
   end
 
   # Standardize phone number string to "+2349999999" format
+  # * replace leading zero with country code
+  # * strip leading + 
+  # * remove -, space, and . characters (why not just remove all non-digits??)
   def phone_std(options={})
     return nil if self.blank?
-      raw = self
+    raw = self.strip
     # Replace initial 0 with country code (configurable, but probably includes +) and remove punctuation and spaces
-    return raw.gsub(/\A0/,Settings.contacts.local_country_code).gsub(/-|\.| /,'')
+    return raw.sub(/\A0/,Settings.contacts.local_country_code).gsub(/[\+\(\)\-\. ]/, '')
   end
 
 #  def phone_bare(options={})

@@ -30,5 +30,22 @@ extend ApplicationHelper
     end
 
   end
+
+  describe 'phone_std converts to canonical form' do
+    
+    it 'replaces leading zero with country code' do
+      std_phone('08033854268').should eq '2348033854268'
+    end
+
+    it 'removes leading plus sign' do
+      std_phone('+2348033854268').should eq '2348033854268'
+    end
+
+    it 'removes parens, hyphen, space and period' do
+      std_phone('(+234) 803-38.5 4268').should eq '2348033854268'
+    end
+
+  end
+  
   
 end

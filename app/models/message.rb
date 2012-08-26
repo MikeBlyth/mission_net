@@ -266,7 +266,7 @@ puts "**** Trying to deliver message ##{self.id} but no email addresses found."
   end
 
   def update_sent_messages_w_status(gateway_reply)
-#puts "**** gateway_reply=#{gateway_reply}"
+puts "**** update_sent_messages_w_status: gateway_reply=#{gateway_reply}"
     gateway_reply.each do |number, result|
       sent_messages.find_by_phone(number).
            update_attributes(:gateway_message_id => result[:sms_id] || result[:error], 
@@ -285,7 +285,6 @@ puts "**** Trying to deliver message ##{self.id} but no email addresses found."
     @phones ||= options[:phone_numbers] || sent_messages.map {|sm| sm.phone}.compact.uniq
     @phones = @phones.split(',') if @phones.is_a? String 
     if @phones.empty?
-puts "**** Trying to deliver SMS for message ##{self.id} but no phone numbers found."  
       AppLog.create(:code => 'Message.deliver_sms', :severity=> 'warning', 
          :description => "Attempting to send SMS for message ##{self.id} but no phone numbers found")
       return

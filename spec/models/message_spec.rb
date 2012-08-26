@@ -377,8 +377,8 @@ describe Message do
 
       it "does not include duplicate phone numbers" do
         #NB: See above
-        @members[1].update_attributes(:phone_1 => @members[0].phone_1, :phone_2 => nil)
-        @members[1].phone_1.should == @members[0].phone_1
+        @members[1].update_attributes(:phone_1 => @members[0].reload.phone_1, :phone_2 => nil)
+        @members[1].reload.phone_1.should == @members[0].reload.phone_1
         @message.create_sent_messages
         @message.stub :update_sent_messages_w_status
         @gateway.should_receive(:deliver).with([@members[0].phone_1.without_plus], /###/)

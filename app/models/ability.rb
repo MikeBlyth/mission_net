@@ -33,6 +33,8 @@ ActiveRecord::Base.logger.level = 0# Logger::WARN
         cannot :read, [SiteSetting, AppLog]
         can :create, Message
         can :update, Member, :id => user.id  # Allow user to edit own records
+        can :update, Member, :id => user.wife.id if user.wife  # Allow user to edit own records
+        can :update, Member, :id => user.husband.id if user.husband  # Allow user to edit own records
       when :limited
 #puts "***** USER IS LIMITED ****"
         cannot :manage, :all
