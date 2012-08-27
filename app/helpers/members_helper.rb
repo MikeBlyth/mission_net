@@ -15,6 +15,13 @@ module MembersHelper
     end
   end
 
+  def can_edit_member(member, user)
+    user.roles_include?(:moderator) ||
+    member.id == user.id ||
+    member.wife_id == user.id ||
+    (member.husband && member.husband.id == user.id)
+  end
+  
   def phone_1_column(record, column)
     filter_private_data(record, :phone_1, :phone_private)
   end

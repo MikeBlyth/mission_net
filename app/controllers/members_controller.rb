@@ -2,6 +2,7 @@ class MembersController < ApplicationController
   helper :countries
 
   include ApplicationHelper
+  include MembersHelper
 
   skip_before_filter :authorize_privilege
   load_and_authorize_resource
@@ -16,11 +17,13 @@ class MembersController < ApplicationController
         :phone_1, :phone_2, :email_1, 
         :location, :location_detail, :in_country, :comments,
         :arrival_date, :departure_date]
+  ModeratorOnlyColumns = [:bloodtype, :blood_donor, :phone_private, :email_private]
 
   active_scaffold :member do |config|
     config.label = "Members"  # Main title
     list.columns = ListColumnsFull
-
+    show.columns = ListColumnsFull - [:name, :phone_private, :email_private]
+    
     # Set default sorting
     config.columns[:name].sort_by :sql
     config.list.sorting = {:name => 'ASC'}
@@ -60,7 +63,9 @@ class MembersController < ApplicationController
 #    session[:compact] = true if session[:compact].nil?   # Start with compact view. Make false to start with full view
     @compact = params[:compact] || 'true' # Making the compact view the default
     session[:compact] = @compact
-    active_scaffold_config.list.columns = @compact == 'true' ? ListColumnsCompact : ListColumnsFull
+    display_columns = (@compact == 'true' ? ListColumnsCompact : ListColumnsFull)
+    display_columns -= ModeratorOnlyColumns unless current_user.roles_include? :moderator
+    active_scaffold_config.list.columns = display_columns
 #binding.pry  
     super
   end
@@ -121,6 +126,15 @@ class MembersController < ApplicationController
       m.name = m.name.strip if m.name[-1]= ' '
     end
     redirect_to(:action => :index)
+  end
+
+  def do_show
+    super
+    display_columns = ListColumnsFull
+puts "**** current_user.id=#{current_user.id}"
+puts "**** @record.id=#{@record.id}"
+    display_columns -= ModeratorOnlyColumns unless can_edit_member(@record, current_user)
+    active_scaffold_config.show.columns = display_columns
   end
 
   def do_edit
