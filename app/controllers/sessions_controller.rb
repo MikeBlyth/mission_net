@@ -37,7 +37,10 @@ puts "**** (2) auth_hash=#{auth_hash}"
 
   user = login_allowed(user_email)
   unless user
-    flash[:info] = "Sorry, that login is not authorized to use this application. Please try another or contact the system administrator."
+    flash[:info] = "Sorry, that login is not authorized to use this application " +
+        "because we don't have that email address on record for you." +
+        "Please try another or contact the system administrator " +
+        "to have your Facebook or Gmail login credentials added."
     redirect_to sign_in_path
     return
   end
