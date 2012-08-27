@@ -18,11 +18,13 @@ class MembersController < ApplicationController
         :location, :location_detail, :in_country, :comments,
         :arrival_date, :departure_date]
   ModeratorOnlyColumns = [:bloodtype, :blood_donor, :phone_private, :email_private]
+  ShowColumns = ListColumnsFull + [:emergency_contact_name, :emergency_contact_phone, :emergency_contact_email] -
+        [:name, :phone_private, :email_private]
 
   active_scaffold :member do |config|
     config.label = "Members"  # Main title
     list.columns = ListColumnsFull
-    show.columns = ListColumnsFull - [:name, :phone_private, :email_private]
+    show.columns = ShowColumns
     
     # Set default sorting
     config.columns[:name].sort_by :sql
@@ -130,7 +132,7 @@ class MembersController < ApplicationController
 
   def do_show
     super
-    display_columns = ListColumnsFull
+    display_columns = ShowColumns
 puts "**** current_user.id=#{current_user.id}"
 puts "**** @record.id=#{@record.id}"
     display_columns -= ModeratorOnlyColumns unless can_edit_member(@record, current_user)

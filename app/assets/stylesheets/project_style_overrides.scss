@@ -326,36 +326,6 @@ div.pdf_directory_form {
   border-left: 0px;
   background-color: transparent; }
 
-div.passengers {
-  padding-left: 10px; }
-
-div.travel_category, div.spouse_kids, div.total_passengers,
-div.other_travelers {
-  margin-top: 0.8em; }
-
-div.traveler_names {
-  select.multiple {
-    height: 180px; } }
-
-div.spouse_kids {
-  table {
-    width: 80%; } }
-
-div.with_children {
-  padding-left: 10px; }
-
-div.with_spouse {
-  padding-left: 10px; }
-
-div.travel_date {
-  padding: 0px;
-  margin: 0px; }
-
-div.temporary_location_dates {
-  padding-left: 1em; }
-
-#as_calendar_events-tbody .date-column {
-  width: 20%; }
 
 .whereis, .status_mismatch {
   th {
@@ -402,28 +372,6 @@ div.crosstab {
   width: 50px; }
 
 #tabs p.form-footer {margin: 0.5em; }
-
-table.children {
-  table-layout: fixed;
-  width: 500px;
-  .first_name-input {
-    width: 90px; }
-  .employment_status-input {
-    width: 100px; }
-  th.idx {
-    width: 30px; }
-  th.name {
-    width: 100px; }
-  th.birth_date {
-    width: 90px; }
-  th.sex {
-    width: 80px; }
-  th.school {
-    width: 80px; }
-  th.grade {
-    width: 60px; }
-  th.status {
-    width: 100px; } }
 
 .active-scaffold-header div.actions a.export {
 //  background-image: url('assets/images/export.png');
@@ -488,6 +436,10 @@ div#groups {
   }
   
 .form-footer input.submit {border-radius: 4px}
+
+.active-scaffold-footer .active-scaffold-pagination {
+    float: left;
+    }
 
 /************* WORKAROUNDS ETC. ******************/
 
