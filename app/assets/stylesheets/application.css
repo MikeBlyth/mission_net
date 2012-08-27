@@ -9,12 +9,15 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
- *= require_tree .
- *= require active_scaffold
+ *= require scaffolds
  *= require jquery.ui.resizable
  *= require jquery.ui.tabs
  *= require jquery.ui.datepicker
  *= require jquery.multiselect
  *= require jquery.multiselect.filter
+ *= require active_scaffold
+ *= require active_scaffold_layout
+ *= require project_style_overrides
+ *= require theme-gold
 */
 

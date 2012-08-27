@@ -89,10 +89,11 @@ div.statuses-view {
 #tabs-wife.wife_hidden, #wife-tab.wife_hidden {
   display: none; }
 
-.status-input,
-.ministry_comment-input, .temporary_location-input, .location-input,
+.status-input, .ministry_comment-input, .temporary_location-input, .location-input,
 .education-input, .ministry_comments {
   width: 270px; }
+  
+.keywords-input {width: 200px}  
 
 /******************* GENERAL *************** */
 
@@ -217,35 +218,37 @@ table.new_family {
 a.big-link {
   font: bold 14px arial, sans-serif; }
 
+/********** Member form *****************/
+
 div.member_form {
   position: relative;
-  $height: 470px;
-  height: $height;
   padding: 20px;
+  $height2: 340px;
+  padding: 5px;
   div.col_1 {
     position: absolute;
     top: 0px;
     left: 0px;
     width: 300px;
     padding: 5px;
-    height: $height - 30px; }
+    height: $height2; }
   div.col_2 {
     position: absolute;
     top: 0px;
     left: 310px;
     width: 300px;
     padding: 5px;
-    height: $height - 30px; }
+    height: $height2; }
   div.col_3 {
     position: absolute;
     top: 0px;
     left: 621px;
     width: 300px;
     padding: 5px;
-    height: $height - 30px; }
+    height: $height2; }
   div.form-footer {
     position: absolute;
-    top: $height - 20px;
+    top: $height2 - 10px;
     left: 0px; }
   table, td {
     border-collapse: collapse;
@@ -290,17 +293,6 @@ div.pdf_directory_form {
     left: $pdf_left_margin;
     }
   }
-
-div.member_form {
-  $height2: 340px;
-  padding: 5px;
-  height: $height2;
-  div.col_1 {
-    height: $height2; }
-  div.col_2 {
-    height: $height2; }
-  div.col_3 {
-    height: $height2; } }
 
 .active-scaffold .active-scaffold td {
   border-bottom: 0px;
@@ -410,6 +402,8 @@ table.children {
 //  background-image: url('assets/images/export.png');
   padding: 5px 5px 5px 25px; }
 
+/********* Message form ***********/
+
 #msg-form #msg-bottom {
   position: relative; }
 
@@ -434,18 +428,29 @@ table.children {
 
 #advanced {
   position: absolute;
-  top: 0px;  background-attachment: fixed;
+  top: -10px; 
   background-repeat: no-repeat;
+  left: 255px;
+  width: 225px;
+  padding: 10px; 
+  #options {background: transparent}
+}
 
-  left: 200px;
-  width: 200px;
-  padding: 5px; }
+div#groups {
+    min-height: 290px;
+    width: 250px;
+}
+
+#msg-form { width: 550px}
+
 
 .groups-view {
   #record_abbrev {
     width: 80px; }
   #record_type_of_group {
     width: 200px; } }
+
+/********************************/
 
 .not-implemented {
   display: none; }
@@ -455,6 +460,8 @@ table.children {
   width: 100%;
   }
   
+.form-footer input.submit {border-radius: 4px}
+
 /************* WORKAROUNDS ETC. ******************/
 
 /* this is needed b/o bug in jquery-ui, to get tabs widget to work next to the floated menu */

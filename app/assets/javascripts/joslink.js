@@ -173,7 +173,7 @@ $(function(){
     autoOpen: true,
     noneSelectedText: 'Choose groups',
     selectedList: '2',
-    minWidth: '250',
+//    minWidth: '250',
     beforeclose: function(){return(false);}
    }).multiselectfilter();
 });

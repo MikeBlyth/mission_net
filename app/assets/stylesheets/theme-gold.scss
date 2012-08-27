@@ -27,8 +27,8 @@ $links_base: hsl(225, 75, 50);
 /* Button for submit etc. */
 $background_button: hsl(40, 70, 60);
 /******* Images **** */
-$widget-content: url(images/ui-bg-gold-textured.png);
-
+//$widget-content: url(images/ui-bg-gold-textured.png);
+$widget-content: image_url('ui-bg-gold-textured.png');
 
 /**  THE REST OF THE STYLESHEET ONLY NEEDS TO BE EDITED IF TWEAKING IS REQUIRED ****/
 /*** Main Listings ***/
@@ -170,11 +170,11 @@ div#content {
   background: $column_head_hover; }
 
 .active-scaffold th.asc a, .active-scaffold th.desc a:hover {
-    background: url("../images/active_scaffold/default/arrow_up.gif") no-repeat scroll right 50%;
+    background: image_url("active_scaffold/arrow_up.gif") no-repeat scroll right 50%;
 }
     
 .active-scaffold th.desc a, .active-scaffold th.desc a:hover {
-    background: url("../images/active_scaffold/default/arrow_down.gif") no-repeat scroll right 50%;
+    background: image_url("active_scaffold/arrow_down.gif") no-repeat scroll right 50%;
 }
     
 .active-scaffold .records tr.record {
@@ -300,6 +300,7 @@ $widget_text_hover: desaturate($body_text_default, 40);
   border: 1px solid $widget_borders_2;
 //  background: $background_form_3 $widget_header 50% 50% repeat-x;
   @include linear-gradient($widget_background_3, darken($widget_background_3,25));
+  background: $widget_background_2 $widget-content 0 0 repeat;
   color: $headers_1_dark;
   a {
     color: $headers_1_dark; } }
@@ -312,7 +313,8 @@ $widget_text_hover: desaturate($body_text_default, 40);
 .active-scaffold .submit, .ui-datepicker-month, .ui-datepicker-year {
 //  background: $date_picker_selectors repeat-x scroll 50% 50% $widget_background_3;
   @include linear-gradient($background_button, darken($background_button,20));
-  color: white;
+//  color: white;
+  color: #903A0A;
   border: 1px solid $border_1_darker;
   &:hover {
     background: $widget_background_2;
@@ -337,7 +339,7 @@ $widget_text_hover: desaturate($body_text_default, 40);
   background-color: $background_alt; }
 
 #advanced #options {
-  background-color: $background_alt; }
+  background-color: $background_form; }
 
 .as_form #msg-form table { background: transparent }
 
@@ -399,9 +401,10 @@ background: red
   background: $error_background;
   color: $error_text; }
 
-.ui-state-error a, .ui-widget-content a, .ui-widget-header a, .ui-state-error-text, .ui-widget-content .ui-state-error-text, .ui-widget-header .ui-state-error-text {
+.ui-state-error a, .ui-widget-content a, .ui-state-error-text, .ui-widget-content .ui-state-error-text, .ui-widget-header .ui-state-error-text {
   color: $error_text; }
 
+.ui-widget-header a {color: #D04A0A}
 /* Icons
  *---------------------------------- */
 
@@ -410,24 +413,24 @@ background: red
 /* Individual icons are sprites within a collection */
 
 .ui-icon {
-  background-image: url(images/ui-icons-base-grey.png); }
+  background-image: image_url('ui-icons-base-grey.png'); }
 
 .ui-widget-content .ui-icon, .ui-widget-header .ui-icon {
-  background-image: url(images/ui-icons-base-grey.png); }
+  background-image: image_url('ui-icons-base-grey.png'); }
 
 .ui-state-default .ui-icon {
-  background-image: url(images/ui-icons-gold-default.png); }
+  background-image: image_url('ui-icons-gold-default.png'); }
 
 .ui-state-hover .ui-icon, .ui-state-focus .ui-icon {
-  background-image: url(images/ui-icons-gold-hover.png); }
+  background-image: image_url('ui-icons-gold-hover.png'); }
 
 .ui-state-active .ui-icon {
-  background-image: url(images/ui-icons-gold-active.png); }
+  background-image: image_url('ui-icons-gold-active.png'); }
 
 .ui-state-highlight .ui-icon {
-  background-image: url(images/ui-icons-gold-highlight.png); }
+  background-image: image_url('ui-icons-gold-highlight.png'); }
 
 .ui-state-error .ui-icon, .ui-state-error-text .ui-icon {
-  background-image: url(images/ui-icons-base-error.png); }
+  background-image: image_url('ui-icons-base-error.png'); }
 
 
