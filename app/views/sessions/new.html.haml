@@ -1,14 +1,18 @@
 %h1 Sign In
-%p 
-  Use your existing account on FaceBook or Google to log in. 
-  %br
-  Your main email address listed on Facebook or Google must 
-  %br
-  match one of your addresses listed in this directory. If you do not have one of
-  those then you will need to get one or the other and ask the moderator of this
-  site to add it to your listing.
+%p.sign_in_instructions
+  Use your existing account on FaceBook or Google/Gmail to log in. 
 = link_to "Connect using your Facebook account", "/auth/facebook", :id => 'connect_facebook'
 %br
 %br
 = link_to "Connect using your Google account", "/auth/google_oauth2", :id => 'connect_google'
-
+%p.sign_in_instructions
+  Your main email address listed on Facebook or Google must 
+  match one of your addresses listed in this directory. If you do not have one of
+  those then you will need to get one or the other and ask the moderator of this
+  site to add it to your listing. 
+%ul
+  %li= link_to "Get a Google/Gmail account", "https://accounts.google.com/SignUp"
+  %li= link_to "Sign up for Facebook", "http://www.facebook.com/"
+%p.sign_in_instructions
+  (Our using Facebook for login does not mean we endorse it or recommend your using it.
+  It is simply an easy way to securely identify users.)
