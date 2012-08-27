@@ -95,6 +95,16 @@ div.statuses-view {
   
 .keywords-input {width: 200px}  
 
+/******************* LISTINGS ****************/
+
+.inplace_form button {
+    font-size: 1em;
+}
+
+.as_content td select {
+    letter-spacing: 0;
+}
+
 /******************* GENERAL *************** */
 
 a, a:visited {
@@ -217,6 +227,15 @@ table.new_family {
 
 a.big-link {
   font: bold 14px arial, sans-serif; }
+  
+/********** Show Member *****************/
+
+div.show-member {
+  border: 1px solid grey;
+  padding: 10px;
+  float: left;
+}
+
 
 /********** Member form *****************/
 

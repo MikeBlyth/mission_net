@@ -5,5 +5,6 @@ class AppLogsController < ApplicationController
   active_scaffold :app_log do |config|
     config.columns = [:created_at, :severity, :code, :description]
     list.sorting = {:created_at => 'DESC'}
+    config.show.link = false
   end
 end

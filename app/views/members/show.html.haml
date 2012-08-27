@@ -1,0 +1,34 @@
+%h4= @member.name
+- @member = @record
+- @spouse = @member.wife ? @member.wife : (@member.husband ? @member.husband : nil)
+- @spouse = @spouse.first_name if @spouse
+.active-scaffold.show-member
+  #col_1.show-view
+    %dl
+      %dt Name
+      %dd{:class=> :name_view}= "#{@member.first_name} #{@member.middle_name} #{@member.last_name} #{"(#{@member.short_name})" unless @member.short_name.blank?}"
+      %dt Spouse
+      %dd{:class => :spouse_view}= @spouse
+      %dt Passport country
+      %dd{:class => :country_view}= @member.country.name
+      %dt Phone
+      %dd{:class => :phone_view}= smart_join [format_phone(@member.phone_1), format_phone(@member.phone_2)], ', '
+      %dt Email
+      %dd{:class => :email_view}= smart_join [@member.email_1, @member.email_2], ', '      
+      %dt Location
+      %dd{:class => :location_view}= description_or_blank(@member.location) + (@member.location_detail.blank? ? '' : "(#{@member.location_detail})" )
+  #col_2.show-view
+    %dl
+      %dt In country?
+      %dd{:class => :in_country_view}= @member.in_country ? 'Yes' : 'No'
+      %dt Arrival date
+      %dd{:class => :arrival_date_view}= @member.arrival_date
+      %dt Departure date
+      %dd{:class => :departure_date_view}= @member.departure_date
+      %dt Blood type?
+      %dd{:class => :bloodtype_view}= @member.bloodtype.to_s
+      %dt Blood donor?
+      %dd{:class => :blood_donor_view}= @member.blood_donor ? 'Yes' : 'No'
+      %dt Comments
+      %dd{:class => :comments_view}= @member.comments
+    

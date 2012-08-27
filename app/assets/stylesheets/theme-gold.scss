@@ -264,6 +264,11 @@ table.children {
   th {
     background: $column_head; } }
 
+.show-member { 
+  background: $background_1;
+  border-color: $border_1_light;
+  }
+
 #content {
   background: $background_alt; }
 
