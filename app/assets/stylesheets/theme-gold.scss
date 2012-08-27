@@ -170,11 +170,11 @@ div#content {
   background: $column_head_hover; }
 
 .active-scaffold th.asc a, .active-scaffold th.desc a:hover {
-    background: image_url("active_scaffold/arrow_up.gif") no-repeat scroll right 50%;
+    background: image_url("active_scaffold/arrow_up.png") no-repeat scroll right 50%;
 }
     
 .active-scaffold th.desc a, .active-scaffold th.desc a:hover {
-    background: image_url("active_scaffold/arrow_down.gif") no-repeat scroll right 50%;
+    background: image_url("active_scaffold/arrow_down.png") no-repeat scroll right 50%;
 }
     
 .active-scaffold .records tr.record {
