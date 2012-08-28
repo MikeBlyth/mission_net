@@ -279,7 +279,10 @@ div.member_form {
     border: 0px solid red;
     border-bottom: 0px solid red;
     border-left: 0px solid red; } }
-
+#tabs-other table {
+  width: auto;
+  td { padding: 0 20px 20px 0; width: auto}
+  }
 /********** Group Selector *********/
 $pdf_dir_form_height: 325px;
 $pdf_top_margin: 10px;
@@ -444,4 +447,10 @@ div#groups {
 /************* WORKAROUNDS ETC. ******************/
 
 /* this is needed b/o bug in jquery-ui, to get tabs widget to work next to the floated menu */
-.ui-helper-clearfix { display:block; min-width: 0; overflow: hidden; }  
+.ui-helper-clearfix { display:block; min-width: 0; overflow: hidden; }
+
+
+/* Close icon is not being shown */
+.active-scaffold a.inline-adapter-close {
+    background: url("/assets/active_scaffold/close.png") repeat scroll 0 0 transparent;
+}

@@ -109,13 +109,9 @@ $( "#tabs" ).tabs();
             %br
             = member.email_field :emergency_contact_email, :class=>'email-input'
     #tabs-other
-      %table.new_family
+      %table
         %tr
-          %td{:style=>"width: 10%; padding: 0px;"}
-            = member.label :in_country, "In country"
-            %br
-            = member.check_box :in_country
-          %td{:style=>"width: 10%; padding: 0px;"}
+          %td
             = member.label :arrival_date
             %br
             = member.date_select :arrival_date, {:include_blank => true}, :style => "font-size: smaller"
@@ -123,20 +119,23 @@ $( "#tabs" ).tabs();
             = member.label :departure_date
             %br
             = member.date_select :departure_date, {:include_blank => true}, :style => "font-size: smaller"
-        %tr
-          %td    
-            = member.label :blood_donor
+          %td
+            = member.label :in_country, "In country"
             %br
-            = member.check_box :blood_donor
+            = member.check_box :in_country
+      %table
+        %tr
           %td
             = member.label :bloodtype
             %br
             - types = Bloodtype.all.sort
             - choices = options_from_collection_for_select(types, :id, :full, @record.bloodtype_id)
             = select(:record, :bloodtype, choices, {:include_blank => true }, :class=>'medium-input')   
-        %tr
-          %td
-            = member.label :comments
+          %td    
+            = member.label :blood_donor
             %br
-            = member.text_field :comments
+            = member.check_box :blood_donor
+      = member.label :comments
+      %br
+      = member.text_field :comments
 
