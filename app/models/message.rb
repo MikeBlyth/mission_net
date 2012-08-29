@@ -266,7 +266,7 @@ puts "**** Trying to deliver message ##{self.id} but no email addresses found."
   end
 
   def update_sent_messages_w_status(gateway_reply)
-puts "**** update_sent_messages_w_status: gateway_reply=#{gateway_reply}"
+#puts "**** update_sent_messages_w_status: gateway_reply=#{gateway_reply}"
     gateway_reply.each do |number, result|
       sent_messages.find_by_phone(number).
            update_attributes(:gateway_message_id => result[:sms_id] || result[:error], 

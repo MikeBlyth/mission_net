@@ -40,7 +40,7 @@ describe Message do
       @message.stub(:created_at).and_return(Time.now)
       SiteSetting.stub(:default_sms_outgoing_gateway => 'Clickatell')
       SiteSetting.stub(:background_queuing => '')
-      FakeWeb.allow_net_connect = false
+#      FakeWeb.allow_net_connect = false
       FactoryGirl.create(:group, :id => 1)
       FactoryGirl.create(:group, :id => 4)
     end

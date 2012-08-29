@@ -24,7 +24,6 @@ describe ClickatellGateway do
     @body = 'Test message'
     @mock_reply = mock('gatewayReply', :body=>'')  # Remember to add stubs for body when something expected
     @gateway = ClickatellGateway.new
-    FakeWeb.allow_net_connect = false
   end
 
   describe 'when needed parameters are missing' do
@@ -139,7 +138,6 @@ describe ClickatellGateway do
       before(:each) do
         @reply = 'ID: ABCDEF'
         FakeWeb.register_uri(:any, %r|http://api\.clickatell\.com/http/|, :body => @reply)
-        FakeWeb.allow_net_connect = false
         @gateway = ClickatellGateway.new
 #        @httyparty = HTTParty
         gateway_session_set('abcdef')

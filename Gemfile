@@ -67,7 +67,7 @@ group :development, :test do
   gem "factory_girl"
   gem "factory_girl_rails"
   gem "selenium-client"
-  gem "database_cleaner"
+  gem "database_cleaner" #, :git => 'git://github.com/bmabey/database_cleaner.git'
   gem 'spork', '>= 0.9.2'
 end
 

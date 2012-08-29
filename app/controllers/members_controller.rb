@@ -192,7 +192,7 @@ puts "**** params=#{params}"
       end
     end.compact
     options.unshift "<option>---</option>"
-puts "**** options=#{options}"
+#puts "**** options=#{options}"
     @json_resp = {:options => options.join('').html_safe}
 #puts "**** @json_resp=#{@json_resp}"
     respond_to do |format|

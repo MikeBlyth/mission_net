@@ -38,4 +38,5 @@ Joslink::Application.configure do
   config.secret_token = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'
   require 'fakeweb.rb'
   FakeWeb.allow_net_connect = false
+  FakeWeb.allow_net_connect = %r[^https?://(localhost|127\.0\.0\.1)]
 end
