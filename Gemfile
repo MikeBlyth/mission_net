@@ -5,7 +5,6 @@ gem 'rails', '3.2.5'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'pg'
 gem 'haml'
 gem 'twilio-ruby'
 gem 'httparty'
@@ -22,7 +21,7 @@ gem 'iron_worker_ng'
 gem 'cancan'
 gem 'redis'
 gem 'rb-readline'
-gem 'thin'
+gem 'thin', :platforms => :ruby
 gem 'prawn', "0.11.1"# , :git => "git://github.com/sandal/prawn" #, :submodules => true
 #gem 'sqlite3'
 
@@ -43,6 +42,15 @@ end
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 
+platforms :ruby do
+  gem 'pg'
+end
+
+platforms :jruby do
+  gem 'jruby-openssl'
+  gem 'activerecord-jdbcpostgresql-adapter'
+end
+
 group :test do
   gem 'fakeweb'
   gem 'faker', '~> 1.0.1'
@@ -61,7 +69,8 @@ group :development, :test do
   gem 'ruby_gntp'
   gem 'launchy'
   gem 'shoulda-matchers'
-  gem 'debugger'
+  gem 'debugger', :platforms => :ruby
+  gem 'ruby-debug',  :platforms => :jruby
   gem 'pry'
   gem 'pry-rails'
   gem "factory_girl"
