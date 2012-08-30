@@ -84,16 +84,10 @@ puts "**** clicked on wife cell => options are #{select_list.text}"
     check "record[email_private]"
     check "record[in_country]"
 
-#    target = find "#as_members-update_column-#{member.id}-name-cell"
-#    target.click
-#    within target do
-#      fill_in "inplace_value", :with => "Doe, John"
-#      click_button "Update"
-#    end
-    page.should have_no_selector('button.inplace_save')    
+    page.should have_no_selector('button.inplace_save')  # i.e. wait for successful saves
     member.reload
     update_values.each do |key, value|
-puts "**** key=#{key}, value=#{value}, reload=#{member.send key}"
+#puts "**** key=#{key}, value=#{value}, reload=#{member.send key}"
       saved_value = member.send(key)
       if key.to_s =~ /date/
         saved_value.should eq Date.parse(value)
@@ -106,7 +100,12 @@ puts "**** key=#{key}, value=#{value}, reload=#{member.send key}"
     member.phone_private.should be_true
     member.email_private.should be_true
     member.in_country.should be_true
-  end
 
+    # Check that Create New opens form and that group control uses multi-select
+    click_link "as_members-new--link"
+    page.should have_content 'Full name'
+    group = member.groups[0].group_name
+    page.should have_selector(:xpath, "//input[@type='checkbox' and @title='#{group}']")
+  end
 
 end  

@@ -94,8 +94,8 @@ $(function() {
         warning: 20,
         counterText: "Signature not automatically added. \nCharacters left for one SMS message: "	
         });      
-    $('<div><p class="msg-info for-sms">About <span id="msg-count">0</span> SMS messages will be sent</p></div>')
-    .insertAfter('#record_to_groups');
+//    $('<div><p class="msg-info for-sms">About <span id="msg-count">0</span> SMS messages will be sent</p></div>')
+//    .insertAfter('#record_to_groups');
  toggle_sms_display();  
  toggle_email_display();  
  $('#as_messages-create--form .submit').val('Save/Send message');
@@ -155,7 +155,9 @@ $('#record_to_groups').live("change", function(){
     $.getJSON("../groups/member_count.js", 
         {to_groups: $(this).val()},
     function(data) {
-      $('#msg-count').text(data);                
+//      $('#msg-count').text(data);                
+      $('#record_to_groups + button').css('font-size', '0.8em');                
+      $('#record_to_groups + button').text('About ' + data + ' messages will be sent.');                
     }            
     ); 
 });
@@ -163,6 +165,11 @@ $('#record_to_groups').live("change", function(){
 
 // ******************* MULTISELECT WIDGET 
 // See http://www.erichynds.com/jquery/jquery-ui-multiselect-widget/
+
+$(document).on('as:action_success', '.members-view a.new, .members-view a.edit', function(e, action_link) {
+  jQuery(".multiselect").multiselect().multiselectfilter();
+});
+
 
 $(function(){
    jQuery(".multiselect").multiselect().multiselectfilter();
