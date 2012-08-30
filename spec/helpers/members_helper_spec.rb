@@ -11,6 +11,7 @@ extend MembersHelper
       @member = FactoryGirl.build_stubbed(:member, :phone_private => true, :email_private => true)
       def current_user; test_sign_in(:member); end
       @privacy_columns.each do |column|
+        # Self is the controller, so we have e.g. within controller phone_1_column(@member,nil)
         self.send(column.to_s + '_column', @member, nil).should eq t(:private_data)
       end
     end
@@ -19,7 +20,7 @@ extend MembersHelper
       @member = FactoryGirl.build_stubbed(:member, :phone_private => false, :email_private => false)
       def current_user; test_sign_in(:member); end
       @privacy_columns.each do |column|
-        self.send(column.to_s + '_column', @member, nil).should eq @member.send(column)
+        self.send(column.to_s + '_column', @member, nil).should_not eq t(:private_data)
       end
     end
 
@@ -27,7 +28,7 @@ extend MembersHelper
       @member = FactoryGirl.build_stubbed(:member, :phone_private => true, :email_private => true)
       def current_user; test_sign_in(:moderator); end
       @privacy_columns.each do |column|
-        self.send(column.to_s + '_column', @member, nil).should eq @member.send(column)
+        self.send(column.to_s + '_column', @member, nil).should_not eq t(:private_data)
       end
     end
 
@@ -37,7 +38,7 @@ extend MembersHelper
       @member.phone_private = true
       @member.email_private = true
       @privacy_columns.each do |column|
-        self.send(column.to_s + '_column', @member, nil).should eq @member.send(column)
+        self.send(column.to_s + '_column', @member, nil).should_not eq t(:private_data)
       end
     end
   end # Filter private data

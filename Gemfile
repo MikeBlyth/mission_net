@@ -72,6 +72,7 @@ group :development, :test do
   gem 'debugger', :platforms => :ruby
   gem 'ruby-debug',  :platforms => :jruby
   gem 'pry'
+  gem 'pry-debugger', :platforms => :ruby  # https://github.com/nixme/pry-debugger
   gem 'pry-rails'
   gem "factory_girl"
   gem "factory_girl_rails"
