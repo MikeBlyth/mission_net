@@ -27,11 +27,12 @@ describe 'Message form' do
     page.should have_content 'You need to write something in your message'
     page.should have_selector(".field_with_errors #record_body")
     # We probably don't need to check all the errors here, rather do it in the model (member_spec)
+
     # Group selector box should show count of members selected
     2.times {FactoryGirl.create(:member, :groups => [members_group])}
-puts "**** Member.count=#{Member.count}"
     check 'Members'
     page.should have_content "2 messages"
+
 #binding.pry    
     
   end

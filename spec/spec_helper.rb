@@ -73,6 +73,9 @@ puts "**** SPORK LOADING PREFORK"
     config.include FactoryGirl::Syntax::Methods
   end
 
+  # Comment out next line to revert to the default driver (Selenium) for JS tests
+  Capybara.javascript_driver = :webkit
+
   # Define a helper to directly sign in a test user
 #  def test_sign_in(user)
 #    controller.sign_in(user)

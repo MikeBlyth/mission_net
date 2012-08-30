@@ -55,6 +55,7 @@ group :test do
   gem 'fakeweb'
   gem 'faker', '~> 1.0.1'
   gem 'simplecov'
+  gem 'capybara-webkit'
 #  gem 'timecop'
 end
 
