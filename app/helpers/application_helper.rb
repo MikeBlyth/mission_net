@@ -21,8 +21,11 @@ module ApplicationHelper
   def description_or_blank(object, nil_value='', description_method=:description)
     nil_value = nil if nil_value == :nil
     return nil_value unless object
-binding.pry
-    value = object.send(description_method) || 'unspecified'
+    if object.respond_to?(description_method) 
+      value = object.send(description_method)
+    else
+      value = nil_value
+    end
     return value.downcase == 'unspecified' ? nil_value : value
   end
 

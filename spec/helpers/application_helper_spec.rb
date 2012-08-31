@@ -73,8 +73,8 @@ describe ApplicationHelper do
       end
 
       it 'returns different nil value when specified' do
-        obj = mock('Object').as_null_object
-        description_or_blank(obj, '*empty*').should eq '*empty*'
+        obj = FactoryGirl.build_stubbed(:member)
+        description_or_blank(obj, '*empty*', :unknown_column).should eq '*empty*'
       end
 
       

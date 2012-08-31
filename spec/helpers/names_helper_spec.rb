@@ -1,5 +1,3 @@
-require 'names_helper.rb'
-
 describe NameHelper do
 extend NameHelper
 
