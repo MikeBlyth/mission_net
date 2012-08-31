@@ -76,9 +76,57 @@ describe ApplicationHelper do
         obj = FactoryGirl.build_stubbed(:member)
         description_or_blank(obj, '*empty*', :unknown_column).should eq '*empty*'
       end
-
-      
     end # description or blank
+
+    describe 'method_or_key' do
+
+      it 'returns method result when method exists' do
+        s = "5"
+        method_or_key(s, :to_i).should eq 5
+      end
+
+      it 'returns hash result when it exists' do
+        method_or_key({:k=> 'value'}, :k).should eq 'value'
+        method_or_key({'k'=> 'value'}, :k).should eq 'value'
+        method_or_key({:k => 'value'}, 'k').should eq 'value'
+        method_or_key({'k'=> 'value'}, 'k').should eq 'value'
+      end
+
+    end # method or key
+
+    describe 'same_date' do
+      it 'returns correct date comparison' do
+        obj = FactoryGirl.build_stubbed(:member, :arrival_date => Date.new(2008, 10, 5))
+        same_date(obj, '2008-10-05', :arrival_date).should be_true
+        same_date(obj, '5 Oct 08', :arrival_date).should be_true
+        same_date(obj, '5 October 2008', :arrival_date).should be_true
+        same_date(obj, 'Oct 5, 2008', :arrival_date).should be_true
+        same_date(obj, '6 Oct 08', :arrival_date).should be_false
+        same_date(obj, '2008-10-06', :arrival_date).should be_false
+      end        
+    end # same_date
+
+    describe 'smart_join' do
+      it 'joins array members as specified' do
+        smart_join([' a ', '', nil, 3.5, "25\n"]).should eq "a, 3.5, 25" 
+      end
+    end
+
+    it 'link_ids works' do
+      link_id('a').should eq 'a_id'
+      link_id('a_id').should eq 'a_id'
+      link_id(:a_id).should eq :a_id
+      link_id(:a).should eq :a_id
+    end
+    
+    it 'Array.not_blank works' do
+      a = [1, '', nil, 2, 3, '']
+      original_a = a.clone
+      a.not_blank.should eq [1, 2, 3]
+      a.should eq original_a  # Not changed by method
+      a.not_blank!.should eq [1, 2, 3]
+      a.should eq [1, 2, 3]  # Changed
+    end
   end  # various tools
   
     
