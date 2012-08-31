@@ -541,12 +541,6 @@ describe Message do
       Message.news_updates.should == [update]
     end
 
-#    it 'returns the last n updates' do
-#      updates = (0..2).map {|n| FactoryGirl.build_stubbed(:message, :news_update=>true)}
-#      Message.stub_chain(:where, :order => updates)
-#      Message.news_updates(:limit=>2).should == [updates[2], updates[1]]
-#    end
-
     it 'returns the last n updates' do
       updates = (0..2).map {|n| FactoryGirl.create(:message, :news_update=>true, :expiration => 24)}
       Message.news_updates(:limit=>2).should == [updates[2], updates[1]]

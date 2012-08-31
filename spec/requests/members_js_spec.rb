@@ -70,7 +70,7 @@ puts "**** clicked on wife cell => options are #{select_list.text}"
     update_values.each do |key, value|
       target = find "#as_members-update_column-#{member.id}-#{key}-cell"
       target.click
-      puts "**** key=#{key}"
+#puts "**** key=#{key}"
       within target do
         if [:country, :location, :bloodtype].include? key
           select value

@@ -30,6 +30,8 @@
 #  in_country              :boolean
 #  comments                :string(255)
 #  short_name              :string(255)
+#  wife_id                 :integer
+#  sex                     :string(255)
 #
 
 

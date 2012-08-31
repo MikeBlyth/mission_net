@@ -4,10 +4,10 @@ module ApplicationHelper
   DefaultReportedLocDuration = 6 # 6 hours
   MaxSmsLength = 160 # characters
   
-  def code_with_description
-    s = self.code.to_s + ' ' + self.description
-    return s
-  end
+#  def code_with_description
+#    s = self.code.to_s + ' ' + self.description
+#    return s
+#  end
 
   # Given an object (or nil) described by method description_method, return 
   # * nil_value if object is nil or its description is missing or is "unspecified"
@@ -21,7 +21,8 @@ module ApplicationHelper
   def description_or_blank(object, nil_value='', description_method=:description)
     nil_value = nil if nil_value == :nil
     return nil_value unless object
-    value = object.send description_method || 'unspecified'
+binding.pry
+    value = object.send(description_method) || 'unspecified'
     return value.downcase == 'unspecified' ? nil_value : value
   end
 

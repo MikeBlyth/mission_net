@@ -110,6 +110,8 @@ GEM
       guard (>= 0.2.2)
     guard-rails (0.1.0)
       guard (>= 0.2.2)
+    guard-rspec (1.2.1)
+      guard (>= 1.1)
     guard-spork (1.0.0)
       guard (>= 1.0.0)
       spork (>= 0.8.4)
@@ -333,6 +335,7 @@ DEPENDENCIES
   guard
   guard-annotate
   guard-rails
+  guard-rspec
   guard-spork
   haml
   heroku-api

@@ -1,5 +1,7 @@
+#require "~/joslink/app/helpers/application_helper.rb"
+
 describe ApplicationHelper do
-extend ApplicationHelper
+#extend ApplicationHelper
 
   describe 'Phone formatting' do
     
@@ -46,6 +48,39 @@ extend ApplicationHelper
     end
 
   end
+
+  describe 'various tools:' do
+    
+    describe 'description_or_blank' do
+    
+      it 'returns description when object exists' do
+        obj = mock('Object', :description => 'OK')
+        description_or_blank(obj).should eq 'OK'
+      end
+
+      it 'returns empty string by default when object does not exist' do
+        description_or_blank(nil).should eq ''
+      end
+
+      it 'returns empty string by default when description does not exist' do
+        obj = mock('Object')
+        description_or_blank(nil).should eq ''
+      end
+
+      it 'returns value of another method/column when specified' do
+        obj = mock('Object', :description => 'wrong one', :custom => 'OK')
+        description_or_blank(obj, '', :custom).should eq 'OK'
+      end
+
+      it 'returns different nil value when specified' do
+        obj = mock('Object').as_null_object
+        description_or_blank(obj, '*empty*').should eq '*empty*'
+      end
+
+      
+    end # description or blank
+  end  # various tools
   
+    
   
 end

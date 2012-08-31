@@ -66,6 +66,7 @@ group :development, :test do
   gem "guard"
   gem "guard-spork"
   gem "guard-rails"  # Restart development server when needed
+  gem 'guard-rspec'
   gem "guard-annotate"
   gem 'ruby_gntp'
   gem 'launchy'

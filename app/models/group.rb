@@ -15,6 +15,24 @@
 #  member          :boolean
 #  limited         :boolean
 #
+
+# == Schema Information
+#
+# Table name: groups
+#
+#  id              :integer         not null, primary key
+#  group_name      :string(255)
+#  parent_group_id :integer
+#  abbrev          :string(255)
+#  primary         :boolean
+#  created_at      :datetime        not null
+#  updated_at      :datetime        not null
+#  user_selectable :boolean
+#  administrator   :boolean
+#  moderator       :boolean
+#  member          :boolean
+#  limited         :boolean
+#
 class Group < ActiveRecord::Base
   extend ExportHelper
   attr_accessible :group_name, :parent_group, :parent_group_id, :primary, :members, :member_ids, :abbrev,
