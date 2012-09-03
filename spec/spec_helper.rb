@@ -75,6 +75,7 @@ puts "**** SPORK LOADING PREFORK"
 
   # Comment out next line to revert to the default driver (Selenium) for JS tests
   Capybara.javascript_driver = :webkit
+#  Capybara.use_default_driver
 
   # Define a helper to directly sign in a test user
 #  def test_sign_in(user)

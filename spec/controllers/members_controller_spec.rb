@@ -90,9 +90,9 @@ describe MembersController do
         
     it 'creates new member with all attributes' do
 #      Location.stub(:find).and_return(mock('location'))
-location = FactoryGirl.create(:location)
-country = FactoryGirl.create(:country)
-bloodtype = FactoryGirl.create(:bloodtype)
+      location = FactoryGirl.create(:location)
+      country = FactoryGirl.create(:country)
+      bloodtype = FactoryGirl.create(:bloodtype)
       member = FactoryGirl.build(:member, :location => location, :country => country, :bloodtype => bloodtype)
       attributes = member.attributes.clone
       attributes.delete_if {|k,v| ['created_at', 'updated_at', 'id'].include? k}

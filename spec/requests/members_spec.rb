@@ -64,14 +64,16 @@ end
 
   describe 'Show a member' do
     before(:each) do
-      @member = FactoryGirl.create(:member)
+      @member = FactoryGirl.create(:member, :phone_1 => '2341234567890', :phone_2 => '2340987654321',
+      :email_1 => 'priv@test.zzz', :email_2 => 'priv2@test.zzz',
+      :email_private => true, :phone_private => true)
     end
     
     it 'shows all fields to admin user', :js => true do
       integration_test_sign_in(:administrator)
 #      visit member_path(@member)
       click_link "Show"
-      save_and_open_page
+#      save_and_open_page
       page.should have_content @member.name
       page.should have_content @member.first_name
       page.should have_content @member.email_1
@@ -84,6 +86,20 @@ end
       
     end
      
+    it 'shows hides private fields from normal user', :js => true do
+      integration_test_sign_in(:member)
+      click_link "Show"
+      page.should have_content @member.name
+      page.should have_content @member.first_name
+      page.should_not have_content @member.email_1
+      page.should_not have_content @member.email_2
+      page.should_not have_content format_phone(@member.phone_1, :unbreakable => true)
+      page.should_not have_content format_phone(@member.phone_2, :unbreakable => true)
+      page.should have_content @member.emergency_contact_email
+      page.should have_content @member.emergency_contact_phone
+      page.should have_content @member.bloodtype
+      
+    end
   end # Show a member
 
   describe 'Editing a member' do

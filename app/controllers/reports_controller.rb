@@ -23,7 +23,8 @@ unless current_user.roles_include?(:moderator)
   redirect_to home_path
   return
 end
-    include_groups = params[:record][:to_groups]
+    to_groups = params[:record][:to_groups] if params[:record]
+    include_groups = to_groups || :all  # Show everyone by default, particular groups if specified
     # Get "families", i.e. members who don't have husbands
     @families = Group.members_in_multiple_groups(include_groups).keep_if {|m| m.husband.nil?}
     @families = @families.sort

@@ -144,7 +144,7 @@ end
 class String
   def phone_format(options={})
     if Settings.formatting.format_phone_numbers && !self.blank? 
-      space_delim = options[:breakable] ? ' ' : "\u00A0"
+      space_delim = options[:unbreakable] ? "\u00A0" : " "
       delim_1 = options[:delim_1] || space_delim
       delim_2 = options[:delim_2] || space_delim
       squished = self.ljust(7).gsub(/[^\+0-9]/,'').gsub(/\A\+?234/,'0')
