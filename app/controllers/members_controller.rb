@@ -106,9 +106,11 @@ class MembersController < ApplicationController
         if row[:name] =~ /\A(.*),\s*(.*)/
           first_name = $2
           last_name = $1
-        elsif row[:name] =~ /\A(.*)\s*(\S+)/
+        elsif row[:name] =~ /\A(\w*)\s*(\S+)/
           last_name = $2
           first_name = $1
+        else
+          last_name = row[:name]
         end
         member = Member.create!(:name=>row[:name], :last_name=>last_name, :first_name=>first_name,
              :phone_1 => row[:phone_1], :phone_2 => row[:phone_2], 
@@ -123,21 +125,19 @@ class MembersController < ApplicationController
     redirect_to members_path if request.post?  # Finished with importing, so go to members list
   end
    
-  def set_full_names
-    Member.find(:all).each do |m| 
-      if m.name.blank? || (m.first_name == m.short_name)
-        m.update_attributes(:name => m.indexed_name)
-      end
-      m.name = m.name.strip if m.name[-1]= ' '
-    end
-    redirect_to(:action => :index)
-  end
+#  def set_full_names
+#    Member.find(:all).each do |m| 
+#      if m.name.blank? || (m.first_name == m.short_name)
+#        m.update_attributes(:name => m.indexed_name)
+#      end
+#      m.name = m.name.strip if m.name[-1]= ' '
+#    end
+#    redirect_to(:action => :index)
+#  end
 
   def do_show
     super
     display_columns = ShowColumns
-puts "**** current_user.id=#{current_user.id}"
-puts "**** @record.id=#{@record.id}"
     display_columns -= ModeratorOnlyColumns unless can_edit_member(@record, current_user)
     active_scaffold_config.show.columns = display_columns
   end

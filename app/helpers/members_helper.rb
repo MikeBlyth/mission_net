@@ -28,12 +28,12 @@ module MembersHelper
 
   def phone_1_column(record, column)
     filtered = filter_private_data(record, :phone_1, :phone_private)
-    filtered == t(:private_data) ? filtered : format_phone(filtered, :delim_1 => "\u00a0", :delim_2 => "\u00a0")
+    filtered == t(:private_data) ? filtered : format_phone(filtered)
   end
 
   def phone_2_column(record, column)
     filtered = filter_private_data(record, :phone_2, :phone_private)
-    filtered == t(:private_data) ? filtered : format_phone(filtered, :delim_1 => "\u00a0", :delim_2 => "\u00a0")
+    filtered == t(:private_data) ? filtered : format_phone(filtered)
   end
 
   def email_1_column(record, column)

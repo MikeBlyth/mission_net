@@ -10,13 +10,14 @@
       %dt Spouse
       %dd{:class => :spouse_view}= @spouse
       %dt Passport country
-      %dd{:class => :country_view}= @member.country.name
+      %dd{:class => :country_view}= @member.country.name if @member.country
       %dt Phone
       %dd{:class => :phone_view}= smart_join [format_phone(@member.phone_1), format_phone(@member.phone_2)], ', '
       %dt Email
       %dd{:class => :email_view}= smart_join [@member.email_1, @member.email_2], ', '      
       %dt Location
-      %dd{:class => :location_view}= description_or_blank(@member.location) + (@member.location_detail.blank? ? '' : "(#{@member.location_detail})" )
+      %dd{:class => :location_view}= smart_join([description_or_blank(@member.location), @member.location_detail])
+      -#description_or_blank(@member.location) + (@member.location_detail.blank? ? '' : "(#{@member.location_detail})" )      
   #col_2.show-view
     %dl
       %dt In country?

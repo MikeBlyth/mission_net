@@ -43,6 +43,9 @@ FactoryGirl.define do
     phone_2 "2348034444444"
     email_1 "shorty@test.com"
     email_2 "midly@test.com"
+    emergency_contact_name "Emergencies"
+    emergency_contact_phone "911"
+    emergency_contact_email "help@emergencies.zzz"
     in_country true
     location_detail "Headquarters"
     arrival_date "2012-06-02"
