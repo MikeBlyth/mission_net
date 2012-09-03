@@ -83,29 +83,68 @@ describe Notifier do
 #    end
   end  # Contact updates
 
-#  describe 'group_message' do
-#    before(:each) do
-#      @message_id = 25
-#      @response_time_limit = 15
-#      @params = {:recipients => ['mike@example.com'], :content => 'Test message', 
-#        :subject => "Test Subject Line", :id => @message_id, 
-#        :response_time_limit => @response_time_limit, :bcc => true} 
-#    end
+  describe 'send info' do
+    before(:each) do
+      @recipients = ['abc@example.com', 'def@example.com']
+      @from_member = FactoryGirl.build_stubbed(:member, :phone_1 => nil, :email_1 => nil)
+      @target = FactoryGirl.build_stubbed(:member, :short_name => 'Ben')
+      @request = 'Dauda'
+    end
+    
+    it "includes target's name, email, and phone number" do
+      body = Notifier.send_info(@recipients, @from_member, @request, [@target]).to_s
+      [:email_1, :last_name, :first_name].each do |field|
+        body.should match @target.send field
+      end      
+      body.should match format_phone @target.phone_1
+    end
 
-#    it 'adds tag to subject line' do
-#      email = Notifier.send_group_message(@params)
-#      email.subject.should =~ Regexp.new(@message_id.to_s)
-#    end
-#    
-#    it 'includes response info when response_time_limit > 0' do
-#      email = Notifier.send_group_message(@params)
-#      email.to_s.should =~ /The sender has requested/
-#    end
+    it "hides private info from another user" do
+      @target.email_private = true
+      @target.phone_private = true
+      body = Notifier.send_info(@recipients, @from_member, @request, [@target]).to_s
+      body.should_not match format_phone @target.phone_1
+      body.should_not match @target.email_1
+    end
+      
+    it "shows private info to same user" do
+      @target.email_private = true
+      @target.phone_private = true
+      body = Notifier.send_info(@recipients, @target, @request, [@target]).to_s
+      body.should match format_phone @target.phone_1
+      body.should match @target.email_1
+    end
+      
+    it 'sends error message if target is not found' do
+      body = Notifier.send_info(@recipients, @from_member, @request, []).to_s
+      body.should match 'No matching members found'
+    end
 
-#    it 'includes does not include response info when response_time_limit > 0' do
-#      email = Notifier.send_group_message(@params.merge(:response_time_limit => nil))
-#      email.to_s.should_not =~ /The sender has requested/
+  end # send_info
 
-#    end
-#  end
+  describe 'group_message' do
+    before(:each) do
+      @message_id = 25
+      @response_time_limit = 15
+      @params = {:recipients => ['mike@example.com'], :content => 'Test message', 
+        :subject => "Test Subject Line", :id => @message_id, 
+        :response_time_limit => @response_time_limit, :bcc => true} 
+    end
+
+    it 'adds tag to subject line' do
+      email = Notifier.send_group_message(@params)
+      email.subject.should =~ Regexp.new(@message_id.to_s)
+    end
+    
+    it 'includes response info when response_time_limit > 0' do
+      email = Notifier.send_group_message(@params)
+      email.to_s.should =~ /The sender has requested/
+    end
+
+    it 'includes does not include response info when response_time_limit > 0' do
+      email = Notifier.send_group_message(@params.merge(:response_time_limit => nil))
+      email.to_s.should_not =~ /The sender has requested/
+
+    end
+  end
 end

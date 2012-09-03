@@ -91,15 +91,20 @@ class Notifier < ActionMailer::Base
                   "Names must be properly capitalized like 'Jones' not 'jones' or 'JONES'."
     else
       members.each do |m|
+        self_info = (m == from_member)
         @content << "#{m.name}:\n" 
         @content << "  location:  #{m.location}\n" if m.location
         phones = smart_join([format_phone(m.phone_1), format_phone(m.phone_2)])
         emails = smart_join([format_phone(m.email_1), format_phone(m.email_2)])
         @content << "  phone:  #{phones}\n" unless phones.blank? || m.phone_private
         @content << "  email:  #{emails}\n" unless phones.blank? || m.email_private
-        @content << "  phone:  #{phones} (private!)\n" if (m == from_member) && m.phone_private
-        @content << "  email:  #{emails} (private!)\n" if (m == from_member) && m.email_private
+        @content << "  phone:  #{phones} (private!)\n" if self_info && m.phone_private
+        @content << "  email:  #{emails} (private!)\n" if self_info && m.email_private
         @content << "\n"
+        if self_info && (m.phone_private || m.email_private)
+          @content << "Note that private info is shown because you are requesting your own " +
+                    "information. It is not shown when others request your information."
+        end
       end
     end
     mail(:to => recipients, :subject=>'Your request for info') do |format|

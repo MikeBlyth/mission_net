@@ -246,5 +246,48 @@ bloodtype = FactoryGirl.create(:bloodtype)
 
     end # only changeable groups are changed on update
 
+    describe 'imports member data' do
+      before :each do
+        test_sign_in(:administrator)
+        @file = Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/files/members.csv'), 'text/csv')
+      end
+      
+      it 'uploads the file' do   # Just a sanity check on the setup
+        post :import, :file => @file
+        Member.count.should be > 0
+        response.should redirect_to members_path
+      end
+
+      # NB: This test is dependent on the content of the test file!
+      it 'correctly imports specified data from csv file' do
+        post :import, :file => @file
+        m = Member.find_by_last_name 'Nasrudeen'
+        m.first_name.should == 'Mohammed'
+        m.phone_1.should == '2341112223333'
+        m.phone_2.should be_nil
+        m.email_1.should == 'abc@example.com'
+        m.email_2.should be_nil
+        m.in_country.should be_true
+        m.groups.should_not be_empty
+        m.groups[0].group_name.should eq 'Visitors'
+        m = Member.find_by_last_name 'Hernandez'
+        m.first_name.should eq 'Jorge'
+        m.phone_1.should eq '2342223334444'
+        m.phone_2.should eq '2342223335555'
+        m.email_1.should eq 'def@example.com'
+        m.email_2.should eq 'g@example.com'
+        m.in_country.should_not be_true
+        m.comments.should eq 'Evangel'
+        Group.should exist :group_name => 'Friends'
+        m.groups.count.should eq 2
+      end
+      
+    end # imports member data
+
+    describe 'convert_keys_to_id' do
+      it 'adds "_id" to end of hash key' do
+        controller.convert_keys_to_id({:cat=>1, :dog=>2, :mouse=>3}, :dog).should == {:cat=>1, :dog_id=>2, :mouse=>3}
+      end
+    end  # convert_keys_to_id
   end # updating groups
 end

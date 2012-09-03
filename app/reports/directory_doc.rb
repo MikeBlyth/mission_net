@@ -15,7 +15,6 @@ class DirectoryDoc < Prawn::Document
   end
 
   def to_pdf(families, visitors=[], options = {})
-puts "**** options=#{options}"
     options[:location] ||= 'short'
     location_col = options[:location_column] # make separate column for locations? 
 

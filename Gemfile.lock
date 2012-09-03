@@ -151,6 +151,8 @@ GEM
       addressable (~> 2.2.6)
       ffi (~> 1.0.9)
       spoon (~> 0.0.1)
+    libnotify (0.7.4)
+      ffi (~> 1.0.11)
     libwebsocket (0.1.5)
       addressable
     listen (0.4.7)
@@ -263,7 +265,6 @@ GEM
       ruby-debug-base (~> 0.10.4.0)
     ruby-debug-base (0.10.4-java)
     ruby-rc4 (0.1.5)
-    ruby_gntp (0.3.4)
     rubyzip (0.9.9)
     sass (3.1.20)
     sass-rails (3.2.5)
@@ -345,6 +346,7 @@ DEPENDENCIES
   jquery-ui-rails
   jruby-openssl
   launchy
+  libnotify
   omniauth (~> 1.0.0)
   omniauth-facebook
   omniauth-google-oauth2
@@ -358,7 +360,6 @@ DEPENDENCIES
   redis
   rspec-rails
   ruby-debug
-  ruby_gntp
   sass-rails (~> 3.2.3)
   selenium-client
   settingslogic

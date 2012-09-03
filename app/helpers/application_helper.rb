@@ -75,6 +75,11 @@ module ApplicationHelper
       a.collect{|x| (x || '').to_s.strip}.delete_if{|x| x.blank?}.join(delim)
     end
   
+    # Same as split, but strips blanks space from each value 
+    def smart_split(s, delim=',')
+      s.split(delim).map {|x| x.strip}
+    end
+  
     # String delimited by any combo of space, ";" or "," is downcased and split into an array
     # "cat dog,mouse;lion" => ["cat", "dog", "mouse", "lion"]
     def delimited_string_to_array(s)
@@ -210,21 +215,4 @@ class Fixnum
   end
 end # class Fixnum 
 
-module ActiveRecord  
-  class Base  
-
-    def update_record_without_timestamping  
-      class << self  
-        def record_timestamps; false; end  
-      end  
-
-      save!  
-
-      class << self  
-        def record_timestamps; super ; end  
-      end  
-    end  
-
-  end  
-end
 

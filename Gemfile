@@ -68,7 +68,8 @@ group :development, :test do
   gem "guard-rails"  # Restart development server when needed
   gem 'guard-rspec'
   gem "guard-annotate"
-  gem 'ruby_gntp'
+  gem 'libnotify' # for use with libnotify
+#  gem 'ruby_gntp'  # for use with Growl
   gem 'launchy'
   gem 'shoulda-matchers'
   gem 'debugger', :platforms => :ruby

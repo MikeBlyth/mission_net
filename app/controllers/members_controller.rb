@@ -79,7 +79,7 @@ class MembersController < ApplicationController
       v = params.delete(k)
       params[(k.to_s << '_id').to_sym] = v unless v.blank?  # resinsert value but with _id added to key
     end
-    params
+    return params
   end
 
 #   Export CSV file. Exports ALL records, so will have to be modified if a subset is desired
@@ -93,14 +93,15 @@ class MembersController < ApplicationController
   def import(options={})
     if request.post? && params[:file].present? 
       infile = params[:file].read 
+#puts "**** infile=#{infile}"  # useful for testing
       n, errs = 0, [] 
-      alerts_group = Group.find_by_group_name('Security alerts')
-      alerts_group = Group.find_or_create_by_group_name(:group_name => 'Security alerts',
-          :abbrev => 'alerts', 
-          :parent_group => Group.find_by_group_name('All'))
-      security_group = Group.find_or_create_by_group_name(:group_name => 'Security leaders', 
-          :abbrev => 'sec', 
-          :parent_group => Group.find_by_group_name('All'))
+#      alerts_group = Group.find_by_group_name('Security alerts')
+#      alerts_group = Group.find_or_create_by_group_name(:group_name => 'Security alerts',
+#          :abbrev => 'alerts', 
+#          :parent_group => Group.find_by_group_name('All'))
+#      security_group = Group.find_or_create_by_group_name(:group_name => 'Security leaders', 
+#          :abbrev => 'sec', 
+#          :parent_group => Group.find_by_group_name('All'))
       CSV.parse(infile, :headers=>true, :header_converters=>:symbol, :converters => :all) do |row| 
         if row[:name] =~ /\A(.*),\s*(.*)/
           first_name = $2
@@ -110,11 +111,13 @@ class MembersController < ApplicationController
           first_name = $1
         end
         member = Member.create!(:name=>row[:name], :last_name=>last_name, :first_name=>first_name,
-             :phone_1 => row[:phone_1], :phone_2 => row[:phone_2], :email_1 => row[:email_1],
+             :phone_1 => row[:phone_1], :phone_2 => row[:phone_2], 
+             :email_1 => row[:email_1], :email_2 => row[:email_2],
              :in_country => row[:in_country] == 'true',
-             :comments => row[:comments])
-        member.groups << [alerts_group] if row[:groups] =~ /(General security)|JosTwitr/
-        member.groups << security_group if row[:groups] =~ /Security leaders/i
+             :groups => groups_from_string(row[:groups]),
+             :comments => row[:comments]) unless last_name.blank?
+#        member.groups << alerts_group if row[:groups] =~ /(General security)|JosTwitr/
+#        member.groups << security_group if row[:groups] =~ /Security leaders/i
       end
     end
     redirect_to members_path if request.post?  # Finished with importing, so go to members list
@@ -201,27 +204,17 @@ puts "**** params=#{params}"
   end    
     
 
-protected
-# Need to figure out how this works -- doesn't work as below! 
-#  def update_authorized?(record=nil)
-#    is_member = (record.is_a? Member)
-#    same_id = is_member ? current_user.id == record.id : false
-#    ok = is_member && same_id
-#    puts "**** record=#{record}, #{record.id if record.is_a? Member}, ok = #{ok}, same-#{same_id}"
-#    return ok #|| !is_member
-#  end
- 
-  def display_edit_link(record=nil)
-puts "**** moderator = #{current_user.roles_include?(:moderator)}"
-    return true if current_user.roles_include?(:moderator)
-    is_member_record = (record.is_a? Member)  # because record parameter can be other than the actual record being edited
-    same_id = is_member_record ? current_user.id == record.id : false
-    ok = is_member_record && same_id
-    puts "**** record=#{record}, #{record.id if record.is_a? Member}, ok = #{ok}, same-#{same_id}"
-    return ok #|| !is_member
+private
+
+  # Given a comma-separated string of group names, return an array of those
+  # groups, creating new groups from the names as needed.
+  def groups_from_string(groups_string)
+    unless groups_string.blank?
+      groups = smart_split groups_string  # split on comma, remove white space
+      return groups.map {|g| Group.find_or_create_by_group_name(g, :abbrev => g)}.uniq
+    end  
   end
-    
-     
+
 
 end
   
