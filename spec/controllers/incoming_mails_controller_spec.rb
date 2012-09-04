@@ -32,6 +32,7 @@ describe IncomingMailsController do
              )
     rebuild_message
     ActionMailer::Base.deliveries.clear  # clear incoming mail queue
+    @mock_message = mock_model(Message, :deliver=>true)
   end
 
   describe 'filters based on member status' do
@@ -165,7 +166,6 @@ describe IncomingMailsController do
    
   describe 'distributes email & sms to groups' do
     before(:each) do
-      @mock_message = mock_model(Message, :deliver=>true)
       Message.stub(:create).and_return(@mock_message)
       @member = test_sender(:member)
       @group_1 = FactoryGirl.create(:group)
@@ -210,6 +210,13 @@ describe IncomingMailsController do
         post :create, @params
       end
       
+      it 'warns sender when SMS message is too long' do
+        @params['plain'] = "sms #{@group_1.abbrev} #{@group_2.abbrev}: #{@body} #{'x' * 200}"
+        Notifier.should_receive(:send_generic).with(@params[:from], /only the first 150/i).
+          and_return(@mock_message)
+        post :create, @params
+      end
+            
       describe 'notifies sender of results' do
         before(:each) do
           @old_notifier = Notifier
@@ -299,6 +306,18 @@ describe IncomingMailsController do
         Message.should_receive(:find_by_id).with(25)
         @message.should_receive(:process_response).with(:member => @member, :text => @user_reply, 
             :mode => 'email')
+        post :create, @params
+      end
+
+      it 'responds w error msg to sender when msg_id is not found' do
+        @body_with_tag = message_id_tag(:id=>999, :location => :body, :action=>:confirm_tag) +
+          ' ' + @user_reply        
+        @params[:plain] = @body_with_tag
+        Message.stub(:find_by_id).and_return(nil)
+        Message.should_receive(:find_by_id).with(999)
+        @message.should_not_receive(:process_response)
+        Notifier.should_receive(:send_generic).with(@params[:from], /error/i).
+          and_return(@mock_message)
         post :create, @params
       end
       

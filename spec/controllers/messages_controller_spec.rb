@@ -76,9 +76,23 @@ describe MessagesController do
   end
   
   describe 'Follow up' do
+    before(:each) do
+      @original_msg = FactoryGirl.create(:message, :subject => "Original message subject", 
+        :send_email => true)
+    end
+    
+    it 'sends form for generating follow up message' do
+      get :followup, :id => @original_msg.id
+      assigns(:original_msg).should eq @original_msg
+      record = assigns(:record)
+      original_id = @original_msg.id
+      record.following_up.should eq original_id
+      record.subject.should match "Following up on message #{original_id}, \"#{@original_msg.subject}\"" 
+      record.sms_only.should eq "f/u msg ##{original_id}"
+      record.body.should match "message ##{original_id}"
+    end
 
     it 'sends the follow-up msg to those not responding to first msg' do  # Would be nice to do this w/o accessing DB!
-      @original_msg = FactoryGirl.create(:message,:send_email => true)
       @fast_responder = FactoryGirl.create(:member)  # handy if not most efficient way to make a member with a contact
       @slow_responder = FactoryGirl.create(:member)
       @original_msg.members << [@fast_responder, @slow_responder]

@@ -49,7 +49,7 @@ class GroupsController < ApplicationController
     super
     # For some reason, ActiveScaffold is not updating the parent_group_id, so
     # rather than debug that issue, we're setting it here.
-params[:subgroups] = nil  # Hack
+    params[:subgroups] = nil  # Hack
     @record.parent_group_id = params[:record][:parent_group_id]
     attach_group_members
   end

@@ -12,6 +12,19 @@ describe GroupsController do
     @mock_group ||= mock_model(Group, stubs).as_null_object
   end
 
+  describe 'create' do
+
+    it 'assigns parameters including parent group' do
+      @parent = Group.create(:group_name=>'new parent', :abbrev=>'newparent')
+      put :create, :record => {:parent_group_id=>@parent.id, 
+        :group_name=>'new_group', :abbrev => 'new'}
+      @group = Group.last
+      @group.group_name.should eq 'new_group'
+      @group.abbrev.should eq 'new'
+      @group.parent_group_id.should eq @parent.id
+    end
+  end
+
   describe 'update' do
     # I can't figure out how to do this with mocks, given the HABTM relationship
     it 'assigns members from multi-select' do
@@ -31,7 +44,31 @@ describe GroupsController do
       @group.reload.group_name.should == 'changed'
       @group.parent_group_id.should == @parent.id
     end
-      
   end
 
+  describe 'member count' do
+  
+    it 'returns count of members returned by "members_in_multiple_groups"' do
+      Group.stub(:members_in_multiple_groups => [mock_model(Member), mock_model(Member)])
+      get :member_count, :to_groups => ['98', '99'], :format => 'js'  # arbitrary numbers not used
+      response.body.should eq "2"
+    end
+
+    it 'returns count of members when it is zero' do
+      Group.stub(:members_in_multiple_groups => [])
+      get :member_count, :to_groups => ['98', '99'], :format => 'js'  # arbitrary numbers not used
+      response.body.should eq "0"
+    end
+    
+    it 'returns zero when no groups specified' do
+      get :member_count, :to_groups => [], :format => 'js'  # arbitrary numbers not used
+      response.body.should eq "0"
+    end
+    
+    it 'returns zero when groups parameter absent' do
+      get :member_count, :format => 'js'  # arbitrary numbers not used
+      response.body.should eq "0"
+    end
+    
+  end # member count
 end
