@@ -26,8 +26,13 @@ describe ReportsController do
     it 'PDF version -- ' do
       mock_dir = mock('Directory')
       DirectoryDoc.stub(:new => mock_dir)
-      mock_dir.should_receive(:to_pdf)
-      get :directory, :format => 'pdf', :report_sorted_by_location => true , :record => {:to_groups => [1]}
+      members =  [FactoryGirl.build_stubbed(:member)]
+      Group.stub(:members_in_multiple_groups => members)
+      @params = {:format => 'pdf', :report_sorted_by_location => true , 'record' => {'to_groups' => [1]}}
+      mock_dir.should_receive(:to_pdf).with(members, nil, 
+          hash_including(@params)).and_return 'PDF REPORT'
+      get :directory, @params
+      response.content_type.should eq "application/pdf"
     end
     
   end # Directory by location

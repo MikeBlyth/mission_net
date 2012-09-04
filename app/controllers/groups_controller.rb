@@ -1,5 +1,4 @@
 class GroupsController < ApplicationController
-#  before_filter :authenticate #, :only => [:edit, :update]
   include ApplicationHelper
   include SessionsHelper
 
