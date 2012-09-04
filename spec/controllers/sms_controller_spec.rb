@@ -303,6 +303,13 @@ describe SmsController do
         post :create, @params   
       end         
 
+      it 'sends "Sorry" message if no updates' do
+        Message.should_receive(:news_updates).and_return []
+        @params['Body'] = "updates"
+        post :create, @params
+        response.body.should match /no new updates found/i
+      end
+
     end  
 #    describe 'location' do
 #      before(:each) {Time.stub(:now).and_return Time.new(2000,01,01,12,00)}
@@ -427,6 +434,15 @@ describe SmsController do
       @message.sent_messages.each {|sm| sm.msg_status.should == MessagesHelper::MsgResponseReceived}
     end
 
+    it 'sends error message if sent_message not found' do
+      Message.stub(:find_by_id).and_return(@message)
+      Member.stub(:find_by_phone).and_return([@sender])
+      @params['Body'] = "!999"  # e.g. #24 if @message.id is 24
+      post :create, @params
+      response.body.should match /was not found/    
+    end
+
   end # handles responses to messages         
 
 end
+

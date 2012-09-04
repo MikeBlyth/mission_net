@@ -1,9 +1,9 @@
 module ModelHelper
 
-  def code_with_description
-    s = self.code.to_s + ' ' + self.description
-    return s
-  end
+#  def code_with_description
+#    s = self.code.to_s + ' ' + self.description
+#    return s
+#  end
 
   # Validate that this record does not have any extant child records, so that we can delete this
   # record safely without orphaning anything. Uses reflect_on_all_associations to gather all the

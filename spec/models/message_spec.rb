@@ -102,6 +102,13 @@ describe Message do
       @message.errors[:base][0].should match(/select a message type/) # NB this assumes that this one is the FIRST error message!
     end
       
+    it 'logs attempt to mail message with no recipients' do
+      AppLog.should_receive(:create).with(hash_including(:code => 'Message.deliver_email',
+          :severity => 'warning'))
+      FactoryGirl.build_stubbed(:message, :send_email=>true, :to_groups => '').
+        deliver
+    end
+
   end
     
           
@@ -505,6 +512,13 @@ describe Message do
       @sent_messages[2].should_not_receive(:update_attributes)
       @message.process_response(:member => @member, :text => @resp_text, :mode => 'email')
     end
+    
+    it 'returns error if sent_message is not found' do
+      message = FactoryGirl.build_stubbed(:message)
+      message.stub(:sent_messages => [])
+      AppLog.should_receive(:create).with(hash_including(:severity => 'error'))
+      message.process_response(:member => @member, :text => @resp_text, :mode => 'email')
+    end
   end # processes responses from recipients
 
   describe 'lists members not yet having responded' do
@@ -531,6 +545,22 @@ describe Message do
     end
     
   end   # lists members not yet having responded
+
+  describe 'Sends followups' do
+    before(:each) do
+      @message = FactoryGirl.build_stubbed(:message, :send_email => true, :send_sms => true)
+    end
+    
+    it 'to non-responding members' do
+      delinquents = [FactoryGirl.build_stubbed(:member), FactoryGirl.build_stubbed(:member)]
+      @message.stub(:members_not_responding => delinquents)
+      @message.should_receive(:deliver_email)
+      @message.should_receive(:deliver_sms)
+      @message.send_followup
+      @message.members.should eq delinquents
+    end
+    
+  end
 
   describe 'News updates' do
     

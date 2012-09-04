@@ -4,11 +4,6 @@ module ApplicationHelper
   DefaultReportedLocDuration = 6 # 6 hours
   MaxSmsLength = 160 # characters
   
-#  def code_with_description
-#    s = self.code.to_s + ' ' + self.description
-#    return s
-#  end
-
   # Given an object (or nil) described by method description_method, return 
   # * nil_value if object is nil or its description is missing or is "unspecified"
   # * description_method otherwise

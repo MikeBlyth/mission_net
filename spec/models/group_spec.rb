@@ -86,4 +86,32 @@ describe Group do
     end
   end # members_with_subgroups 
   
+  describe 'group_member_names' do
+    before(:each) do
+      @members = (1..12).map {|i| mock('Member', :full_name_short => "M_#{i}")}
+      @group = FactoryGirl.build_stubbed(:group)
+    end
+  
+    it 'returns string of short names of members' do
+      @group.stub(:members => @members[0..2])
+      @group.group_member_names.should eq "M_1, M_2, M_3"   
+    end
+
+    it 'returns empty string if no members' do
+      @group.stub(:members => [])
+      @group.group_member_names.should eq ""
+    end
+
+    it 'ends with elipsis if more members than being printed' do
+      @group.stub(:members => @members[0..2])
+      @group.group_member_names(2).should match /\.\.\./
+    end
+
+    it 'gives count if n > 3' do
+      @group.stub(:members => @members[0..5])
+      @group.group_member_names(2).should match /6 total/
+    end
+
+  end # group_member_names
+  
 end
