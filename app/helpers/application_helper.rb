@@ -66,8 +66,13 @@ module ApplicationHelper
     #   but first trim whitespace from elements and delete blank elements
     # Example
     # smart_join([' a ', '', nil, 3.5, "25\n"]) -> "a, 3.5, 25" 
-    def smart_join(a, delim=', ')
-      a.collect{|x| (x || '').to_s.strip}.delete_if{|x| x.blank?}.join(delim)
+    def smart_join(a, delim=', ', final=nil)
+      values = a.collect{|x| (x || '').to_s.strip}.delete_if{|x| x.blank?}
+      if values.many? && final    # Need to put in the final "and" or whatever
+        values[0..-2].join(delim) + " #{final} " + values.last
+      else
+        values.join(delim)
+      end
     end
   
     # Same as split, but strips blanks space from each value 
