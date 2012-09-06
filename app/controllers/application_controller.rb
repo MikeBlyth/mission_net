@@ -26,6 +26,10 @@ class ApplicationController < ActionController::Base
       redirect_to sign_in_path
       puts "**** Not signed in!"
     else  
+      if response.request.fullpath =~ /inline_adapter/
+        render :json => '<em>Sorry, that action is not available to you.</em>'.html_safe
+        return
+      end
       if (request.referer == request.url) # A rare occasion 
         redirect_to safe_page_path
       else
