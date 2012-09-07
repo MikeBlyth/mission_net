@@ -1,6 +1,6 @@
 #require Rails.root.join('spec/factories')
 #require Rails.root.join('spec/spec_helper')
-require "#{Rails.root}/spec/mock_clickatell_gateway.rb"
+require "mock_clickatell_gateway.rb"
 
 puts "**** INCLUDING MESSAGESTESTHELPER ***"
 module MessagesTestHelper
