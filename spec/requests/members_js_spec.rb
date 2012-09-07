@@ -40,7 +40,7 @@ describe "Members" do
       target = find "#as_members-update_column-#{member.id}-wife-cell"
       target.click
       select_list = find("#record_wife_#{member.id}")
-puts "**** clicked on wife cell => options are #{select_list.text}"
+# puts "**** clicked on wife cell => options are #{select_list.text}"
       select_list.should have_content "Alice"
       select_list.should_not have_content nonwife_1.first_name
       select_list.should_not have_content same_last_name_female.first_name

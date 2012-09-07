@@ -1,21 +1,21 @@
 require 'yaml'
 module MessagesHelper
 
-  def to_groups_column(record)
+  def to_groups_column(record, column)
     return nil if record.to_groups.nil?
     record.to_groups_array.map {|g| Group.find_by_id(g.to_i).to_s}.join(", ")
   end 
 
-  def status_summary_column(record)
+  def status_summary_column(record, column)
     status = record.current_status
     "deliv=#{status[:delivered]}, pend=#{status[:pending]}, reply=#{status[:replied]}, err=#{status[:errors]}"
   end
   
-  def created_at_column(record)
+  def created_at_column(record, column)
     to_local_time(record.created_at)
   end
 
-  def body_column(record)
+  def body_column(record, column)
     if record.sms_only && record.sms_only.size > 40
       record.sms_only
     else

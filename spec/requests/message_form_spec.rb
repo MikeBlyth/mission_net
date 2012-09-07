@@ -1,6 +1,14 @@
+# NB This test probably fails when run under Spork. Don't know why.
 require 'spec_helper'
 require 'fake_web'
 include ApplicationHelper
+
+# Need to override delivery of message because it's on DelayJob and crashes tests
+class MessagesController
+  alias_method :old_deliver_message, :deliver_message
+  def deliver_message(record)
+  end
+end  
 
 describe 'Message form' do
 
@@ -32,10 +40,19 @@ describe 'Message form' do
     2.times {FactoryGirl.create(:member, :groups => [members_group])}
     check 'Members'
     page.should have_content "2 messages"
-
-#binding.pry    
-    
+    fill_in "record_subject", :with => "Subject line"
+    fill_in "record_body", :with => "Message body"
+    find('input.submit').click
+    page.should have_content 'Status summary'  # for time out
+    msg = Message.last
+    msg.subject.should eq 'Subject line'
+    msg.body.should eq 'Message body'
   end
   
 end
+
+class MessagesController
+puts "**** Restoring deliver message method"
+  alias_method :deliver_message, :old_deliver_message
+end  
 

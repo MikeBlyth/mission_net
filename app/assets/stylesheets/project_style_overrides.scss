@@ -444,11 +444,13 @@ div#groups {
     float: left;
     }
 
-/************* WORKAROUNDS ETC. ******************/
+/************* TWEAKS, WORKAROUNDS ETC. ******************/
 
 /* this is needed b/o bug in jquery-ui, to get tabs widget to work next to the floated menu */
 .ui-helper-clearfix { display:block; min-width: 0; overflow: hidden; }
 
+/* Stop disabled action links from displaying on list */
+.active-scaffold tr.record td.actions a.disabled {display: none}
 
 /* Close icon is not being shown */
 .active-scaffold a.inline-adapter-close {

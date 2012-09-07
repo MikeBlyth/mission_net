@@ -20,7 +20,7 @@ class MessagesController < ApplicationController
   end
 
   def after_create_save(record)
-    deliver_message(record) # This delivers the message "automatically" when created in this controller, 
+   deliver_message(record) # This delivers the message "automatically" when created in this controller, 
   end
   
   def update

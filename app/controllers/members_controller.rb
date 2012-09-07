@@ -185,7 +185,7 @@ class MembersController < ApplicationController
 
   def wife_select
     id = params[:id]
-puts "**** params=#{params}"
+# puts "**** params=#{params}"
     husband = Member.find id
     same_name = Member.where("last_name = ? and id != ?", husband.last_name, id)
     current = husband.wife_id

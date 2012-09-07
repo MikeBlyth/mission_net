@@ -47,10 +47,10 @@ puts "**** SPORK LOADING PREFORK"
     # (Seems that TF are not supported with Selenium, either )
     config.use_transactional_fixtures = false
 
-#    config.before(:suite) do
+    config.before(:suite) do
 #      DatabaseCleaner.strategy = :transaction
-#      DatabaseCleaner.clean_with(:truncation)
-#    end
+      DatabaseCleaner.clean_with(:truncation)
+    end
 
     config.before(:each) do
       DatabaseCleaner.strategy = if example.metadata[:js]
