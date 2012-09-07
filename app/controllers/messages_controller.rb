@@ -8,7 +8,7 @@ class MessagesController < ApplicationController
     config.columns[:sent_messages].label = 'Sent to'
     config.columns[:importance].label = 'Imp'
     config.columns[:user].clear_link
-    config.columns[:sms_only].label = I18n.t('messages.sms_only')
+ #   config.columns[:sms_only].label = I18n.t('messages.sms_only')
     config.create.link.inline = false 
     config.update.link = false
     config.actions.exclude :update

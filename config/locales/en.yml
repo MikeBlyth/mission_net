@@ -3,13 +3,70 @@
 
 en:
   both_have_phone: "(both)"
-  hello: "Hello world"
+  hello: Hello
   Male: "Male"
   Female: "Female"
   private_data: "**private**"
   private_dir: "---"     # Filler for private data in reports
   via: "via"
   unspecified_location: "Location not listed"
+  activerecord:
+    models:
+      message: Message
+      bloodtype: Blood type
+      city: City
+      country: Country
+      group: Group
+      location: Location
+      member: Member
+      settings: Settings
+      system_note: System Note
+    attributes:
+      group:
+        group_name: Group name
+        abbrev: Abbrev
+        primary: Primary?
+        user_selectable: User selectable?
+        admin: Admin?
+        moderator: Moderator?
+        member: Member?
+        limited: Limited?
+        parent_group: Parent group
+      member:
+        last_name: Last name               
+        first_name: First name              
+        middle_name: Middle name             
+        name: Full name                    
+        country: Country              
+        emergency_contact_phone: Emergency contact phone
+        emergency_contact_email: Emergency contact email
+        emergency_contact_name: Emergency contact name  
+        phone_1: Phone 1
+        phone_2: Phone 2                 
+        email_1: Email 1                 
+        email_2: Email 2                 
+        location: Location             
+        location_detail: Location detail         
+        arrival_date: Arrival date
+        departure_date: Departure date
+        blood_donor: Blood donor?
+        bloodtype: Blood type
+        created_at: Created at
+        updated_at: Updated at
+        phone_private: Phone private?
+        email_private: Email private?
+        in_country: On location
+        comments: Comments 
+        short_name: Short name
+        wife: Wife                 
+        sex: Sex
+      message:
+        user: User
+        body: Email text
+        sms_only: SMS text
+        send_sms: Send SMS
+        send_email: Send email
+        to_groups: Dest. groups
   messages:
     sms_text_message_label: "SMS Text Message"
     email_body_label: 'Email Message (or "More Information" for SMS)'
@@ -31,4 +88,4 @@ en:
             Could it be in your junk mail folder? We really do want to be sure that 
             you got this message so please make sure you've read it and then 
             just reply to this message or the original one."
-      
+    
