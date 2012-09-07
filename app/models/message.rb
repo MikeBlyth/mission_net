@@ -297,7 +297,7 @@ puts "**** Trying to deliver message ##{self.id} but no email addresses found."
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  
     update_sent_messages_w_status(gateway_reply) if options[:news_update].nil? && gateway_reply # The IF is there just to make testing simpler.
-                                                                  # In production, a reply will always be present?
+                                                                   # In production, a reply will always be present?
   end
   
   def check_recipients

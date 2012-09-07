@@ -27,7 +27,9 @@ puts "**** SPORK LOADING PREFORK"
 
   # Requires supporting ruby files with custom matchers and macros, etc,
   # in spec/support/ and its subdirectories.
-  Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
+  Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| 
+  puts "**** " + f.to_s
+  require f; }
 
   RSpec.configure do |config|
     # ## Mock Framework
