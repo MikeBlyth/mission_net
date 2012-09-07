@@ -8,6 +8,7 @@ class MessagesController < ApplicationController
     config.columns[:sent_messages].label = 'Sent to'
     config.columns[:importance].label = 'Imp'
     config.columns[:user].clear_link
+    config.columns[:sms_only].label = I18n.t('messages.sms_only')
     config.create.link.inline = false 
     config.update.link = false
     config.actions.exclude :update
@@ -39,12 +40,9 @@ class MessagesController < ApplicationController
     @original_msg = Message.find @id
     @record = Message.new
     @record.following_up = @id 
-    @record.subject = "Following up on message #@id, \"#{@original_msg.subject}\"" 
-    @record.sms_only = "f/u msg ##@id"
-    @record.body = "This is Josie, the Joslink database gopher. I haven't seen a reply from you " +
-        "showing that you received message ##{@id}. Could it be in your junk mail folder? We really " +
-        "do want to be sure that you got this message so please make sure you've read it and then " +
-        "just reply to this message or the original one."
+    @record.subject = t('messages.followup.subject_line', :id => @id, :subject => @original_msg.subject)
+    @record.sms_only = t('messages.followup.sms_line', :id => @id, :subject => @original_msg.subject)
+    @record.body = t('messages.followup.body_content', :id => @id, :subject => @original_msg.subject)
   end
   
   # Use form from 'followup' to generate new message

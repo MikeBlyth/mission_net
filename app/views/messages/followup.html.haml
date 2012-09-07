@@ -4,14 +4,10 @@
     Be sure to follow up any messages you send with this system, and do not
     assume that they are being delivered reliably (yet).
   #msg-form.ui-corner-all
-    %p
-      This form is for sending a follow-up for message #{@id}:
+    %p= t '.form_descr_1', :id => @original_msg.id
     %p.msg-quote
       #{to_local_time(@original_msg.created_at)}: #{truncate(@original_msg.body, :length => 200)}
-    %p
-      This follow-up message will be sent <em>only</em> to people who did not receive (or respond to) 
-      the original message #{@id}. You can repeat part of the message and or remind people to
-      respond.
+    %p= t '.form_descr_2', :id => @original_msg.id
     #msg-top
       = form_for @record, :url => { :action => "followup_send" } do |f|
         = render :partial => 'text_inputs'

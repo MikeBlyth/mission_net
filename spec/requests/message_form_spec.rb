@@ -39,9 +39,25 @@ describe 'Message form' do
     fill_in "record_body", :with => "Message body"
     find('input.submit').click
     page.should have_content 'Status summary'  # for time out
+    page.should have_link 'Follow up'  # for time out
     msg = Message.last
-    msg.subject.should eq 'Subject line'
+    id = msg.id
+    subject = msg.subject
+    subject.should eq 'Subject line'
     msg.body.should eq 'Message body'
+    click_link 'Follow up'
+    # Now we have new page, the one for entering f/u message.
+    page.should have_content I18n.t('messages.followup.form_descr_1', :id => id)
+    find('#record_sms_only').should have_content I18n.t('messages.followup.sms_line', :id => id, :subject => subject)
+    find('#record_subject').value.should eq I18n.t('messages.followup.subject_line', :id => id, :subject => subject)
+    find('#record_body').value.should eq I18n.t('messages.followup.body_content', :id => id, :subject => subject)
+    page.should have_selector('input#record_send_email')
+    page.should have_selector('input#record_send_sms')
+    page.should have_selector('input#record_news_update')
+    check 'Send email'
+    click_button("Send")
+    page.should have_content 'Status summary'  # for time out
+    
   end
   
 end

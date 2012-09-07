@@ -22,6 +22,10 @@ module MessagesHelper
       record.body[0..140] if record.body
     end
   end
+
+  def interpolate_id(str, id)
+    t(str).gsub('$', id.to_s)
+  end
  
   #  Generate or find the message id tag used to identify confirmation responses
   #  A bit complicated because of using different formats in the subject line and the

@@ -10,3 +10,25 @@ en:
   private_dir: "---"     # Filler for private data in reports
   via: "via"
   unspecified_location: "Location not listed"
+  messages:
+    sms_text_message_label: "SMS Text Message"
+    email_body_label: 'Email Message (or "More Information" for SMS)'
+    subject_label: "Subject"
+    send_email: "Send email"
+    send_sms: "Send SMS"
+    sms_only: "SMS body"
+    news_update: "News update"
+    private_label: "Private"
+    followup:
+      form_descr_1: "This form is for sending a follow-up for message #%{id}."
+      form_descr_2: "This follow-up message will be sent only to people who 
+              did not receive (or respond to) the original message %{id}. 
+              You can repeat part of the message and or remind people to respond."
+      subject_line: "Following up on message #%{id}: %{subject}"
+      sms_line: "f/u msg #%{id}"
+      body_content: "This is Josie, the Joslink database gopher. I haven't 
+            seen a reply from you showing that you received message #%{id}, \"%{subject}.\" 
+            Could it be in your junk mail folder? We really do want to be sure that 
+            you got this message so please make sure you've read it and then 
+            just reply to this message or the original one."
+      
