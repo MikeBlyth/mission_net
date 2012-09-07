@@ -84,11 +84,11 @@ puts "**** SPORK LOADING PREFORK"
 
   def test_sign_in(role=:administrator)
     group = FactoryGirl.build_stubbed(:group, role => true)
-    @user = FactoryGirl.build_stubbed(:member, :groups => [group], :id => 999)
-    @user.stub(:role => role)
-    controller.stub(:current_user).and_return(@user)
-    $current_user = @user
-    return @user
+    user = FactoryGirl.build_stubbed(:member, :groups => [group], :id => 999)
+    user.stub(:role => role)
+    controller.stub(:current_user).and_return(user)
+    $current_user = user
+    return user
   end
   alias test_sign_in_fast test_sign_in
 
@@ -98,10 +98,14 @@ puts "**** SPORK LOADING PREFORK"
 
   def create_signed_in_member(role=:member)
     group = FactoryGirl.create(:group, role => true)
-    @user = FactoryGirl.create(:member, :groups => [group])
-    controller.stub(:current_user).and_return(@user)
-    $current_user = @user
-    return @user
+    user = FactoryGirl.create(:member, :groups => [group])
+    controller.stub(:current_user).and_return(user)
+    $current_user = user
+    return user
+  end
+
+  def set_user_role(role)
+    $current_user.stub(:role => role)
   end
 
   def integration_test_sign_in(role=:administrator)
@@ -138,6 +142,16 @@ end
 Spork.each_run do
   puts "**** SPORK LOADING EACH RUN"
   load 'clickatell_gateway.rb'  # Why does it have to be specified??
+
+#RSpec.configure do |config|
+#  config.before(:all) do
+#    DeferredGarbageCollection.start
+#  end
+#  config.after(:all) do
+#    DeferredGarbageCollection.reconsider
+#  end
+#end
+
   # Run simplecov here if we *are* running under spork (ENV['DRB'])
 #  if ENV['DRB']
 #    require 'simplecov'

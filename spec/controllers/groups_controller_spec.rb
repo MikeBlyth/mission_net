@@ -1,5 +1,7 @@
 require 'spec_helper'
 require 'sim_test_helper'
+require "cancan/matchers"
+#require 'custom_matchers.rb'
 
 describe GroupsController do
     before(:each) do
@@ -10,6 +12,15 @@ describe GroupsController do
 
   def mock_group(stubs={})
     @mock_group ||= mock_model(Group, stubs).as_null_object
+  end
+
+  describe 'privileges' do
+
+    it {:administrator.should be_allowed_to [:create,  :read, :update, :destroy]}
+    it {:moderator.should be_allowed_to [:create, :read, :update, :destroy]}
+    it {:member.should be_allowed_to [:read]}
+    it {:limited.should be_allowed_to []}
+
   end
 
   describe 'create' do
