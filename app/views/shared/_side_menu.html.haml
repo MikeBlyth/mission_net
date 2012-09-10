@@ -1,28 +1,27 @@
 - if signed_in? 
-  %h5 
-    Main Menu
+  %h5= t('Main_Menu')
   %ul.links
-    %li= link_to "Edit your user info", edit_member_path(current_user)
-    %li= link_to "Sign out", sign_out_path 
+    %li= link_to t('side_menu.edit_your_user_info'), edit_member_path(current_user)
+    %li= link_to t('side_menu.sign_out'), sign_out_path 
     - if current_user.roles_include? :member
-      %li= link_to 'Members', members_path 
-      %li= link_to 'Create new message', new_message_path
-      %li= link_to 'Reports', reports_path
-      %li= link_to 'System notices, bug reports, requests...', system_notes_path
+      %li= link_to t('side_menu.members'), members_path 
+      %li= link_to t('side_menu.create_new_message'), new_message_path
+      %li= link_to t('side_menu.reports'), reports_path
+      %li= link_to t('side_menu.system_notices'), system_notes_path
     - if current_user.roles_include? :moderator
-      %h5 Moderators
-      %li= link_to 'Message list', messages_path
-      %li= link_to 'Groups', groups_path
-      %li= link_to 'Log', '/app_logs'
+      %h5= t(:Moderators)
+      %li= link_to t('side_menu.message_list'), messages_path
+      %li= link_to t('side_menu.groups'), groups_path
+      %li= link_to t('side_menu.log'), '/app_logs'
     - if current_user.roles_include? :administrator
-      %h5 Option Tables
-      %li= link_to 'Bloodtypes', bloodtypes_path 
-      %li= link_to 'Cities', cities_path 
-      %li= link_to 'Countries', countries_path 
-      %li= link_to 'Locations', locations_path 
+      %h5= t('Option_tables')
+      %li= link_to t('side_menu.bloodtypes'), bloodtypes_path 
+      %li= link_to t('side_menu.cities'), cities_path 
+      %li= link_to t('side_menu.countries'), countries_path 
+      %li= link_to t('side_menu.locations'), locations_path 
       %hr
-      %h5 Admin tasks
-      %li= link_to 'Settings (be careful!)', site_settings_path
+      %h5= t('Admin_tasks')
+      %li= link_to t('side_menu.settings'), site_settings_path
   %hr
 - else 
 

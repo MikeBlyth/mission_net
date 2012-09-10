@@ -7,28 +7,28 @@ $( "#tabs" ).tabs();
 <div >
 #tabs
   %ul
-    %li <a href="#tabs-member">Name & Country</a>
-    %li <a href="#tabs-contact">Contact Info</a>
-    %li <a href="#tabs-other">Other</a>
+    %li= link_to t("members.form.name_and_country"), "#tabs-member"
+    %li= link_to t("members.form.contact_info"), "#tabs-contact"
+    %li= link_to t("members.form.other"), "#tabs-other"
   
   = fields_for :record do |member|
     #tabs-member
       %table.new_family
         %tr
           %td
-            = member.label :name, "Full name of individual", :class=>'required'
+            = member.label :name,  :class=>'required'
             %br
             = member.text_field :name, :class=> "name-input"
             %br
             %p.description Must be unique
           %td
             .country
-              = member.label :country, "Passport country"
+              = member.label :country, t('members.form.passport_country')
               %br
               - choices = options_from_collection_for_select(Country.where('include_in_selection').select('id, name').order('name'), :id, :name, @member[:country_id])
               = member.select(:country, choices, {:include_blank => true }, :class=>'wide-input')    
           %td
-            = member.label :groups, "Groups"
+            = member.label :groups
             %br
             -#= member.select :group_ids, Group.order('group_name').collect {|x| [x.group_name, x.id]}, {}, :multiple => true, :size=>10         
             -#= member.select :groups, group_choices(@member), {:include_blank => '(none)' },  :multiple => true, :size=>10, :class=>'multiselect'  
@@ -77,7 +77,7 @@ $( "#tabs" ).tabs();
             %br
             = member.telephone_field :phone_2, :class=>'phone-input'
           %td
-            = member.label :phone_private, 'Phone number is private?'
+            = member.label :phone_private
             %br
             = member.check_box :phone_private
         %tr
@@ -90,11 +90,11 @@ $( "#tabs" ).tabs();
             %br
             = member.email_field :email_2
           %td
-            = member.label :email_private, 'Email is private?'
+            = member.label :email_private
             %br
             = member.check_box :email_private
         %tr
-          %td{:colspan => '3'} <h5>Emergency Contact Information </h5>
+          %td{:colspan => '3'}= "<h5>#{t('members.form.Emergency_Contact_Information')} </h5>".html_safe
         %tr
           %td
             = member.label :emergency_contact_name        

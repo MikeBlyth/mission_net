@@ -1,8 +1,5 @@
 #msg-followup
-  %p.msg-caveat.ui-corner-all
-    Note: 
-    Be sure to follow up any messages you send with this system, and do not
-    assume that they are being delivered reliably (yet).
+  %p.msg-caveat.ui-corner-all= t('messages.be_sure_to_follow_up')
   #msg-form.ui-corner-all
     %p= t '.form_descr_1', :id => @original_msg.id
     %p.msg-quote
@@ -11,5 +8,5 @@
     #msg-top
       = form_for @record, :url => { :action => "followup_send" } do |f|
         = render :partial => 'text_inputs'
-        = submit_tag('Send')
+        = submit_tag t('Send')
         

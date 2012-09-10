@@ -4,12 +4,12 @@
     %table
       %tr
         %td 
-          = form.label :keywords, "Keywords (useful for searching)"
+          = form.label :keywords, t('.keywords')
           %br
           = form.text_field :keywords, :class => 'keywords-input'
       %tr
         %td 
-          = form.label :expiration, "Expiration (only affects news updates)"
+          = form.label :expiration, t('.expiration')
           %br
           = form.select :expiration, [['1 hour', 1], ['2 hours', 2], ['4 hours', 4], ['6 hours', 6],
                   ['8 hours', 8], ['12 hours',12], ['24 hours', 24], ['2 days', 48] ]

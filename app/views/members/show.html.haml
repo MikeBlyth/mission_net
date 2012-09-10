@@ -5,11 +5,11 @@
 .active-scaffold.show-member
   #col_1.show-view
     %dl
-      %dt Name
+      %dt= t('.name')
       %dd{:class=> :name_view}= "#{@member.first_name} #{@member.middle_name} #{@member.last_name} #{"(#{@member.short_name})" unless @member.short_name.blank?}"
-      %dt Spouse
+      %dt= t('.spouse')
       %dd{:class => :spouse_view}= @spouse
-      %dt Passport country
+      %dt= t(:passport_country)
       %dd{:class => :country_view}= @member.country.name if @member.country
       %dt Phone
       %dd{:class => :phone_view}= smart_join [format_phone(@member.phone_1), format_phone(@member.phone_2)], ', '

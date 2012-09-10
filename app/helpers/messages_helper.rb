@@ -27,6 +27,16 @@ module MessagesHelper
     t(str).gsub('$', id.to_s)
   end
  
+  def time_choices(choices)
+    choice_list = choices.map do |c|
+      if c >= 1
+        [I18n.t(:hour, :count => c), c]
+      else
+        minutes = (c * 60).to_i
+        ["#{minutes} #{I18n.t :minutes}", c]
+      end
+    end
+  end    
   #  Generate or find the message id tag used to identify confirmation responses
   #  A bit complicated because of using different formats in the subject line and the
   #  message body, and a different format when presenting the message than when confirming it.

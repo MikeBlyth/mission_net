@@ -2,14 +2,33 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  Admin_tasks: Admin tasks
   both_have_phone: "(both)"
-  hello: Hello
-  Male: "Male"
+  click_to_show_more_columns: Click to show more columns
+  click_to_hide_some_columns: Click to hide some columns
   Female: "Female"
+  hello: Hello
+  hide_menu: Hide menu
+  hour:
+    one: 1 hour
+    other: '%{count} hours'
+  Main_Menu: Main Menu
+  Male: Male
+  Members: Members
+  Member: Member
+  minutes: minutes
+  Moderators: Moderators
+  Moderator: Moderator
+  "Signed in as": Signed in as
+  "Not signed in": Not signed in
+  Option_tables: Option tables
+  passport_country: Passport country
   private_data: "**private**"
   private_dir: "---"     # Filler for private data in reports
-  via: "via"
+  Send: Send
+  show_menu: Show menu
   unspecified_location: "Location not listed"
+  via: "via"
   activerecord:
     models:
       message: Message
@@ -63,12 +82,31 @@ en:
       message:
         user: User
         body: Email text
+        keywords: Keywords
         sms_only: SMS text
         send_sms: Send SMS
         send_email: Send email
+        response_time_limit: Response time limit
         to_groups: Dest. groups
+  side_menu:
+    edit_your_user_info: Edit your user info
+    sign_out: Sign out
+    members: Members
+    create_new_message: Create new message
+    reports: Reports
+    system_notices: System notices
+    message_list: Message list
+    groups: Groups
+    log: Log
+    blood_types: Blood types
+    cities: Cities
+    countries: Countries
+    locations: Locations
   messages:
-    sms_text_message_label: "SMS Text Message"
+    be_sure_to_follow_up: "Note: Be sure to follow up any critical messages you 
+              send with this system, and do not just assume that they are being 
+              delivered reliably and read by the recipient."
+    destination_groups: Destination groups
     email_body_label: 'Email Message (or "More Information" for SMS)'
     subject_label: "Subject"
     send_email: "Send email"
@@ -76,7 +114,9 @@ en:
     sms_only: "SMS body"
     news_update: "News update"
     private_label: "Private"
+    sms_text_message_label: "SMS Text Message"
     followup:
+
       form_descr_1: "This form is for sending a follow-up for message #%{id}."
       form_descr_2: "This follow-up message will be sent only to people who 
               did not receive (or respond to) the original message %{id}. 
@@ -88,4 +128,29 @@ en:
             Could it be in your junk mail folder? We really do want to be sure that 
             you got this message so please make sure you've read it and then 
             just reply to this message or the original one."
-    
+    options:
+      expiration: Expiration (only affects news updates) 
+      keywords: Keywords (useful for searching)
+  members:
+    show:
+      name: Full name
+    form:
+      contact_info: Contact Info
+      other: Other
+      name_and_country: Name & Country
+      Emergency_Contact_Information: Emergency Contact Information
+      passport_country: Passport country
+    import:
+      description: "This will import members stored in a comma-separated (CSV) file 
+                   from your computer."
+      file_to_upload: File to upload
+      import_members: Import new members
+      notice: "Be sure to back up your database before importing new members. The
+               import feature is still experimental."
+  groups:
+    form:
+      abbrev: Abbreviation$
+      notice: "If this new group is to be a container for sub-groups, you should just add 
+              members to the sub-groups. They will automatically be included in this parent group." 
+      
+ 
