@@ -15,15 +15,14 @@ class GroupsController < ApplicationController
     config.columns[:abbrev].inplace_edit = true
     config.columns[:primary].inplace_edit = true
     config.columns[:administrator].inplace_edit = true
-    config.columns[:administrator].label = 'Admin'
+#    config.columns[:administrator].label = 'Admin'
     config.columns[:moderator].inplace_edit = true
     config.columns[:member].inplace_edit = true
     config.columns[:limited].inplace_edit = true
     config.columns[:parent_group].inplace_edit = true
     config.columns[:parent_group].form_ui = :select 
-    config.action_links.add 'export', :label => 'Export', :page => true, :type => :collection, 
-       :confirm=>'This will download all the Groups data (most fields) for ' + 
-         'use in your own spreadsheet or database, and may take a minute or two. Is this what you want to do?'
+    config.action_links.add 'export', :label => I18n.t('export'), :page => true, :type => :collection, 
+       :confirm=> I18n.t('export_confirm', :model => "Groups") 
     config.update.link.page = true  # At present, the jQuery multiselect widget doesn't work when edit is done inline
   end
 

@@ -13,7 +13,7 @@ class IncomingMailsController < ApplicationController
     @from_member = login_allowed(@from_address)
 # puts "**** @from_member=#{@from_member}"
     unless @from_member
-      render :text => 'Refused--unknown sender', :status => 403, :content_type => Mime::TEXT.to_s
+      render :text => I18n.t('Refused unknown sender'), :status => 403, :content_type => Mime::TEXT.to_s
       return
     end
     @privileges = @from_member.role
@@ -23,7 +23,7 @@ class IncomingMailsController < ApplicationController
     process_message_response
     commands = extract_commands(@body)
     if commands.nil? || commands.empty?
-      Notifier.send_generic(@from_address, "Error: nothing found in your message #{@body[0..160]}").deliver
+      Notifier.send_generic(@from_address, I18n.t(:nothing_in_message, :body => @body[0..160]).deliver
       success = false
     else
       success = process_commands(commands)
@@ -32,9 +32,9 @@ class IncomingMailsController < ApplicationController
     # if the message was handled successfully then send a status of 200,
     #   else give a 422 with the errors
     if success
-      render :text => "Success", :status => 200, :content_type => Mime::TEXT.to_s
+      render :text => I18n.t(:success), :status => 200, :content_type => Mime::TEXT.to_s
     else
-      render :text => 'Error: Email commands not recogized', :status => 422, :content_type => Mime::TEXT.to_s
+      render :text => I18n.t('error_msg.email_commands_not_recogized', :status => 422, :content_type => Mime::TEXT.to_s
     end
   end # create
   
@@ -61,9 +61,7 @@ class IncomingMailsController < ApplicationController
         end
       else
         msg_tag = message_id_tag(:id => msg_id, :action => :create, :location => :body)
-        Notifier.send_generic(@from_address, "Error: It seems you tried to confirm message ##{msg_id}, " +
-           "but you don't seem to have a message with that ID. Maybe you should contact the sender " +
-           "in person to confirm that you received the message, if that is what you meant to do.").deliver
+        Notifier.send_generic(@from_address, I18n.t('error_msg.invalid_confirmation')).deliver
       end
     end
   end
@@ -145,16 +143,15 @@ private
 
   def confirmation_message(body, use_sms, valid_group_names, invalid_group_names)
     body_joined = format_text(body[0..149])
-    confirmation = "CONFIRMATION\n\nYour message: \n\n#{body_joined} \n\nwas sent to groups #{valid_group_names.join(', ')}. "
+    confirmation = t(:group_msg_sent_conf, :body=>body_joined, :groups => valid_group_names.join(', '))
     if use_sms && body.length > 150 
-      confirmation << "Only the first 150 characters at most of your message were sent by SMS, " + 
-          "so recipients will see at most the portion above."
+      confirmation << t(:sms_length_warning)
     end 
     unless invalid_group_names.empty?
       if invalid_group_names.size == 1
-        confirmation << "Group #{invalid_group_names} was not found, so did not receive message."
+        confirmation << t(:missing_group_warning, :invalid_groups => invalid_group_names)
       else
-        confirmation << "Groups #{invalid_group_names.join(', ')} were not found, so did not receive messages."
+        confirmation << t(:missing_groups_warning, :invalid_groups => invalid_group_names)
       end
     end
     return confirmation

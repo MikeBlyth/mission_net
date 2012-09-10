@@ -1,11 +1,11 @@
 .active_scaffold
-%h2 #{@title}
-<p>Asterisk (*) means presently out of the country.</p>
+%h2= t('.title')
+%p= t('.asterisk')
 %table.whereis
-  %th Location
-  %th Name
-  %th Email
-  %th Phone
+  %th= t :location
+  %th= t :name
+  %th= t :email
+  %th= t :phone
   %tbody
     - location=''
     - @families.sort! do |x,y| 
@@ -13,7 +13,7 @@
     - @families.each do |f|
       %tr{:class=> cycle('list_line_odd' , 'list_line_even' )}
         - formatted = family_data_formatted(f)
-        - this_location = description_or_blank(f.location,'Location not listed')
+        - this_location = description_or_blank(f.location,t('.Location not listed'))
         - if location != this_location
           -  location = this_location
           %td= "#{location}"

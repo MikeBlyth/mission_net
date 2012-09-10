@@ -1,25 +1,18 @@
-%h1 Initial Setup
-%p 
-  The member database is empty, so presumably you want to set up a new installation. You will be added as an
-  administrator.
-  Please enter your email below. Note
-  that at least one of the email addresses must one you use to log in with Facebook or Google, since that is how authentication is
-  done by this system. 
-%p
-  Note: Once you have been added to the database, you will no longer be able to access this page, so be sure that the
-  email you enter is correct or you will not be able to log in and will have to re-start the installation.
+%h1 t(:setup_title)
+%p= t(:setup_1)
+%p= t(:setup_2)
 = form_tag do
-  = label_tag 'First name'
+  = label_tag t(:first_name)
   = text_field_tag :first_name
   %br
-  = label_tag 'Last name'
+  = label_tag t(:last_name)
   = text_field_tag :last_name
   %br
-  = label_tag 'Email address'
+  = label_tag t(:email_address)
   = text_field_tag :email_1
   %br
-  = label_tag 'Second email address'
+  = label_tag t(:second_email_address)
   = text_field_tag :email_2
-  = submit_tag('OK')
+  = submit_tag(t(:OK))
   
 

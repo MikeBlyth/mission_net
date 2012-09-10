@@ -32,6 +32,11 @@
 #   default: secret
 #   type: password
 
+organization:
+  name: Name of organization or database
+  default: Joslink
+  type: string
+
 base_url:
   name: Base URL for this site
   default: https://simjos.heroku.com/
@@ -42,11 +47,16 @@ base_email_address:
   type: string
   default: database@joslink.org
 
-organization:
-  name: Name of organization or database
-  default: Joslink
+incoming_sms_number:
+  name: Phone number for incoming SMS
   type: string
-      
+  default: 999-999-9999
+
+incoming_voice_number:
+  name: Phone number for incoming voice calls
+  type: string
+  default: 999-999-9999
+
 default_outgoing_sms_gateway:
   name: SMS gateway for outgoing messages
   default: ironworker_twilio

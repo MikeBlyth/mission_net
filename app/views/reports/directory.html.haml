@@ -1,11 +1,11 @@
 .active_scaffold
-%h2 #{@title}
-<p>Asterisk (*) means presently out of the country.</p>
+%h2= t('.title')
+%p= t('.asterisk')
 %table.whereis
-  %th Name
-  %th Location
-  %th Email
-  %th Phone
+  %th= t(:name)
+  %th= t(:location)
+  %th= t(:email)
+  %th= t(:phone)
   %tbody
   - @families.each do |f|
     - formatted = family_data_formatted(f)

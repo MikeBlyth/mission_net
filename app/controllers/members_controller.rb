@@ -22,7 +22,7 @@ class MembersController < ApplicationController
         [:name, :phone_private, :email_private]
 
   active_scaffold :member do |config|
-    config.label = "Members"  # Main title
+#    config.label = I18n.t "Members"  # Main title
     list.columns = ListColumnsFull
     show.columns = ShowColumns
     

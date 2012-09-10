@@ -1,37 +1,32 @@
 .active-scaffold.site_settings{:style=>'width: 400px'}
-  %h2 Site Settings
+  %h2= t('.title') 
   = form_tag(update_site_settings_path, :method => :put) do 
     %hr
-    %h3 Email
-    %p Fill in these settings if the site uses SendGrid for outgoing email.
-    = settings_field(:sendgrid_user_name)
-    = settings_field(:sendgrid_password)
+    %h3= t(:email)
+    %p= t('.sendgrid_instructions')
+    = settings_field(:sendgrid_user_name, :label=> t('.sendgrid_user_name'))
+    = settings_field(:sendgrid_password, :label=> t('.sendgrid_password'))
     %br
-    %h3 SMS Text Messaging
-    = settings_field(:default_outgoing_sms_gateway, :label=>'Default Outgoing SMS Gateway',
+    %h3= t('.sms_text_messaging')
+    = settings_field(:default_outgoing_sms_gateway, :label=> t('.default_outgoing_sms_gateway'),
       :choices => [['Twilio'], ['Clickatell']])
     %h4 Clickatell 
-    = settings_field(:clickatell_user_name)
-    = settings_field(:clickatell_password)
+    = settings_field(:clickatell_user_name, :label=> t('.clickatell_user_name'))
+    = settings_field(:clickatell_password, :label=> t('.clickatell_password'))
     = settings_field(:clickatell_api_id, :label=>'Clickatell API ID')
     %h4 Twilio
-    = settings_field(:twilio_account_sid, :label=>'Twilio account SID')
-    = settings_field(:twilio_auth_token, :password=>true, :label=>'Twilio authorization token')
-    = settings_field(:twilio_api_version, :label=>'Twilio API version')
-    = settings_field(:twilio_phone_number)
-    = settings_field(:twilio_background, {:choices=>[['None', ''], ['DelayedJob'], ['IronWorker']]})
-    %h3 Notifications
-    %h4 Contact Updates
-    %p 
-      Specify who will receive various notifications from this program, and when they will be sent.
-      Include email addresses only (no names), separated by commas.
-    = settings_field(:contact_update_recipients)
-    %h3 Maintenance tasks
-    %p{:style=>'width: 400px'}
-      If auto-update in-country status is selected, the system will check 
-      members' arrival and departure dates, if any, and adjust their in_country status accordingly.
-      This is done daily (in the early morning)
-    = settings_field(:auto_update_in_country_status, :choices=> [['Yes',1],['No','0']])
+    = settings_field(:twilio_account_sid, :label=> t('.twilio_account_sid'))
+    = settings_field(:twilio_auth_token, :password=>true, :label=> t('.twilio_auth_token'))
+    = settings_field(:twilio_api_version, :label=> t('.twilio_api_version'))
+    = settings_field(:twilio_phone_number, :label => t('.twilio_phone_number'))
+    = settings_field(:twilio_background, :label => t('.twilio_background'), :choices=>[[t('None'), ''], ['DelayedJob'], ['IronWorker']])
+    %h3= t('.notifications')
+    %h4= t('.contact_updates')
+    %p= t('.contact_update_instructions') 
+    = settings_field(:contact_update_recipients, :label => t('.contact_update_recipients'))
+    %h3= t('.maintenance tasks')
+    %p{:style=>'width: 400px'}= t('.auto_update_instructions')
+    = settings_field(:auto_update_in_country_status, :label => t('.auto_update_in_country_status'), :choices=> [[t('Yes'), 1], [t('No'), '0']])
     %hr
-    = submit_tag 'Save'
+    = submit_tag t('Save')
     

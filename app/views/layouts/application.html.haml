@@ -9,7 +9,7 @@
   #menu_toggle
     %a.show_menu
       = image_tag "arrows-4-icon.png"
-      %span#show_hide t(:hide_menu)
+      %span#show_hide= t(:hide_menu)
     #signed_in
       = signed_in? ? t('Signed in as') + ' ' + current_user.name : t("Not signed in")
     #menu

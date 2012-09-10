@@ -1,24 +1,24 @@
-%h4 Reports
-%h5 Directory (names, phone numbers and email addresses)
+%h4= t('.reports')
+%h5= t('.header')
 %ul
   %li#directory 
-    View in Browser
+    = t '.view_in_browser'
     %ul 
-      %li= link_to 'By family (HTML)', '/reports/directory.html?by=family', :id=>'directory-family'
-      %li= link_to 'By location (HTML)', '/reports/directory.html?by=location', :id=>'directory-location'
+      %li= link_to t('.by_family'), '/reports/directory.html?by=family', :id=>'directory-family'
+      %li= link_to t('.by_location'), '/reports/directory.html?by=location', :id=>'directory-location'
   %li#directory_pdf
-    Printable (PDF)
+    = t('.printable')
     = form_tag('/reports/directory.pdf', :method => "get")  do
       .pdf_directory_form
         = render :partial => 'messages/groups'      
         .options-container
           = check_box_tag :report_sorted_by_name
-          = label_tag :report_sorted_by_name
+          = label_tag :report_sorted_by_name, t( '.report_sorted_by_name')
           %br
           = check_box_tag :report_sorted_by_location
-          = label_tag :report_sorted_by_location
+          = label_tag :report_sorted_by_location, t('.report_sorted_by_location')
           %br
           = text_field_tag :font_size, '10', :class => 'font_size'
-          = label_tag :font_size
-        = submit_tag "Download", :id => 'download'
+          = label_tag :font_size, t('.font_size')
+        = submit_tag t("download"), :id => 'download'
 

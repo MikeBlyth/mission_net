@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
       puts "**** Not signed in!"
     else  
       if response.request.fullpath =~ /inline_adapter/
-        render :json => '<em>Sorry, that action is not available to you.</em>'.html_safe
+        render :json => "<em>#{t('cancan_forbidden')}</em>".html_safe
         return
       end
       if (request.referer == request.url) # A rare occasion 
@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
 private
 
   def authorize
-    redirect_to(sign_in_url, :notice => "Please log in") unless signed_in?
+    redirect_to(sign_in_url, :notice => t("Please log in")) unless signed_in?
   end
 
 end

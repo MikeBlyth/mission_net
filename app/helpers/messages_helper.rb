@@ -27,13 +27,22 @@ module MessagesHelper
     t(str).gsub('$', id.to_s)
   end
  
-  def time_choices(choices)
+  # Unit in is always hours. Unit out can be hours or minutes
+  def time_choices(choices, unit_out=:hour)
+    multiplier = case unit_out
+      when :hour, :hours then 1
+      when :minute, :minutes then 60
+      else raise "Invalid time unit specified: #{unit_out}"
+    end 
     choice_list = choices.map do |c|
-      if c >= 1
-        [I18n.t(:hour, :count => c), c]
-      else
-        minutes = (c * 60).to_i
-        ["#{minutes} #{I18n.t :minutes}", c]
+      case 
+        when c.kind_of?(Array)   # A choice specified manually
+          c
+        when c.kind_of?(Integer) && c >= 1 
+          [I18n.t(:hour, :count => c), c * multiplier]
+        else 
+          minutes = (c * 60).to_i
+          ["#{minutes} #{I18n.t :minutes}", (c * multiplier).to_i]
       end
     end
   end    

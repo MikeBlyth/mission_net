@@ -5,15 +5,11 @@
   %body
     %p= @content 
     %hr
-    %p{'style' => "color: #666"}  
-      This is #{"a follow up for " if @following_up}message <strong>##{@id}</strong>. 
+    %p{'style' => "color: #666"}= t('outgoing.this_is_message_id_html', :id => @id)  
     - if @response_time_limit
-      %p{'style' => "color: #666"}
-        The sender has requested a confirmation #{respond_by(@response_time_limit, true)} 
-        that you have received this message. Simply
-        reply to the message leaving the subject line unchanged. If the sender asked you to reply 
-        with some information, just type that on the first line of your reply and it will be recorded.
-        You can also confirm that you have received this message by sending '!#{@id}' as a text 
-        message to the database number, 1-415-237-4227 (1-415-AFRICAR).
-      %p{'style' => "color: #666"} Thank you.
+      %p{'style' => "color: #666"}= t('outgoing.confirmation_request_html', 
+        :time_limit => (respond_by(@response_time_limit, true),
+        :id => @id,
+        :sms_number => SiteSettings.incoming_sms_number)
+      %p{'style' => "color: #666"}= t('Thank you')
 

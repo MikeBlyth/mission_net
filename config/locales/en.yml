@@ -6,38 +6,79 @@ en:
   both_have_phone: "(both)"
   click_to_show_more_columns: Click to show more columns
   click_to_hide_some_columns: Click to hide some columns
+  cancan_forbidden: Sorry, that action is not available to you.
+  download: Download$
+  email: Email$
+  email_address: Email address
+  error:
+    one: 1 error
+    other: '%{count} errors'
+  error_msg:
+    email_commands_not_recogized: Email commands not recogized
+    invalid_confirmation: "Error: It seems you tried to confirm message #%{id}
+           but you don't seem to have a message with that ID. Maybe you should 
+           contact the sender in person to confirm that you received the 
+           message, if that is what you meant to do."
+    nothing_in_message: "Error: nothing found in your message %{body}"    
+  export: Export$
+  export_confirm: "This will download all the %{model} data (most fields) for 
+         use in your own spreadsheet or database, and may take a minute or 
+         two. Is this what you want to do?$"
   Female: "Female"
+  first_name: First name              
+  group_msg_sent_conf: "CONFIRMATION\n\nYour message: \n\n%{body} \n\nwas sent to groups %{groups}."
   hello: Hello
   hide_menu: Hide menu
+  'hide advanced options': Hide advanced options
   hour:
     one: 1 hour
     other: '%{count} hours'
+  last_name: Last name               
+  location: Location
   Main_Menu: Main Menu
   Male: Male
   Members: Members
   Member: Member
   minutes: minutes
+  missing_group_warning: "Group %{invalid_groups} was not found, so did not receive message."
+  missing_groups_warning: "Groups %{invalid_groups} were not found, so did not receive message."
   Moderators: Moderators
   Moderator: Moderator
   "Signed in as": Signed in as
+  name: Name
   "Not signed in": Not signed in
+  "No": No$
+  no_response_needed: no reponse needed
+  none: none$
+  None: None$
   Option_tables: Option tables
   passport_country: Passport country
+  phone: Phone
+  "Please log in": Please log in
   private_data: "**private**"
   private_dir: "---"     # Filler for private data in reports
+  'Refused unknown sender': 'Refused: unknown sender'
+  second_email_address: Second email address
+  Save: Save$
   Send: Send
   show_menu: Show menu
+  sms_length_warning: "Only the first 150 characters at most of your message 
+       were sent by SMS so recipients will see at most the portion above."
+  success: Success
+  Thank_you: Thank you
   unspecified_location: "Location not listed"
-  via: "via"
+  via: via
+  "Yes": Yes$
+  Bet: Bet
   activerecord:
     models:
-      message: Message
-      bloodtype: Blood type
-      city: City
-      country: Country
-      group: Group
-      location: Location
-      member: Member
+      message: Messages
+      bloodtype: Blood types
+      city: Cities
+      country: Countries
+      group: Groups
+      location: Locations$
+      member: Members$
       settings: Settings
       system_note: System Note
     attributes:
@@ -46,7 +87,7 @@ en:
         abbrev: Abbrev
         primary: Primary?
         user_selectable: User selectable?
-        admin: Admin?
+        administrator: Admin?
         moderator: Moderator?
         member: Member?
         limited: Limited?
@@ -106,7 +147,7 @@ en:
     be_sure_to_follow_up: "Note: Be sure to follow up any critical messages you 
               send with this system, and do not just assume that they are being 
               delivered reliably and read by the recipient."
-    destination_groups: Destination groups
+    destination_groups: Destination groups$
     email_body_label: 'Email Message (or "More Information" for SMS)'
     subject_label: "Subject"
     send_email: "Send email"
@@ -116,7 +157,6 @@ en:
     private_label: "Private"
     sms_text_message_label: "SMS Text Message"
     followup:
-
       form_descr_1: "This form is for sending a follow-up for message #%{id}."
       form_descr_2: "This follow-up message will be sent only to people who 
               did not receive (or respond to) the original message %{id}. 
@@ -149,8 +189,88 @@ en:
                import feature is still experimental."
   groups:
     form:
-      abbrev: Abbreviation$
+      abbrev: Abbreviation
       notice: "If this new group is to be a container for sub-groups, you should just add 
               members to the sub-groups. They will automatically be included in this parent group." 
+  outgoing:
+    confirmation_request: "The sender has requested a confirmation %{time_limit}
+        that you have received this
+        message. Simply reply to the message leaving the subject line unchanged. 
+        If the sender asked you to reply with some information, just type that 
+        on the first line of your reply and it will be recorded. You can also confirm 
+        that you have received this message by sending '!%{id}' as a text 
+        message to the database number, %{sms_number}."
+    this_is_message_id_html: This is message <strong>#%{id}</strong>.      
+    this_is_message_id: This is message #%{id}.      
+  reports:
+    directory:
+      asterisk: Asterisk (*) means presently out of the country.
+      title: Mission Contacts 
+      'Location not listed': Location not listed
+    directory_by_location:
+      asterisk: Asterisk (*) means presently out of the country.
+      title: Mission Contacts 
+      'Location not listed': Location not listed
+    index:
+      header: Directory (names, phone numbers and email addresses)$
+      by_family: By family (HTML)$
+      by_location: By location (HTML)$
+      font_size: Font size$
+      printable: Printable (PDF)$
+      reports: Reports$
+      report_sorted_by_name: Report sorted by name$
+      report_sorted_by_location: Report sorted by location$
+      view_in_browser: View in Browser$
+  safe_page_text: "Please select one of the options from the menu. 
+          If you are having problems, try signing out and then
+          signing in again."
+  sessions:
+    new:
+      facebook_disclaimer: "(Our using Facebook for login does not mean we endorse it 
+         or recommend your using it. It is simply an easy way to securely identify users.)"
+      get_google: Get a Google/Gmail account
+      get_facebook: Sign up for Facebook
+      instructions_1: Use your existing account on FaceBook or Google/Gmail to log in. 
+      instructions_2: "Your main email address listed on Facebook or Google must 
+        match one of your addresses listed in this directory. If you do not have one of
+        those then you will need to get one or the other and ask the moderator of this
+        site to add it to your listing."
+      connect_facebook: Connect using your Facebook account
+      connect_google: Connect using your Google account
+  setup_1: "The member database is empty, so presumably you want to set up
+      a new installation. You will be added as an administrator.
+      Please enter your email below. Note that at least one of the
+      email addresses must one you use to log in with Facebook or
+      Google, since that is how authentication is done by this
+      system."
+  setup_2: "Note: Once you have been added to the database, you will no longer be 
+      able to access this page, so be sure that the email you enter is correct or 
+      you will not be able to log in and will have to re-start the installation."
+
+  setup_title: Initial Setup
+  site_settings:
+    edit:
+      auto_update_in_country_status: Auto update in-country status?
+      auto_update_instructions: "If auto-update in-country status is selected, the system will check 
+         members' arrival and departure dates, if any, and adjust their in_country status accordingly. 
+         This is done daily (in the early morning).$"
+      clickatell_user_name: Clickatell user name$
+      clickatell_password: Clickatell password$
+      contact_updates: Contact Updates$
+      contact_update_instructions: "Specify who will receive various notifications from this program, 
+        and when they will be sent. Include email addresses only (no names), separated by commas.$"
+      contact_update_recipients: Contact update recipients$
+      default_outgoing_sms_gateway: Default outgoing SMS gateway$
+      maintenance tasks: Maintenance tasks$
+      notifications: Notifications$
+      sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.$
+      sms_text_messaging: SMS Text Messaging$
+      sendgrid_user_name: Sendgrid user name$
+      sendgrid_password: Sendgrid password$
+      title: Site Settings$
+      twilio_account_sid: Twilio account SID$
+      twilio_auth_token: Twilio authorization token$
+      twilio_api_version: Twilio API version$
+      twilio_phone_number: Twilio incoming phone number$
+      twilio_background: Twilio background service$
       
- 
