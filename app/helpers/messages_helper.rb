@@ -80,11 +80,11 @@ module MessagesHelper
   end  
   
   MessageStatuses = {
-    -1 => 'Error',
-     0 => 'Sent',
-     1 => 'Pending',
-     2 => 'Delivered',
-     3 => 'Responded'
+    -1 => I18n.t( 'msg_status.Error'),
+     0 => I18n.t( 'msg_status.Sent'),
+     1 => I18n.t( 'msg_status.Pending'),
+     2 => I18n.t( 'msg_status.Delivered'),
+     3 => I18n.t( 'msg_status.Responded')
      }
     
   MsgError = -1

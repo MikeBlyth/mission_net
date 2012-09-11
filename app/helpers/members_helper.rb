@@ -70,7 +70,7 @@ module MembersHelper
       away_string = ''
     else
       away_string = "*"
-      away_string << " (return ~ #{member.arrival_date})" if 
+      away_string << " (#{t(:return)} ~ #{member.arrival_date})" if 
             (member.arrival_date && member.arrival_date >= Date.today)
     end
     formatted[:couple_w_status] = member_name + wife_name + away_string

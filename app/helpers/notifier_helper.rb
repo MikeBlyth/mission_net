@@ -1,8 +1,5 @@
 module NotifierHelper
 
-MISSING = '*** MISSING ***'
-MISSING_CONTACT = '---None on file---'
-  
   # Given response_time_limit in minutes, using current time 
   # generate phrase like 'immediately', by '2:43 pm', or
   # 'by 2:43 PM 24 Jun.' 
@@ -10,9 +7,9 @@ MISSING_CONTACT = '---None on file---'
     deadline = (Time.now + response_time_limit*60).in_time_zone(Joslink::Application.config.time_zone)
     max_minutes = response_time_limit  # just renaming for convenience
     formatted = case max_minutes
-    when 0..59 then "<strong>immediately</strong>"
-    when 60..360 then "<strong>by #{deadline.strftime("%l:%M %p")}</strong>"
-    else "by #{deadline.strftime("%l:%M %p %-d %b")}"
+    when 0..59 then "<strong>#{I18n.t(:immediately)}</strong>"
+    when 60..360 then "<strong>#{I18n.t(:by_deadline, :deadline => deadline.strftime("%l:%M %p"))}</strong>"
+    else "by #{I18n.t(:by_deadline, :deadline => deadline.strftime("%l:%M %p %-d %b"))}"
     end
     formatted.gsub!(/<strong>|<\/strong>/,'') unless html
     return formatted.html_safe
@@ -30,33 +27,14 @@ MISSING_CONTACT = '---None on file---'
   end
   
   def summary_header
-    s  = <<"SUMMARYHEADER"
-Your #{SiteSetting.organization} Database Information
-
-Please take a minute to review the information we have for you on the #{SiteSetting.organization} 
-database. We're trying to make sure everything is accurate. Contact information is
-particularly important since in case of crisis or emergency we need to be able
-to contact you. 
-
-Confidentiality
-
-Information marked with an asterisk "*" could appear in the #{SiteSetting.organization} directory, 
-calendars, or other lists. You may request your email, phone numbers, and Skype 
-name to be private if you wish. Other contact information may appear in the directory.
-SUMMARYHEADER
-    return s
+    I18n.t(:summary_header, :organization => SiteSetting.organization)
   end
     
   def member_summary_core(m)
-member_info = <<"MEMBERINFO"
-*Name: #{m.name}
-*Location in Nigeria: #{m.location}
-Citizenship: #{m.country_name || MISSING}
-Contact information
-#{m.contact_summary_text(:prefix=>"  *") || MISSING_CONTACT}
+    I18n.t(:member_summary_core, :name => m.name, :location => m.location,
+       :passport_country => m.country_name || I18n.t(:MISSING), 
+       :contact_summary => m.contact_summary_text(:prefix=>"  *") || I18n.t(:MISSING_CONTACT))
 
-MEMBERINFO
-    return member_info
   end
   
 end # module

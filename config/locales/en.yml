@@ -4,6 +4,7 @@
 en:
   Admin_tasks: Admin tasks
   both_have_phone: "(both)"
+  by_deadline: "by %{deadline}"
   click_to_show_more_columns: Click to show more columns
   click_to_hide_some_columns: Click to hide some columns
   cancan_forbidden: Sorry, that action is not available to you.
@@ -50,6 +51,7 @@ en:
   hour:
     one: 1 hour
     other: '%{count} hours'
+  immediately: immediately
   last_name: Last name               
   location: Location
   Main_Menu: Main Menu
@@ -59,11 +61,18 @@ en:
   message_is_being_delivered: Message is being delivered
   message_status_summary: "deliv=%{deliv}, pend=%{pend}, reply=%{reply}, err=%{err}"
   minutes: minutes
+  MISSING: '*** MISSING ***'
+  MISSING_CONTACT: '---None on file---'
   missing_group_warning: "Group %{invalid_groups} was not found, so did not receive message."
   missing_groups_warning: "Groups %{invalid_groups} were not found, so did not receive message."
   Moderators: Moderators
   Moderator: Moderator
-  "Signed in as": Signed in as
+  msg_status:
+    Error: Error
+    Pending: Pending
+    Delivered: Delivered
+    Sent: Sent
+    Responded: Responded
   name: Name
   "Not signed in": Not signed in
   "No": No$
@@ -79,10 +88,12 @@ en:
   private_dir: "---"     # Filler for private data in reports
   'Refused unknown sender': 'Refused: unknown sender'
   Rejected: Rejected
+  return: return
   second_email_address: Second email address
   Save: Save$
   Send: Send
   show_menu: Show menu
+  "Signed in as": Signed in as
   sms:
     help:
       "d <group> = deliver msg to grp": d <group> = deliver msg to grp
@@ -366,4 +377,24 @@ en:
 
     If you have any questions or this information appears to be out-of-date, please
     contact a system administrator.
-      
+  summary_header: |
+    Your %{organization} Database Information
+
+    Please take a minute to review the information we have for you on the %{organization}  
+    database. We're trying to make sure everything is accurate. Contact information is
+    particularly important since in case of crisis or emergency we need to be able
+    to contact you. 
+
+    Confidentiality
+
+    Information marked with an asterisk "*" could appear in the %{organization} directory, 
+    calendars, or other lists. You may request your email, phone numbers, and Skype 
+    name to be private if you wish. Other contact information may appear in the directory.
+        
+  member_summary_core: |
+    *Name: %{name}
+    *Location: %{location}
+    Citizenship: %{passport_country}
+    Contact information
+    %{contact_summary}
+
