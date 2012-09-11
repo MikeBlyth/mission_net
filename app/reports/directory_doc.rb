@@ -1,7 +1,6 @@
 require 'reports_helper'
 include MembersHelper
 
-
 class DirectoryDoc < Prawn::Document
   include ReportsHelper
   include ApplicationHelper
@@ -25,9 +24,9 @@ class DirectoryDoc < Prawn::Document
       (description_or_blank(y.location,'Zz') +y[:name])
     end
     if location_col
-      table_data = [['Location','Name', 'Email', 'Phone']]
+      table_data = [[I18n.t('location'), I18n.t('name'), I18n.t('email'), I18n.t('phone')]]
     else
-      table_data = [['Name', 'Email', 'Phone']]
+      table_data = [[I18n.t('name'), I18n.t('email'), I18n.t('phone')]]
     end
       
     location = ''
@@ -66,7 +65,7 @@ class DirectoryDoc < Prawn::Document
     # Part 2 -- Sorted by family
     if options[:report_sorted_by_name]
       start_new_page if options[:report_sorted_by_location]
-      table_data = [['<i>Name</i>', 'Email', 'Phone']]
+      table_data = [["<i>#{I18n.t('name')}</i>", I18n.t('email'), I18n.t('phone')]]
       families.each do |f|
         table_data << family_data_line(f, {:location => nil}.merge(options))
       end      

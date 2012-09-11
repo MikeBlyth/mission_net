@@ -1,5 +1,5 @@
 class Notifier < ActionMailer::Base
-  default :from => "joslink@livinginnigeria.org"
+  default :from => SiteSetting.base_email_address
   include ApplicationHelper
   include IncomingMailsHelper  
   include NotifierHelper
@@ -12,7 +12,7 @@ class Notifier < ActionMailer::Base
   def send_help(recipients)
     @content = help_content
 
-    mail(:to => recipients, :subject=>'Joslink/Josalerts Database Help') do |format|
+    mail(:to => recipients, :subject=>I18n.t(:help_subject_line)) do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
     end 
@@ -24,9 +24,9 @@ class Notifier < ActionMailer::Base
   #puts "Processing #{member ? member.name : "NIL"} for summary"
     @content = member_summary_content(member)
     msg = mail(:to => member.primary_email, 
-               :cc => SiteSetting.base_email_address,
+#               :cc => SiteSetting.base_email_address,
                :from => SiteSetting.base_email_address,
-               :subject=>'Your Joslink Database Information') do |format|
+               :subject=> I18n.t(:member_summary_subject_line)) do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
     end
@@ -53,7 +53,7 @@ class Notifier < ActionMailer::Base
   end
 
   def send_test(recipients, content)
-    @content = "Test from joslink@livinginnigeria.org\n\n#{content}"
+    @content = "Test from #{SiteSetting.org_system_name}\n\n#{content}"
     mail(:to => recipients, :subject=>'Test from database') do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
@@ -66,7 +66,7 @@ class Notifier < ActionMailer::Base
     mail(
       :to => (bcc ? '' : recipients),
       :bcc => (bcc ? recipients : ''), 
-      :subject=>'Message from Joslink/Josalerts'
+      :subject=> I18n.t(:generic_subject_line) 
                                            ) do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
@@ -84,30 +84,32 @@ class Notifier < ActionMailer::Base
 #  end    
 
   # TODO: should be able to use contact.summary here for all the contact info.
+  # NEEDS Refactoring in any case
+  # Could use one I18n template instead of adding content piecemeal
   def send_info(recipients, from_member, request, members)
-    @content = "Here is the info you requested ('info #{request}'):\n\n"
+    @content = I18n.t('send_info.first_line', :request => request)
     if members.empty?
-      @content << "No matching members found. Try with first or last name only. Check spelling.\n" +
-                  "Names must be properly capitalized like 'Jones' not 'jones' or 'JONES'."
+      @content << I18n.t('send_info.no_contacts')
     else
       members.each do |m|
         self_info = (m == from_member)
         @content << "#{m.name}:\n" 
-        @content << "  location:  #{m.location}\n" if m.location
+        @content << I18n.t('send_info.location', :location => m.location) if m.location
         phones = smart_join([format_phone(m.phone_1), format_phone(m.phone_2)])
         emails = smart_join([format_phone(m.email_1), format_phone(m.email_2)])
-        @content << "  phone:  #{phones}\n" unless phones.blank? || m.phone_private
-        @content << "  email:  #{emails}\n" unless phones.blank? || m.email_private
-        @content << "  phone:  #{phones} (private!)\n" if self_info && m.phone_private
-        @content << "  email:  #{emails} (private!)\n" if self_info && m.email_private
+        @content << I18n.t('send_info.phones', :phones => phones) + "\n" unless phones.blank? || m.phone_private
+        @content << I18n.t('send_info.emails', :emails => emails) + "\n" unless emails.blank? || m.email_private
+        @content << I18n.t('send_info.phones', :phones => phones) + ' ' +
+           I18n.t('send_info.private') + "\n" if self_info && m.phone_private
+        @content << I18n.t('send_info.emails', :emails => emails) + ' ' +
+           I18n.t('send_info.private') + "\n" if self_info && m.email_private
         @content << "\n"
         if self_info && (m.phone_private || m.email_private)
-          @content << "Note that private info is shown because you are requesting your own " +
-                    "information. It is not shown when others request your information."
+          @content << I18n.t('send_info.privacy_note')
         end
       end
     end
-    mail(:to => recipients, :subject=>'Your request for info') do |format|
+    mail(:to => recipients, :subject=> I18n.t(:info_request_subject_line)) do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
     end 

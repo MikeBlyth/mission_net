@@ -202,7 +202,7 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
   end
 
   def self.auto_update_all_in_country_statuses
-    do_updates = SiteSetting.auto_update_in_country_status.to_i == 1
+    do_updates = [1, '1', 'Yes', 'yes', true].include? SiteSetting.auto_update_in_country_status
     self.all.each {|m| m.auto_update_in_country_status(do_updates)}
   end
   

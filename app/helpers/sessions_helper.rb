@@ -94,6 +94,6 @@ module SessionsHelper
   end
 
   def deny_access
-    redirect_to sign_in_path, :notice => "Please sign in."
+    redirect_to sign_in_path, :notice => I18n.t("Please log in")
   end
 end

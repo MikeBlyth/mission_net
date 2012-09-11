@@ -45,19 +45,23 @@ en:
   follow_up: Follow up
   follow_up_message_sent: Follow up message sent
   group_msg_sent_conf: "CONFIRMATION\n\nYour message: \n\n%{body} \n\nwas sent to groups %{groups}."
+  generic_subject_line: Message from Joslink ReachOut
   hello: Hello
+  help_subject_line: Joslink ReachOut Help
   hide_menu: Hide menu
   'hide advanced options': Hide advanced options
   hour:
     one: 1 hour
     other: '%{count} hours'
   immediately: immediately
+  info_request_subject_line: Your request for info
   last_name: Last name               
   location: Location
   Main_Menu: Main Menu
   Male: Male
   Members: Members
   Member: Member
+  member_summary_subject_line: Your Joslink ReachOut Information
   message_is_being_delivered: Message is being delivered
   message_status_summary: "deliv=%{deliv}, pend=%{pend}, reply=%{reply}, err=%{err}"
   minutes: minutes
@@ -84,7 +88,7 @@ en:
   Page: Page       # For page numbering
   passport_country: Passport country
   phone: Phone
-  "Please log in": Please log in
+  "Please log in": Please sign in
   printed_on_date: Printed on
   private_data: "**private**"
   private_dir: "---"     # Filler for private data in reports
@@ -94,6 +98,15 @@ en:
   second_email_address: Second email address
   Save: Save$
   Send: Send
+  send_info:
+    emails: "  email:  %{emails}"
+    first_line: "Here is the info you requested (info %{request}):\n\n"
+    location: "  location: %{location}"
+    no_contacts: No matching members found. Try with first or last name only. Check spelling.
+    phones: "  phone:  %{phones}"
+    privacy_note: "Note that private info is shown because you are requesting your own 
+                    information. It is not shown when others request your information."
+    private: (private!)
   show_menu: Show menu
   "Signed in as": Signed in as
   sms:

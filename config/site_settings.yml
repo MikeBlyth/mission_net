@@ -34,18 +34,23 @@
 
 organization:
   name: Name of organization or database
-  default: Joslink
+  default: MyOrganization
+  type: string
+
+org_system_name:
+  name: Name of this system for your org
+  default: MyOrganization ReachOut
   type: string
 
 base_url:
   name: Base URL for this site
-  default: https://simjos.heroku.com/
+  default: https://mysite.myserver.com/
   type: string
 
 base_email_address:
   name: Base email address for this site
   type: string
-  default: database@joslink.org
+  default: database@myorganization.org
 
 incoming_sms_number:
   name: Phone number for incoming SMS
@@ -75,7 +80,7 @@ clickatell_password:
 clickatell_api_id:
   name: Clickatell HTTP API number
   type: string
-  default: BM2071
+  default: BZ1075
 
 default_news_update_expiration:
   name: Default news update expiration (hours)
