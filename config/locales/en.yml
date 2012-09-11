@@ -81,9 +81,11 @@ en:
   None: None$
   only_moderators_can: "Sorry, only moderators can %{action} at this time."
   Option_tables: Option tables
+  Page: Page       # For page numbering
   passport_country: Passport country
   phone: Phone
   "Please log in": Please log in
+  printed_on_date: Printed on
   private_data: "**private**"
   private_dir: "---"     # Filler for private data in reports
   'Refused unknown sender': 'Refused: unknown sender'
@@ -127,6 +129,7 @@ en:
   system_notes_prompt: "Create a new entry if you find a bug or problem or just have a suggestion. 
         Category is optional and status is for developer use."
   Thank_you: Thank you
+  Title: Title
   unspecified_location: "Location not listed"
   via: via
   "Yes": Yes$
