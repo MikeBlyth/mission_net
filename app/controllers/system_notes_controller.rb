@@ -7,7 +7,7 @@ class SystemNotesController < ApplicationController
   end
 
   def index
-    @notices = "Create a new entry if you find a bug or problem or just have a suggestion. Category is optional and status is for developer use."
+    @notices = I18n.t(:system_notes_prompt) 
     super
   end
   

@@ -1,5 +1,4 @@
 class CountriesController < ApplicationController
-  helper :countries
 
   load_and_authorize_resource
   

@@ -8,7 +8,8 @@ module MessagesHelper
 
   def status_summary_column(record, column)
     status = record.current_status
-    "deliv=#{status[:delivered]}, pend=#{status[:pending]}, reply=#{status[:replied]}, err=#{status[:errors]}"
+    I18n.t('message_status_summary', :deliv=>status[:delivered], :pend=>status[:pending], 
+        :reply=>status[:replied], :err=>status[:errors])
   end
   
   def created_at_column(record, column)
@@ -23,10 +24,6 @@ module MessagesHelper
     end
   end
 
-  def interpolate_id(str, id)
-    t(str).gsub('$', id.to_s)
-  end
- 
   # Unit in is always hours. Unit out can be hours or minutes
   def time_choices(choices, unit_out=:hour)
     multiplier = case unit_out
@@ -46,6 +43,7 @@ module MessagesHelper
       end
     end
   end    
+
   #  Generate or find the message id tag used to identify confirmation responses
   #  A bit complicated because of using different formats in the subject line and the
   #  message body, and a different format when presenting the message than when confirming it.
@@ -54,20 +52,21 @@ module MessagesHelper
   #  If action is :find, the tag is searched for; if found, the message number is returned
   #  If action is :confirm_tag, the confirmation form used in body is returned (e.g., '!500' w quotes)
   def message_id_tag(params={:id => 0, :text => nil, :location=>:body, :action=>:generate})
+    tag_string = SiteSetting.message_id_string
 #puts "**** params=#{params}"
     case params[:action]
     when :generate
       if params[:location] == :body
         return "##{params[:id]}"
       else
-        return "(JosAlerts message ##{params[:id]})"
+        return "(#{tag_string} ##{params[:id]})"
       end
     when :find
       if params[:location] == :body
         params[:text] =~ /[\s\(\[]*!([0-9]+)/ || params[:text] =~ /confirm +[!#]([0-9]+)/i
         return $1 ? $1.to_i : nil
       else
-        params[:text] =~ /JosAlerts message #([0-9]{1,9})\)/i
+        params[:text] =~ Regexp.new(tag_string + '\s#([0-9]{1,9})\)', true)
         return $1 ? $1.to_i : nil
       end
     when :confirm_tag    # This is for use in an explanation of how to confirm

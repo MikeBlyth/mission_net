@@ -56,7 +56,7 @@ class MessagesController < ApplicationController
                                     # will not be included
 #puts "**** fu_message.members =#{fu_message.members[0].last_name}, #{fu_message.members[0].primary_email}"
     deliver_message(fu_message)
-    flash[:notice] = I18n.t :
+    flash[:notice] = I18n.t :follow_up_message_sent
     redirect_to messages_path
   end
 

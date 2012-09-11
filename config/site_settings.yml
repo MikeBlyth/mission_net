@@ -87,6 +87,11 @@ directory_title:
   type: string
   default: Directory
 
+message_id_string:
+  name: Message ID tag (added to subject lines)
+  type: string
+  default: OurOrganization Message
+
 twilio_api_version:
   name: Twilio API Version
   type: string

@@ -234,6 +234,14 @@ describe IncomingMailsController do
           post :create, @params
         end
 
+        it 'warns that one group was not found' do
+          Notifier.should_receive(:send_generic).with(@params[:from], 
+            Regexp.new("was sent to groups #{@group_1.group_name}.* badGroup was not found")).
+            and_return(@mock_mail)
+          @params['plain'] = "d badGroup #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+          post :create, @params
+        end
+
         it 'warns that some groups were not found' do
           Notifier.should_receive(:send_generic).with(@params[:from], 
             Regexp.new("was sent to groups #{@group_1.group_name}.* sadGroup were not found")).
@@ -241,6 +249,7 @@ describe IncomingMailsController do
           @params['plain'] = "d badGroup sadGroup #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
           post :create, @params
         end
+
         it 'warns if nothing after the "d" command' do
           Notifier.should_receive(:send_generic).with(@params[:from], 
             Regexp.new("I don't understand")).

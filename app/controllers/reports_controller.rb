@@ -28,7 +28,7 @@ end
     # Get "families", i.e. members who don't have husbands
     @families = Group.members_in_multiple_groups(include_groups).keep_if {|m| m.husband.nil?}
     @families = @families.sort
-    @title = I18n.t SiteSettings.directory_title
+    @title = I18n.t SiteSetting.directory_title
     respond_to do |format|
       format.html do 
         if params[:by] == 'location'

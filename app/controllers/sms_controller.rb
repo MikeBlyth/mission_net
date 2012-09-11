@@ -160,7 +160,7 @@ private
       return I18n.t('sms.message_being_sent', :id => message.id, :group_name => group.group_name, 
               :count => message.members.count)
     else
-      return I18n.t('sms.no_groups', :target => target_group, :primary_groups => Group.primary_group_abbrevs)[0..MaxSmsLength])
+      return I18n.t('sms.no_groups', :target_group => target_group, :primary_groups => Group.primary_group_abbrevs[0..MaxSmsLength])
     end
   end
   
@@ -203,9 +203,9 @@ private
     updates.each do |u|
       u.deliver_sms(:phone_numbers => @from, :news_update => true) # Don't try to use delayed-job here w present DJ/Heroku setup
     end
-    return "No new updates with keyword(s) '#{keyword}'. The last one or two updates are being sent." if found_without_keyword
-    return "Sending #{updates.count} updates" if updates.any? 
-    return "No new updates found. Contact your organization if you need more information."
+    return I18n.t('sms.no_new_updates_with_keyword', :keyword => keyword) if found_without_keyword
+    return I18n.t('sms.sending_updates', :count=> updates.count) if updates.any? 
+    return I18n.t('sms.no_updates_found') 
   end
 
   # The user has sent an SMS text confirming response of a previous message
@@ -217,14 +217,10 @@ private
       @possible_senders.each do |a_member|
         message.process_response(:member => a_member, :response => text, :mode => 'SMS')
       end
-      return("Thanks for your response :-)")
+      return I18n.t("sms.thanks_for_response") 
     else
-      return("Thanks for responding, but message number #{message_id} was not found. Check the number again.")
+      return I18n.t("sms.thanks_but_not_found", :id => message_id) 
     end
-##    target = SentMessage.where("member_id = ? AND message_id = ?", @sender.id, command[1..99].to_i)[0]
-#    target = SentMessage.where("member_id = ?", @sender.id)[0]
-#puts "**** target=#{target}"
-#target.should_not == nil
     return ''
   end
 

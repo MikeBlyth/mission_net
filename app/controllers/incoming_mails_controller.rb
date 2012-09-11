@@ -23,7 +23,7 @@ class IncomingMailsController < ApplicationController
     process_message_response
     commands = extract_commands(@body)
     if commands.nil? || commands.empty?
-      Notifier.send_generic(@from_address, I18n.t('error_msg.nothing_in_message', :body => @body[0..160]).deliver
+      Notifier.send_generic(@from_address, I18n.t('error_msg.nothing_in_message', :body => @body[0..160])).deliver
       success = false
     else
       success = process_commands(commands)
@@ -34,7 +34,7 @@ class IncomingMailsController < ApplicationController
     if success
       render :text => I18n.t(:success), :status => 200, :content_type => Mime::TEXT.to_s
     else
-      render :text => I18n.t('error_msg.email_commands_not_recogized', :status => 422, :content_type => Mime::TEXT.to_s
+      render :text => I18n.t('error_msg.email_commands_not_recogized'), :status => 422, :content_type => Mime::TEXT.to_s
     end
   end # create
   
@@ -149,9 +149,10 @@ private
     end 
     unless invalid_group_names.empty?
       if invalid_group_names.size == 1
-        confirmation << t(:missing_group_warning, :invalid_groups => invalid_group_names)
+        confirmation << t(:missing_group_warning, :invalid_groups => invalid_group_names[0])
       else
-        confirmation << t(:missing_groups_warning, :invalid_groups => invalid_group_names)
+        confirmation << t(:missing_groups_warning, 
+          :invalid_groups => smart_join(invalid_group_names, ', ', '&'))
       end
     end
     return confirmation

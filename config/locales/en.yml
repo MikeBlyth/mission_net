@@ -57,6 +57,7 @@ en:
   Members: Members
   Member: Member
   message_is_being_delivered: Message is being delivered
+  message_status_summary: "deliv=%{deliv}, pend=%{pend}, reply=%{reply}, err=%{err}"
   minutes: minutes
   missing_group_warning: "Group %{invalid_groups} was not found, so did not receive message."
   missing_groups_warning: "Groups %{invalid_groups} were not found, so did not receive message."
@@ -89,7 +90,7 @@ en:
       "info <name> = get contact info": info <name> = get contact info
       "report = post update": report = post update
       "updates = get updates": updates = get updates
-      "!21 <reply> = reply to msg 21": !21 <reply> = reply to msg 21"
+      "!21 <reply> = reply to msg 21": !21 <reply> = reply to msg 21
     forwarded: "I forwarded your msg to %{to}. It would be better to contact him/her
               directly at %{number}."
     message_being_sent: "Your message #%{id} 
@@ -97,20 +98,27 @@ en:
     name_not_found: "%{name} not found in database"
     no_groups: "Error: no group %{target_group}. Send command 'groups' to list the main ones 
                incl %{primary_groups}"
+    no_new_updates_with_keyword: "No new updates with keyword(s) '%{keyword}'. 
+              The last one or two updates are being sent." 
+    no_updates_found: No new updates found. Contact your organization if you need more information.
     nothing_in_message: Nothing found in your message!
+    sending_updates: "Sending %{count} updates"
     some_groups: Some groups
+    thanks_but_not_found: "Thanks for responding, but message number %{id} was not found.
+              Check the number again."
+    thanks_for_response: Thanks for your response :-)
     unknown_command: "Unknown command '%{command}'. Send HELP for instructions. If u want to 
-              reply to a msg u received, pls contact
-              the sender directly. Don't use this number."
-    update_saved: "Your news update, \"%{text[0..15]},\" has been saved. It will expire in %{exp_time}."
+        reply to a msg u received, pls contact the sender directly. Don't use this number."
+    update_saved: "Your news update, \"%{text},\" has been saved. It will expire in %{exp_time}."
   sms_length_warning: "Only the first 150 characters at most of your message 
-       were sent by SMS so recipients will see at most the portion above."
+        were sent by SMS so recipients will see at most the portion above."
   success: Success
+  system_notes_prompt: "Create a new entry if you find a bug or problem or just have a suggestion. 
+        Category is optional and status is for developer use."
   Thank_you: Thank you
   unspecified_location: "Location not listed"
   via: via
   "Yes": Yes$
-  Bet: Bet
   activerecord:
     models:
       message: Messages
@@ -315,4 +323,47 @@ en:
       twilio_api_version: Twilio API version$
       twilio_phone_number: Twilio incoming phone number$
       twilio_background: Twilio background service$
+  help_email: |
+    Accessing the Joslink/Josalerts Database by Email
+
+    The database can be accessed online from your web browser at https://joslink.herokuapp.com.
+    However, you can also request information and perform actions via email.
+
+    Database requests should go in the body of the email, one command per line.
+    Commands include:
+
+    info <Name> 
+       Get contact information on people matching <Name>. 
+       You can use just about any format for the name, examples:
+       
+       info Donald Duck
+       info Don
+       info Duck
+       info Duck, Don
+       info Duc
+       
+       Only one <Name> can be requested per line, but you can use multiple
+       lines and will receive one email for each request.
+       
+    BROADCASTING MESSAGE TO GROUPS 
+
+    d group another_group: This is the message to be sent out to people...
+      
+      The 'd' command sends messages *by SMS* to the specified groups. 
+      Remember that an SMS message sent by this system is limited to roughly
+      145 characters.
+      
+    email group another_group: This is the message to be sent out to people...
+
+      The 'email' command sends messages by EMAIL to the specified groups.
+      Email messages are not limited in length, but they are not formatted at 
+      all so are best suited for fairly short communications.
+
+    d+email group another_group: This is the message to be sent out to people...
+      
+      The 'd+email' command, naturally, sends both SMS and email. The SMS message is
+      still cut off after at most 150 characters. 'email+d' works the same as 'd+email'.
+
+    If you have any questions or this information appears to be out-of-date, please
+    contact a system administrator.
       

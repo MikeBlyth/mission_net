@@ -2,7 +2,7 @@
 
 = t('outgoing.this_is_message_id_html', :id => @id)
 - if @response_time_limit
-    t('outgoing.confirmation_request_html', 
-    :time_limit => (respond_by(@response_time_limit, true),
+    = t('outgoing.confirmation_request', 
+    :time_limit => (respond_by(@response_time_limit, true)),
     :id => @id,
-    :sms_number => SiteSettings.incoming_sms_number)
+    :sms_number => SiteSetting.incoming_sms_number)

@@ -1,5 +1,4 @@
 class MembersController < ApplicationController
-  helper :countries
 
   include ApplicationHelper
   include MembersHelper

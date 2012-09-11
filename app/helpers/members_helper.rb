@@ -1,3 +1,5 @@
+include ApplicationHelper
+
 module MembersHelper
 
   # Needed to suppress the 'Replace with new record' button on edit page
