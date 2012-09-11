@@ -23,7 +23,7 @@ class IncomingMailsController < ApplicationController
     process_message_response
     commands = extract_commands(@body)
     if commands.nil? || commands.empty?
-      Notifier.send_generic(@from_address, I18n.t(:nothing_in_message, :body => @body[0..160]).deliver
+      Notifier.send_generic(@from_address, I18n.t('error_msg.nothing_in_message', :body => @body[0..160]).deliver
       success = false
     else
       success = process_commands(commands)
@@ -186,10 +186,7 @@ private
   # Needs refactoring!
   def group_deliver(text, command)
     unless text =~ /\A\s*\S+\s+(.*?):\s*(.*)/m  # "d <groups>: <body>..."  (body is multi-line)
-      return("I don't understand. To send to groups, separate the group names with spaces" +
-             " and be sure to follow the group or groups with a colon (':')." +
-             "\n\nFor example, \"email admin: This is a message for admin.\"" +
-             " \n\nWhat I got was \"#{text}.\"")
+      return I18n.t('error_msg.unparsable_group_deliver', :text => text)
     end
     body = format_text($2)   # All the rest of the message, from match above (text =~ ...)
     group_names_string = $1
@@ -199,23 +196,21 @@ private
     # and an error message is returned.
     unless accepted
       group_names_string='Moderators'
-      body = 'Rejected: ' + body
+      body = I18n.t(:Rejected) + ': ' + body
     end
     groups_checked = validate_groups(group_names_string)
     valid_group_ids = groups_checked[:valid_group_ids]
     valid_group_names = groups_checked[:valid_group_names]
     invalid_group_names = groups_checked[:invalid_group_names]
     if valid_group_ids.empty?
-      return("You sent the \"#{command}\" command, which means to forward the message to groups, but " +
-          "no valid group names or abbreviations found in \"#{group_names_string}.\" ")
+      return I18n.t('error_msg.no_groups_found', :command => command, :group_names_string => group_names_string)
     end
     message = setup_message(body, command, valid_group_ids)
     message.deliver  # Don't forget to deliver!
     if accepted
       return confirmation_message(body, use_sms?(command), valid_group_names, invalid_group_names)
     else
-      return "Sorry, you are not allowed to send messages directly to groups, but your message "
-        + "is being forwarded to the moderator(s)."
+      return I18n.t('error_msg.group_deliver_not_allowed')
     end
   end
 

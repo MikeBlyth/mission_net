@@ -77,6 +77,16 @@ clickatell_api_id:
   type: string
   default: BM2071
 
+default_news_update_expiration
+  name: Default news update expiration (hours)
+  type: string
+  default: 4
+  
+directory_title:
+  name: Directory Title 
+  type: string
+  default: Directory
+
 twilio_api_version:
   name: Twilio API Version
   type: string

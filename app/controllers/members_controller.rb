@@ -51,17 +51,15 @@ class MembersController < ApplicationController
     config.field_search.columns = [:last_name, :groups, :location, :phone_1, :bloodtype, :blood_donor]
 
     # Add the export link to top of page
-    config.action_links.add 'export', :label => 'Export', :page => true, :type => :collection, 
-     :confirm=>'This will download all the member data (most fields) for ' + 
-       'use in your own spreadsheet or database, and may take a minute or two. Is this what you want to do?'
-
+    config.action_links.add 'export', :label => I18n.t(:export), :page => true, :type => :collection, 
+     :confirm=> I18n.t(:export_confirm, :model => 'Members') 
     # Any links that should open in their own page rather than inline with JS/Ajax
     config.update.link.page = true # At present, the jQuery multiselect widget doesn't work when edit is done inline
 
   end
 
   def index
-    @notices = "Directory (email/phone list) is (I think!) ready to roll. Click on link to reports on side menu."
+    @notices = ""  # This should be tied to the system notices database
 #    session[:compact] = true if session[:compact].nil?   # Start with compact view. Make false to start with full view
     @compact = params[:compact] || 'true' # Making the compact view the default
     session[:compact] = @compact

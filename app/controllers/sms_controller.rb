@@ -52,7 +52,7 @@ private
 
   # Parse the message received from mobile
   def process_sms(body)
-    return "Nothing found in your message!" if body.blank?
+    return I18n.t('sms.nothing_in_msg') if body.blank?
     command, text = extract_commands(body)[0] # parse to first word=command, rest = text
     return case command.downcase
        when 'd' then group_deliver(text)
@@ -65,10 +65,7 @@ private
        when /\A!/ then process_response(command, text)
        # More commands go here ...
        else
-         unsolicited_response(body) ||
-           "Unknown command '#{command}'. Send HELP for instructions. If u want to reply to a msg u received, pls contact " + 
-             "the sender directly. Don't use this number."
-#             "unknown command '#{command}'. Info=" + (do_info(text) if Member.find_with_name(text))
+         unsolicited_response(body) || I18n.t('sms.unknown_command', :command => command)
        end
   end
 
@@ -80,8 +77,8 @@ private
     msg = "<=#{@from} #{@sender.shorter_name}: #{body}"
     if last_message_sender
       SmsGateway.default_sms_gateway.deliver(last_message_sender.phone_1, msg)
-      return "I forwarded your msg to #{last_message_sender.shorter_name}. It would be better to contact him/her" +
-             " directly at #{last_message_sender.phone_1}."
+      return I18n.t('sms.forwarded', :to => last_message_sender.shorter_name, 
+          :number => last_message_sender.phone_1) 
     end
     return nil
   end
@@ -89,6 +86,8 @@ private
   # Return help
   # ToDo -- add specific help about commands
   def do_help(text=nil)
+    # NB: If command summary is changed, be sure to make corresponding changes in the
+    # I18n translation tables
     command_summary = [ ['d <group>', 'deliver msg to grp'], 
                         ['groups', 'list main grps'],
                         ['info <name>', 'get contact info'],
@@ -97,13 +96,13 @@ private
 #                        ['location <place>', 'set current loc'],
                         ['!21 <reply>', 'reply to msg 21']
                       ]
-    command_summary.map {|c| "#{c[0]} = #{c[1]}"}.join("\n")
+    command_summary.map {|c| I18n.t("sms.help.#{c[0]} = #{c[1]}")}.join("\n")
   end
   
   # Send a list of abbreviations for the "primary" groups (primary meaning that)
   # they're important enough to fit into this 160-character string
   def do_list_groups()
-    "Some groups: " + Group.primary_group_abbrevs
+    I18n.t("sms.some_groups") + ": " + Group.primary_group_abbrevs
   end                    
   
 #  def do_location(text)
@@ -133,7 +132,7 @@ private
     if member
       return (member.last_name_first(:initial=>true) + ' ' + contact_info(member) + '. ')
     else
-      return "#{text} not found in database"
+      return I18n.t('sms.name_not_found', :name => text)
     end
   end    
   
@@ -158,16 +157,16 @@ private
       body = insert_sender_name(body, @sender)
       message = Message.new(:user_id => @sender.id, :send_sms=>true, :to_groups=>group.id, :sms_only=>body)
       message.deliver  # Don't forget to deliver!
-      return("Your message ##{message.id} is being sent to #{group.group_name} (#{message.members.count} recipients)")
+      return I18n.t('sms.message_being_sent', :id => message.id, :group_name => group.group_name, 
+              :count => message.members.count)
     else
-      return( ("Error: no group #{target_group}. Send command 'groups' to list the main ones incl " +
-               Group.primary_group_abbrevs)[0..MaxSmsLength] )
+      return I18n.t('sms.no_groups', :target => target_group, :primary_groups => Group.primary_group_abbrevs)[0..MaxSmsLength])
     end
   end
   
   # Post the sender's message as a news update, expiring in 4 hours (add code to make variable if desired)
   def report_update(text)
-    body = "#{t(:via)} #{@sender.shorter_name}: #{text}"  # Will accept messages longer than 150, though I don't think gateways will do this
+    body = "#{I18n.t(:via)} #{@sender.shorter_name}: #{text}"  # Will accept messages longer than 150, though I don't think gateways will do this
     sms_only = insert_sender_name(text, @sender)
     message = Message.new(:user_id => @sender.id, :send_sms=>false, :news_update => true, 
       :sms_only => sms_only, :body => body, :expiration => 240) 
@@ -178,9 +177,9 @@ private
         :news_update => false, :sms_only => "#{@sender.shorter_name} rprts: #{text}", 
         :body => "#{@sender.shorter_name} reports: #{text}") 
       message.deliver
-    end  
-        
-    return("Your news update, \"#{text[0..15]},\" has been saved. It will expire in four hours.")
+    end
+    expiration_time_string = I18n.t(:hour, :count => SiteSettings.default_news_update_expiration)
+    return I18n.t('sms.update_saved', :text => text[0..15], :exp_time => expiration_time_string) 
   end  
 
   # Return to the user the latest news updates

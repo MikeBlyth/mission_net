@@ -7,6 +7,7 @@ en:
   click_to_show_more_columns: Click to show more columns
   click_to_hide_some_columns: Click to hide some columns
   cancan_forbidden: Sorry, that action is not available to you.
+  Directory: Directory
   download: Download$
   email: Email$
   email_address: Email address
@@ -14,18 +15,34 @@ en:
     one: 1 error
     other: '%{count} errors'
   error_msg:
+    auth_failed: "Sorry, but that didn't work! 
+        Sometimes it takes the program just a bit longer to get started, so try once more."
     email_commands_not_recogized: Email commands not recogized
+    group_deliver_not_allowed: "Sorry, you are not allowed to send messages directly to groups,
+        but your message is being forwarded to the moderator(s)."
     invalid_confirmation: "Error: It seems you tried to confirm message #%{id}
            but you don't seem to have a message with that ID. Maybe you should 
            contact the sender in person to confirm that you received the 
            message, if that is what you meant to do."
-    nothing_in_message: "Error: nothing found in your message %{body}"    
+    login_not_authorized: Sorry, that login is not authorized to use this application
+        because we don't have that email address on record for you.
+        Please try another or contact the system administrator
+        to have your Facebook or Gmail login credentials added."
+    no_groups_found: "You sent the \"%{command}\" command, which means to forward the message to groups, but
+          no valid group names or abbreviations found in \"%{group_names_string}.\" "
+    nothing_in_message: "Error: nothing found in your message \"%{body}\""    
+    unparsable_group_deliver: "I don't understand. To send to groups, separate the group names with spaces
+               and be sure to follow the group or groups with a colon (':').
+               \n\nFor example, \"email admin: This is a message for admin.\"
+               \n\nWhat I got was \"%{text}.\"
   export: Export$
   export_confirm: "This will download all the %{model} data (most fields) for 
          use in your own spreadsheet or database, and may take a minute or 
          two. Is this what you want to do?$"
   Female: "Female"
   first_name: First name              
+  follow_up: Follow up
+  follow_up_message_sent: Follow up message sent
   group_msg_sent_conf: "CONFIRMATION\n\nYour message: \n\n%{body} \n\nwas sent to groups %{groups}."
   hello: Hello
   hide_menu: Hide menu
@@ -39,6 +56,7 @@ en:
   Male: Male
   Members: Members
   Member: Member
+  message_is_being_delivered: Message is being delivered
   minutes: minutes
   missing_group_warning: "Group %{invalid_groups} was not found, so did not receive message."
   missing_groups_warning: "Groups %{invalid_groups} were not found, so did not receive message."
@@ -51,6 +69,7 @@ en:
   no_response_needed: no reponse needed
   none: none$
   None: None$
+  only_moderators_can: "Sorry, only moderators can %{action} at this time."
   Option_tables: Option tables
   passport_country: Passport country
   phone: Phone
@@ -58,10 +77,32 @@ en:
   private_data: "**private**"
   private_dir: "---"     # Filler for private data in reports
   'Refused unknown sender': 'Refused: unknown sender'
+  Rejected: Rejected
   second_email_address: Second email address
   Save: Save$
   Send: Send
   show_menu: Show menu
+  sms:
+    help:
+      "d <group> = deliver msg to grp": d <group> = deliver msg to grp
+      "groups = list main grps": groups = list main grps
+      "info <name> = get contact info": info <name> = get contact info
+      "report = post update": report = post update
+      "updates = get updates": updates = get updates
+      "!21 <reply> = reply to msg 21": !21 <reply> = reply to msg 21"
+    forwarded: "I forwarded your msg to %{to}. It would be better to contact him/her
+              directly at %{number}."
+    message_being_sent: "Your message #%{id} 
+        is being sent to %{group_name} (%{count} recipients)"
+    name_not_found: "%{name} not found in database"
+    no_groups: "Error: no group %{target_group}. Send command 'groups' to list the main ones 
+               incl %{primary_groups}"
+    nothing_in_message: Nothing found in your message!
+    some_groups: Some groups
+    unknown_command: "Unknown command '%{command}'. Send HELP for instructions. If u want to 
+              reply to a msg u received, pls contact
+              the sender directly. Don't use this number."
+    update_saved: "Your news update, \"%{text[0..15]},\" has been saved. It will expire in %{exp_time}."
   sms_length_warning: "Only the first 150 characters at most of your message 
        were sent by SMS so recipients will see at most the portion above."
   success: Success
@@ -123,6 +164,7 @@ en:
       message:
         user: User
         body: Email text
+        importance: Importance
         keywords: Keywords
         sms_only: SMS text
         send_sms: Send SMS

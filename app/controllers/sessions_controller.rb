@@ -37,10 +37,7 @@ puts "**** (2) auth_hash=#{auth_hash}"
 
   user = login_allowed(user_email)
   unless user
-    flash[:info] = "Sorry, that login is not authorized to use this application " +
-        "because we don't have that email address on record for you." +
-        "Please try another or contact the system administrator " +
-        "to have your Facebook or Gmail login credentials added."
+    flash[:info] = I18n.t('error_msg.login_not_authorized')
     redirect_to sign_in_path
     return
   end
@@ -68,7 +65,7 @@ end
 
   # This gets called by the auth provider (e.g. Facebook) when the signin with the provider didn't work
   def failure
-    render :text => "Sorry, but that didn't work! Sometimes it takes the program just a bit longer to get started, so try once more."
+    render :text => I18n.t('error_msg.auth_failed') 
   end
   
   def destroy

@@ -21,6 +21,6 @@ class SentMessagesController < ApplicationController
 #puts "**** @sent_message=#{@sent_message}, parsed[:updates]=#{parsed[:updates]} "
     @sent_message.update_attributes(parsed[:updates]) if @sent_message
     AppLog.create(:code => "SMS.clickatell.update", :description=>"params=#{params}")
-    render :text => "Success", :status => 200
+    render :text => I18n.t("success"), :status => 200
   end
 end 

@@ -5,15 +5,15 @@ class MessagesController < ApplicationController
     config.list.columns = [:id, :created_at, :user, :body, :sms_only, :send_sms, :send_email, :to_groups, 
         :sent_messages, :importance, :status_summary]
     config.create.link.page = true 
-    config.columns[:sent_messages].label = 'Sent to'
-    config.columns[:importance].label = 'Imp'
     config.columns[:user].clear_link
  #   config.columns[:sms_only].label = I18n.t('messages.sms_only')
+    config.columns[:sent_messages].label = 'Sent to'
+    config.columns[:importance].label = 'Imp'
     config.create.link.inline = false 
     config.update.link = false
     config.actions.exclude :update
     list.sorting = {:created_at => 'DESC'}
-    config.action_links.add 'followup', :label => 'Follow up', :type => :member#, :inline=>false
+    config.action_links.add 'followup', :label => I18n.t(:follow_up), :type => :member#, :inline=>false
   end
 
   def before_create_save(record)
@@ -30,7 +30,7 @@ class MessagesController < ApplicationController
     end
 
   def deliver_message(record)
-    flash[:notice] = 'Message is being delivered'
+    flash[:notice] = I18n.t(:message_is_being_delivered)
     record.deliver  # Note that delivery may use DelayedJob to run the actual delivery in the background.
   end
 
@@ -56,7 +56,7 @@ class MessagesController < ApplicationController
                                     # will not be included
 #puts "**** fu_message.members =#{fu_message.members[0].last_name}, #{fu_message.members[0].primary_email}"
     deliver_message(fu_message)
-    flash[:notice] = 'Follow up message sent'
+    flash[:notice] = I18n.t :
     redirect_to messages_path
   end
 

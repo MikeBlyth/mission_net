@@ -19,7 +19,7 @@ skip_authorization_check  # TEMPORARY -- what kind of control is actually needed
 #puts "ReportsController#whereis report, params=#{params}"
 # TEMPORARY -- what kind of control is actually needed if any?
 unless current_user.roles_include?(:moderator)
-  flash[:notices] = 'Sorry, only moderators can generate reports at this time.'
+  flash[:notices] = I18n.t(:only_moderators_can, :action => 'generate reports')
   redirect_to home_path
   return
 end
@@ -28,7 +28,7 @@ end
     # Get "families", i.e. members who don't have husbands
     @families = Group.members_in_multiple_groups(include_groups).keep_if {|m| m.husband.nil?}
     @families = @families.sort
-    @title = "Mission Contacts"
+    @title = I18n.t SiteSettings.directory_title
     respond_to do |format|
       format.html do 
         if params[:by] == 'location'
@@ -52,6 +52,8 @@ end
     end
   end
 
+
+######## FROM OTHER PROJECT FOR SCAVENGING AS DESIRED ##################
 
 #  def contact_updates
 #    @contacts = Contact.recently_updated.sort
