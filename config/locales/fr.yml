@@ -2,22 +2,21 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  Admin_tasks: Admin tasks
+  Admin_tasks: Les tâches administratives
   both_have_phone: "(both)"
   by_deadline: "by %{deadline}"
-  click_to_show_more_columns: Click to show more columns
-  click_to_hide_some_columns: Click to hide some columns
-  cancan_forbidden: Sorry, that action is not available to you.
-  Directory: Directory
-  download: Download$
-  email: Email$
-  email_address: Email address
+  click_to_show_more_columns: Cliquez pour afficher davantage de colonnes
+  click_to_hide_some_columns: Cliquez pour masquer certaines colonnes
+  cancan_forbidden: Désolés, vous ne pouvez pas le faire
+  Directory: Annuaire
+  download: Télécharger
+  email: E-mail
+  email_address: Adresse e-mail
   error:
-    one: 1 error
-    other: '%{count} errors'
+    one: un erreur
+    other: '%{count} erreurs'
   error_msg:
-    auth_failed: "Sorry, but that didn't work!
-        Sometimes it takes the program just a bit longer to get started, so try once more."
+    auth_failed: "Désolé, mais ça n'a pas marché! Parfois, il faut le programme un peu plus de temps à démarrer, alors essayez une fois de plus."
     email_commands_not_recogized: Email commands not recogized
     group_deliver_not_allowed: "Sorry, you are not allowed to send messages directly to groups,
         but your message is being forwarded to the moderator(s)."
@@ -25,10 +24,10 @@ en:
            but you don't seem to have a message with that ID. Maybe you should 
            contact the sender in person to confirm that you received the 
            message, if that is what you meant to do."
-    login_not_authorized: "Sorry, that login is not authorized to use this application
-        because we don't have that email address on record for you.
-        Please try another or contact the system administrator
-        to have your Facebook or Gmail login credentials added."
+    login_not_authorized: "Désolé, cette adresse n'est pas autorisé à utiliser cette application
+        parce que nous ne l'avons dans nos dossiers pour vous.
+        S'il vous plaît essayer une autre ou contactez l'administrateur système 
+        pour ajouter votre informations de connexion Gmail ou Facebook.
     no_groups_found: "You sent the \"%{command}\" command, which means to forward the message to groups, but
           no valid group names or abbreviations found in \"%{group_names_string}.\" "
     nothing_in_message: "Error: nothing found in your message \"%{body}\""    
@@ -36,31 +35,31 @@ en:
                and be sure to follow the group or groups with a colon (':').
                \n\nFor example, \"email admin: This is a message for admin.\"
                \n\nWhat I got was \"%{text}.\""
-  export: Export$
-  export_confirm: "This will download all the %{model} data (most fields) for 
-         use in your own spreadsheet or database, and may take a minute or 
-         two. Is this what you want to do?$"
+  export: Exporter
+  export_confirm: "Ceci va télécharger tous la plupart des données de %{model} pour         
+        utiliser dans votre propre feuille de calcul ou base de données, 
+        et peut prendre une minute ou deux. Est-ce ce que vous voulez faire?"
   Female: "Female"
-  first_name: First name              
-  follow_up: Follow up
+  first_name: Prénom
+  follow_up: Suivi
   follow_up_message_sent: Follow up message sent
   group_msg_sent_conf: "CONFIRMATION\n\nYour message: \n\n%{body} \n\nwas sent to groups %{groups}."
   generic_subject_line: Message from Joslink ReachOut
   hello: Hello
   help_subject_line: Joslink ReachOut Help
-  hide_menu: Hide menu
-  'hide advanced options': Hide advanced options
+  hide_menu: Masquer le menu
+  'hide advanced options': Cacher les options avancées
   hour:
-    one: 1 hour
-    other: '%{count} hours'
+    one: 1 heur
+    other: '%{count} heurs'
   immediately: immediately
-  info_request_subject_line: Your request for info
-  last_name: Last name               
-  location: Location
-  Main_Menu: Main Menu
+  info_request_subject_line: Votre demande d'information
+  last_name: Nom de famille
+  location: Emplacement
+  Main_Menu: Menu principal
   Male: Male
-  Members: Members
-  Member: Member
+  Members: Membres
+  Member: Membre
   member_summary_subject_line: Your Joslink ReachOut Information
   message_is_being_delivered: Message is being delivered
   message_status_summary: "deliv=%{deliv}, pend=%{pend}, reply=%{reply}, err=%{err}"
@@ -69,33 +68,33 @@ en:
   MISSING_CONTACT: '---None on file---'
   missing_group_warning: "Group %{invalid_groups} was not found, so did not receive message."
   missing_groups_warning: "Groups %{invalid_groups} were not found, so did not receive message."
-  Moderators: Moderators
-  Moderator: Moderator
+  Moderators: Modérateurs
+  Moderator: Modérateur
   msg_status:
     Error: Error
     Pending: Pending
     Delivered: Delivered
     Sent: Sent
     Responded: Responded
-  name: Name
+  name: Nom
   "Not signed in": Not signed in
-  "No": No$
+  "No": Non
   no_response_needed: no reponse needed
   none: none$
   None: None$
   only_moderators_can: "Sorry, only moderators can %{action} at this time."
   Option_tables: Option tables
   Page: Page       # For page numbering
-  passport_country: Passport country
+  passport_country: Pays
   phone: Phone
-  "Please log in": Please sign in
-  printed_on_date: Printed on
-  private_data: "**private**"
+  "Please log in": Identifiez-vous SVP
+  printed_on_date: Imprimé sur 
+  private_data: "**privé**"
   private_dir: "---"     # Filler for private data in reports
   'Refused unknown sender': 'Refused: unknown sender'
-  Rejected: Rejected
-  return: return
-  second_email_address: Second email address
+  Rejected: Rejeté
+  return: retour
+  second_email_address: Seconde adresse email
   Save: Save$
   Send: Send
   send_info:
@@ -107,7 +106,7 @@ en:
     privacy_note: "Note that private info is shown because you are requesting your own 
                     information. It is not shown when others request your information."
     private: (private!)
-  show_menu: Show menu
+  show_menu: Afficher le menu
   "Signed in as": Signed in as
   sms:
     help:
@@ -145,18 +144,18 @@ en:
   Title: Title
   unspecified_location: "Location not listed"
   via: via
-  "Yes": Yes$
+  "Yes": Oui
   activerecord:
     models:
       message: Messages
-      bloodtype: Blood types
-      city: Cities
-      country: Countries
-      group: Groups
-      location: Locations$
-      member: Members$
-      settings: Settings
-      system_note: System Note
+      bloodtype: Les groupes sanguins
+      city: Villes
+      country: Pays
+      group: Groupes
+      location: Emplacements
+      member: Memberes
+      settings: Paramètres de réglage
+      system_note: Notes sur le système
     attributes:
       group:
         group_name: Group name
@@ -169,33 +168,33 @@ en:
         limited: Limited?
         parent_group: Parent group
       member:
-        last_name: Last name               
-        first_name: First name              
-        middle_name: Middle name             
-        name: Full name                    
-        country: Country              
-        emergency_contact_phone: Emergency contact phone
-        emergency_contact_email: Emergency contact email
-        emergency_contact_name: Emergency contact name  
+        last_name: Nom de famille
+        first_name: Prénom
+        middle_name: Deuxième prénom
+        name: Nom et prénom                    
+        country: Pays              
+        emergency_contact_phone: Téléphone de contact d'urgence
+        emergency_contact_email: E-mail de contact d'urgence
+        emergency_contact_name: Nom de contact d'urgence
         phone_1: Phone 1
         phone_2: Phone 2                 
         email_1: Email 1                 
         email_2: Email 2                 
-        location: Location             
-        location_detail: Location detail         
-        arrival_date: Arrival date
-        departure_date: Departure date
-        blood_donor: Blood donor?
-        bloodtype: Blood type
+        location: Emplacement             
+        location_detail: Détail d'emplacement 
+        arrival_date: Arrivée
+        departure_date: Départe
+        blood_donor: Donneur de sang?
+        bloodtype: Groupe sanguin
         created_at: Created at
         updated_at: Updated at
-        phone_private: Phone private?
-        email_private: Email private?
-        in_country: On location
-        comments: Comments 
+        phone_private: Téléphone privé?
+        email_private: E-mail privé?
+        in_country: Sur place
+        comments: Commentaires 
         short_name: Short name
-        wife: Wife                 
-        sex: Sex
+        wife: Femme                 
+        sex: Sexe
       message:
         user: User
         body: Email text
@@ -207,32 +206,32 @@ en:
         response_time_limit: Response time limit
         to_groups: Dest. groups
   side_menu:
-    edit_your_user_info: Edit your user info
-    sign_out: Sign out
-    members: Members
-    create_new_message: Create new message
-    reports: Reports
-    system_notices: System notices
-    message_list: Message list
-    groups: Groups
-    log: Log
-    blood_types: Blood types
-    cities: Cities
-    countries: Countries
-    locations: Locations
+    edit_your_user_info: Modifier vos informations
+    sign_out: Déconnecter
+    members: Membres
+    create_new_message: Créer un nouveau message
+    reports: Rapports
+    system_notices: Notes sur le système
+    message_list: Messages
+    groups: Groupes
+    log: Fichier journal
+    blood_types: Groupes sanguin
+    cities: Villes
+    countries: Pays
+    locations: Emplacements
   messages:
     be_sure_to_follow_up: "Note: Be sure to follow up any critical messages you 
               send with this system, and do not just assume that they are being 
               delivered reliably and read by the recipient."
     destination_groups: Destination groups$
-    email_body_label: 'Email Message (or "More Information" for SMS)'
-    subject_label: "Subject"
-    send_email: "Send email"
-    send_sms: "Send SMS"
-    sms_only: "SMS body"
-    news_update: "News update"
-    private_label: "Private"
-    sms_text_message_label: "SMS Text Message"
+    email_body_label: "E-mail (ou plus d'informations pour les SMS)
+    subject_label: "Sujet"
+    send_email: "Envoyer un email"
+    send_sms: "Envoyer un SMS"
+    sms_only: "Texte du SMS"
+    news_update: "Mise à jour"
+    private_label: "Privé"
+    sms_text_message_label: "Message SMS"
     followup:
       form_descr_1: "This form is for sending a follow-up for message #%{id}."
       form_descr_2: "This follow-up message will be sent only to people who 
@@ -246,17 +245,17 @@ en:
             you got this message so please make sure you've read it and then 
             just reply to this message or the original one."
     options:
-      expiration: Expiration (only affects news updates) 
-      keywords: Keywords (useful for searching)
+      expiration: Expiration (seulment pour les mises à jour) 
+      keywords: Mots-clés (utiles pour la recherche)
   members:
     show:
-      name: Full name
+      name: Nom et prénom
     form:
-      contact_info: Contact Info
-      other: Other
-      name_and_country: Name & Country
-      Emergency_Contact_Information: Emergency Contact Information
-      passport_country: Passport country
+      contact_info: Information de contact
+      other: Autre
+      name_and_country: Nom & Pays
+      Emergency_Contact_Information: Coordonnées d'urgence
+      passport_country: Pays
     import:
       description: "This will import members from a comma-separated (CSV) file 
                    on your computer."
@@ -266,7 +265,7 @@ en:
                import feature is still experimental."
   groups:
     form:
-      abbrev: Abbreviation
+      abbrev: Abbréviation
       notice: "If this new group is to be a container for sub-groups, you should just add 
               members to the sub-groups. They will automatically be included in this parent group." 
   outgoing:
@@ -305,15 +304,14 @@ en:
     new:
       facebook_disclaimer: "(Our using Facebook for login does not mean we endorse it 
          or recommend your using it. It is simply an easy way to securely identify users.)"
-      get_google: Get a Google/Gmail account
-      get_facebook: Sign up for Facebook
+      get_google: Obtenir un compte Google / Gmail
+      get_facebook: Inscrivez-vous à Facebook
       instructions_1: Use your existing account on FaceBook or Google/Gmail to log in. 
-      instructions_2: "Your main email address listed on Facebook or Google must 
-        match one of your addresses listed in this directory. If you do not have one of
-        those then you will need to get one or the other and ask the moderator of this
-        site to add it to your listing."
-      connect_facebook: Connect using your Facebook account
-      connect_google: Connect using your Google account
+      instructions_2: "Votre adresse e-mail principale cotée sur Facebook ou Google doit
+           correspondre à l'une de vos adresses figurant dans cet annuaire. Si vous n'avez 
+           pas l'un des ceux alors vous aurez besoin d'obtenir l'un ou l'autre"
+      connect_facebook: Connecter avec votre compte Facebook
+      connect_google: Connecter avec votre compte Google
   setup_1: "The member database is empty, so presumably you want to set up
       a new installation. You will be added as an administrator.
       Please enter your email below. Note that at least one of the
