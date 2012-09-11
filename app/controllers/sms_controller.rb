@@ -178,7 +178,7 @@ private
         :body => "#{@sender.shorter_name} reports: #{text}") 
       message.deliver
     end
-    expiration_time_string = I18n.t(:hour, :count => SiteSettings.default_news_update_expiration)
+    expiration_time_string = I18n.t(:hour, :count => Message.default_news_expiration)
     return I18n.t('sms.update_saved', :text => text[0..15], :exp_time => expiration_time_string) 
   end  
 

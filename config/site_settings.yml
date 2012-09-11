@@ -77,7 +77,7 @@ clickatell_api_id:
   type: string
   default: BM2071
 
-default_news_update_expiration
+default_news_update_expiration:
   name: Default news update expiration (hours)
   type: string
   default: 4

@@ -15,7 +15,7 @@ en:
     one: 1 error
     other: '%{count} errors'
   error_msg:
-    auth_failed: "Sorry, but that didn't work! 
+    auth_failed: "Sorry, but that didn't work!
         Sometimes it takes the program just a bit longer to get started, so try once more."
     email_commands_not_recogized: Email commands not recogized
     group_deliver_not_allowed: "Sorry, you are not allowed to send messages directly to groups,
@@ -24,7 +24,7 @@ en:
            but you don't seem to have a message with that ID. Maybe you should 
            contact the sender in person to confirm that you received the 
            message, if that is what you meant to do."
-    login_not_authorized: Sorry, that login is not authorized to use this application
+    login_not_authorized: "Sorry, that login is not authorized to use this application
         because we don't have that email address on record for you.
         Please try another or contact the system administrator
         to have your Facebook or Gmail login credentials added."
@@ -34,7 +34,7 @@ en:
     unparsable_group_deliver: "I don't understand. To send to groups, separate the group names with spaces
                and be sure to follow the group or groups with a colon (':').
                \n\nFor example, \"email admin: This is a message for admin.\"
-               \n\nWhat I got was \"%{text}.\"
+               \n\nWhat I got was \"%{text}.\""
   export: Export$
   export_confirm: "This will download all the %{model} data (most fields) for 
          use in your own spreadsheet or database, and may take a minute or 

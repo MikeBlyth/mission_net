@@ -27,7 +27,6 @@
 #
 
 include MessagesHelper
-
 #require 'ironworker_twilio_gateway.rb'
 
 class Message < ActiveRecord::Base
@@ -64,6 +63,12 @@ class Message < ActiveRecord::Base
       order('updated_at DESC').limit(options[:limit])
   end
   
+  def self.default_news_expiration  # In hours
+    default = SiteSetting.default_news_update_expiration.to_i
+    default = 4 if default == 0
+    default
+  end
+
   # This is not an automatic length checker! It needs to be changed if you change the length of the timestamp.
   def self.timestamp_length
     Date.today.day < 10 ? 9 : 10   # timestamp is shorter if day of month is one digit, like 9Mar1252p 
