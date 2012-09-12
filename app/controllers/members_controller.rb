@@ -58,7 +58,6 @@ class MembersController < ApplicationController
   end
 
   def index
-puts "**** I18n.locale=#{I18n.locale}"
     @notices = ""  # This should be tied to the system notices database
 #    session[:compact] = true if session[:compact].nil?   # Start with compact view. Make false to start with full view
     @compact = params[:compact] || 'true' # Making the compact view the default

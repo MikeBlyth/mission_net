@@ -49,6 +49,7 @@ scope "(:locale)", :locale => /en|fr/ do
 #    end
 #  end
 
+  match '/:locale' => 'members#index'
   get "/home", :to => "members#index", :as => :home
   root :to => "members#index"
   

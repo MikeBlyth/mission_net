@@ -59,11 +59,9 @@ private
 
   def set_locale
     locale = (params[:locale] || 'en').to_sym
-puts "**** params[:locale]=#{params[:locale]}"
     if I18n.available_locales.include? locale
       I18n.locale = locale
     end
-puts "**** I18n.locale now set to =#{I18n.locale}"      
   end
 
   def authorize

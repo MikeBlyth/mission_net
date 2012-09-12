@@ -130,7 +130,6 @@ module ApplicationHelper
   end
   
   def change_locale_to(new_locale)
-    puts "**** params=#{params}"
     url_for(params.merge(:locale => new_locale))
   end
 #******* Anything below this point is not in the module itself *********
