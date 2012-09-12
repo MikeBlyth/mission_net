@@ -1,10 +1,14 @@
-# Sample localization file for English. Add more files in this directory for other locales.
+# Sample localization file for French. Add more files in this directory for other locales.
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
-en:
+fr:
+  date:
+    formats:
+      default: "%-1e %b %y"# 9 Mar 11
+      short: "%-1e %b"
   Admin_tasks: Les tâches administratives
-  both_have_phone: "(both)"
-  by_deadline: "by %{deadline}"
+  both_have_phone: "(tous les deux)"
+  by_deadline: "avant %{deadline}"
   click_to_show_more_columns: Cliquez pour afficher davantage de colonnes
   click_to_hide_some_columns: Cliquez pour masquer certaines colonnes
   cancan_forbidden: Désolés, vous ne pouvez pas le faire
@@ -12,6 +16,7 @@ en:
   download: Télécharger
   email: E-mail
   email_address: Adresse e-mail
+  english: Anglais
   error:
     one: un erreur
     other: '%{count} erreurs'
@@ -27,7 +32,7 @@ en:
     login_not_authorized: "Désolé, cette adresse n'est pas autorisé à utiliser cette application
         parce que nous ne l'avons dans nos dossiers pour vous.
         S'il vous plaît essayer une autre ou contactez l'administrateur système 
-        pour ajouter votre informations de connexion Gmail ou Facebook.
+        pour ajouter votre informations de connexion Gmail ou Facebook."
     no_groups_found: "You sent the \"%{command}\" command, which means to forward the message to groups, but
           no valid group names or abbreviations found in \"%{group_names_string}.\" "
     nothing_in_message: "Error: nothing found in your message \"%{body}\""    
@@ -43,6 +48,7 @@ en:
   first_name: Prénom
   follow_up: Suivi
   follow_up_message_sent: Follow up message sent
+  french: Français
   group_msg_sent_conf: "CONFIRMATION\n\nYour message: \n\n%{body} \n\nwas sent to groups %{groups}."
   generic_subject_line: Message from Joslink ReachOut
   hello: Hello
@@ -60,28 +66,28 @@ en:
   Male: Male
   Members: Membres
   Member: Membre
-  member_summary_subject_line: Your Joslink ReachOut Information
-  message_is_being_delivered: Message is being delivered
+  member_summary_subject_line: Vos informations personnelles comme indiqué sur %{site}
+  message_is_being_delivered: Le message est livré
   message_status_summary: "deliv=%{deliv}, pend=%{pend}, reply=%{reply}, err=%{err}"
   minutes: minutes
-  MISSING: '*** MISSING ***'
-  MISSING_CONTACT: '---None on file---'
+  MISSING: '*** MANQUANT ***'
+  MISSING_CONTACT: '---Rien dans le dossier---'
   missing_group_warning: "Group %{invalid_groups} was not found, so did not receive message."
   missing_groups_warning: "Groups %{invalid_groups} were not found, so did not receive message."
   Moderators: Modérateurs
   Moderator: Modérateur
   msg_status:
-    Error: Error
-    Pending: Pending
-    Delivered: Delivered
-    Sent: Sent
-    Responded: Responded
+    Error: Erreur
+    Pending: En attente
+    Delivered: Livré
+    Sent: Envoyée
+    Responded: Répondu
   name: Nom
   "Not signed in": Not signed in
   "No": Non
-  no_response_needed: no reponse needed
-  none: none$
-  None: None$
+  no_response_needed: pas nécessaire
+  none: rien
+  None: Rien
   only_moderators_can: "Sorry, only moderators can %{action} at this time."
   Option_tables: Option tables
   Page: Page       # For page numbering
@@ -95,16 +101,17 @@ en:
   Rejected: Rejeté
   return: retour
   second_email_address: Seconde adresse email
-  Save: Save$
-  Send: Send
+  Save: Enregistrer
+  Send: Envoyer
   send_info:
     emails: "  email:  %{emails}"
-    first_line: "Here is the info you requested (info %{request}):\n\n"
-    location: "  location: %{location}"
-    no_contacts: No matching members found. Try with first or last name only. Check spelling.
+    first_line: "Voici les infos que vous avez demandé (info %{request}):\n\n"
+    location: "  emplacement: %{location}"
+    no_contacts: "Personne n'a été trouvé. Essayez d'utiliser le nom ou le prénom seulement.
+          Vérifier l'orthographe."
     phones: "  phone:  %{phones}"
-    privacy_note: "Note that private info is shown because you are requesting your own 
-                    information. It is not shown when others request your information."
+    privacy_note: "Notez que l'information privée est indiquée parce que vous avez demandé votre propre informations. 
+          Il ne sera pas affiché quand les autres se renseigner sur vous.."
     private: (private!)
   show_menu: Afficher le menu
   "Signed in as": Signed in as
@@ -153,20 +160,20 @@ en:
       country: Pays
       group: Groupes
       location: Emplacements
-      member: Memberes
+      member: Membres
       settings: Paramètres de réglage
       system_note: Notes sur le système
     attributes:
       group:
-        group_name: Group name
+        group_name: Nom
         abbrev: Abbrev
-        primary: Primary?
-        user_selectable: User selectable?
+        primary: Primaire?
+        user_selectable: Sélectionnable?
         administrator: Admin?
-        moderator: Moderator?
-        member: Member?
-        limited: Limited?
-        parent_group: Parent group
+        moderator: Moderateur?
+        member: Membre?
+        limited: Limité?
+        parent_group: Origine
       member:
         last_name: Nom de famille
         first_name: Prénom
@@ -192,19 +199,19 @@ en:
         email_private: E-mail privé?
         in_country: Sur place
         comments: Commentaires 
-        short_name: Short name
+        short_name: Nom court
         wife: Femme                 
         sex: Sexe
       message:
         user: User
         body: Email text
         importance: Importance
-        keywords: Keywords
-        sms_only: SMS text
-        send_sms: Send SMS
-        send_email: Send email
-        response_time_limit: Response time limit
-        to_groups: Dest. groups
+        keywords: Mots-clés
+        sms_only: "Message SMS"
+        send_sms: SMS
+        send_email: Email
+        response_time_limit: Délai de réponse
+        to_groups: Groupes de destination
   side_menu:
     edit_your_user_info: Modifier vos informations
     sign_out: Déconnecter
@@ -215,7 +222,7 @@ en:
     message_list: Messages
     groups: Groupes
     log: Fichier journal
-    blood_types: Groupes sanguin
+    bloodtypes: Groupes sanguin
     cities: Villes
     countries: Pays
     locations: Emplacements
@@ -223,8 +230,8 @@ en:
     be_sure_to_follow_up: "Note: Be sure to follow up any critical messages you 
               send with this system, and do not just assume that they are being 
               delivered reliably and read by the recipient."
-    destination_groups: Destination groups$
-    email_body_label: "E-mail (ou plus d'informations pour les SMS)
+    destination_groups: Destination Groupes$
+    email_body_label: "E-mail (ou plus d'informations pour les SMS)"
     subject_label: "Sujet"
     send_email: "Envoyer un email"
     send_sms: "Envoyer un SMS"

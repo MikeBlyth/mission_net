@@ -1,5 +1,6 @@
 Joslink::Application.routes.draw do
 
+scope "(:locale)", :locale => /en|fr/ do
   resources :system_notes do as_routes end
 
   resources :cities do as_routes end
@@ -108,3 +109,5 @@ Joslink::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id))(.:format)'
 end
+end
+

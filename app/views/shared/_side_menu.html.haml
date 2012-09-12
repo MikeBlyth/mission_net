@@ -1,6 +1,9 @@
 - if signed_in? 
   %h5= t('Main_Menu')
   %ul.links
+    %li 
+      = link_to t(':english'), change_locale_to(:en)
+      = link_to t(':french'), change_locale_to(:fr)
     %li= link_to t('side_menu.edit_your_user_info'), edit_member_path(current_user)
     %li= link_to t('side_menu.sign_out'), sign_out_path 
     - if current_user.roles_include? :member

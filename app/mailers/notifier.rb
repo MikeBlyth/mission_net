@@ -26,7 +26,7 @@ class Notifier < ActionMailer::Base
     msg = mail(:to => member.primary_email, 
 #               :cc => SiteSetting.base_email_address,
                :from => SiteSetting.base_email_address,
-               :subject=> I18n.t(:member_summary_subject_line)) do |format|
+               :subject=> I18n.t(:member_summary_subject_line, :site=>SiteSetting.org_system_name)) do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
     end

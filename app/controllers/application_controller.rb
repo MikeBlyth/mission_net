@@ -12,12 +12,19 @@ class ApplicationController < ActionController::Base
 
   before_filter :require_https, :except => :update_status_clickatell #, :only => [:login, :signup, :change_password] 
   check_authorization  
+
+  before_filter :set_locale
   
   def require_https
     redirect_to :protocol => "https://" unless (request.protocol=='https://' or request.host=='localhost' or
         request.host == 'test.host' or 
         request.headers['REQUEST_URI'] =~ /update_status_clickatell/ or
         request.remote_addr == '127.0.0.1')
+  end
+
+  def default_url_options(options={})
+#    logger.debug "default_url_options is passed options: #{options.inspect}\n"
+    { :locale => I18n.locale }
   end
 
   rescue_from CanCan::AccessDenied do |exception|
@@ -49,6 +56,15 @@ class ApplicationController < ActionController::Base
   end
 
 private
+
+  def set_locale
+    locale = (params[:locale] || 'en').to_sym
+puts "**** params[:locale]=#{params[:locale]}"
+    if I18n.available_locales.include? locale
+      I18n.locale = locale
+    end
+puts "**** I18n.locale now set to =#{I18n.locale}"      
+  end
 
   def authorize
     redirect_to(sign_in_url, :notice => t("Please log in")) unless signed_in?

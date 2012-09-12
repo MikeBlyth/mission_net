@@ -12,6 +12,7 @@ en:
   download: Download$
   email: Email$
   email_address: Email address
+  english: English
   error:
     one: 1 error
     other: '%{count} errors'
@@ -44,6 +45,7 @@ en:
   first_name: First name              
   follow_up: Follow up
   follow_up_message_sent: Follow up message sent
+  french: French
   group_msg_sent_conf: "CONFIRMATION\n\nYour message: \n\n%{body} \n\nwas sent to groups %{groups}."
   generic_subject_line: Message from Joslink ReachOut
   hello: Hello
@@ -61,7 +63,7 @@ en:
   Male: Male
   Members: Members
   Member: Member
-  member_summary_subject_line: Your Joslink ReachOut Information
+  member_summary_subject_line: Your personal information as listed on %{site}
   message_is_being_delivered: Message is being delivered
   message_status_summary: "deliv=%{deliv}, pend=%{pend}, reply=%{reply}, err=%{err}"
   minutes: minutes
