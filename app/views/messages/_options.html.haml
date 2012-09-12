@@ -17,7 +17,7 @@
               %td 
                 = form.label :response_time_limit
                 %br
-                = form.select :response_time_limit, time_choices([[t('no response needed'), nil], 0.0834, 0.167, 0.25, 0.5, 1, 2, 6, 12, 24], :minutes)
+                = form.select :response_time_limit, time_choices([[t(:no_response_needed), nil], 0.0834, 0.167, 0.25, 0.5, 1, 2, 6, 12, 24], :minutes)
       %tr.not-implemented
         %td 
           = form.label :retry_interval, :class=>'for-sms'

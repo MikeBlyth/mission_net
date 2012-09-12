@@ -12,7 +12,7 @@ class Notifier < ActionMailer::Base
   def send_help(recipients)
     @content = help_content
 
-    mail(:to => recipients, :subject=>I18n.t(:help_subject_line)) do |format|
+    mail(:to => recipients, :subject=>I18n.t(:help_subject_line, :site=>SiteSetting.org_system_name)) do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
     end 

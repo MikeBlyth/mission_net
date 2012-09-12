@@ -6,9 +6,14 @@ fr:
     formats:
       default: "%-1e %b %y"# 9 Mar 11
       short: "%-1e %b"
+    order:
+      - :day
+      - :month
+      - :year
   Admin_tasks: Les tâches administratives
   both_have_phone: "(tous les deux)"
   by_deadline: "avant %{deadline}"
+  Choose: Choisir
   click_to_show_more_columns: Cliquez pour afficher davantage de colonnes
   click_to_hide_some_columns: Cliquez pour masquer certaines colonnes
   cancan_forbidden: Désolés, vous ne pouvez pas le faire
@@ -16,13 +21,13 @@ fr:
   download: Télécharger
   email: E-mail
   email_address: Adresse e-mail
-  english: Anglais
+  english: l'Anglais
   error:
     one: un erreur
     other: '%{count} erreurs'
   error_msg:
     auth_failed: "Désolé, mais ça n'a pas marché! Parfois, il faut le programme un peu plus de temps à démarrer, alors essayez une fois de plus."
-    email_commands_not_recogized: Email commands not recogized
+    email_commands_not_recogized: Le système ne reconnaît pas vos commandes par courrier électronique
     group_deliver_not_allowed: "Sorry, you are not allowed to send messages directly to groups,
         but your message is being forwarded to the moderator(s)."
     invalid_confirmation: "Error: It seems you tried to confirm message #%{id}
@@ -48,17 +53,17 @@ fr:
   first_name: Prénom
   follow_up: Suivi
   follow_up_message_sent: Follow up message sent
-  french: Français
+  french: le Français
   group_msg_sent_conf: "CONFIRMATION\n\nYour message: \n\n%{body} \n\nwas sent to groups %{groups}."
   generic_subject_line: Message from Joslink ReachOut
-  hello: Hello
-  help_subject_line: Joslink ReachOut Help
+  hello: Bonjour
+  help_subject_line: Aide pour %{site}
   hide_menu: Masquer le menu
   'hide advanced options': Cacher les options avancées
   hour:
     one: 1 heur
     other: '%{count} heurs'
-  immediately: immediately
+  immediately: immédiatement
   info_request_subject_line: Votre demande d'information
   last_name: Nom de famille
   location: Emplacement
@@ -68,12 +73,14 @@ fr:
   Member: Membre
   member_summary_subject_line: Vos informations personnelles comme indiqué sur %{site}
   message_is_being_delivered: Le message est livré
-  message_status_summary: "deliv=%{deliv}, pend=%{pend}, reply=%{reply}, err=%{err}"
+  message_status_summary: "livré=%{deliv}, attente=%{pend}, répondu=%{reply}, err=%{err}"
   minutes: minutes
   MISSING: '*** MANQUANT ***'
   MISSING_CONTACT: '---Rien dans le dossier---'
-  missing_group_warning: "Group %{invalid_groups} was not found, so did not receive message."
-  missing_groups_warning: "Groups %{invalid_groups} were not found, so did not receive message."
+  missing_group_warning: "On n'a pas trouvé le Groupe %{invalid_groups} donc 
+      il n'a pas reçu votre message."
+  missing_groups_warning: "On n'a pas trouvé les Groupe %{invalid_groups} donc 
+      ils n'ont pas reçu votre message."
   Moderators: Modérateurs
   Moderator: Modérateur
   msg_status:
@@ -83,13 +90,14 @@ fr:
     Sent: Envoyée
     Responded: Répondu
   name: Nom
-  "Not signed in": Not signed in
+  "Not signed in": Vous n'êtes pas connecté
   "No": Non
   no_response_needed: pas nécessaire
   none: rien
   None: Rien
-  only_moderators_can: "Sorry, only moderators can %{action} at this time."
-  Option_tables: Option tables
+  only_moderators_can: "Désolé, seuls les modérateurs peuvent le faire."
+  Option_tables: Tableaux d'options
+  or: ou
   Page: Page       # For page numbering
   passport_country: Pays
   phone: Phone
@@ -97,7 +105,7 @@ fr:
   printed_on_date: Imprimé sur 
   private_data: "**privé**"
   private_dir: "---"     # Filler for private data in reports
-  'Refused unknown sender': 'Refused: unknown sender'
+  'Refused unknown sender': 'Rejeté: expéditeur inconnu'
   Rejected: Rejeté
   return: retour
   second_email_address: Seconde adresse email
@@ -114,7 +122,8 @@ fr:
           Il ne sera pas affiché quand les autres se renseigner sur vous.."
     private: (private!)
   show_menu: Afficher le menu
-  "Signed in as": Signed in as
+  Sign_in: Connectez-vous
+  "Signed in as": Connecté 
   sms:
     help:
       "d <group> = deliver msg to grp": d <group> = deliver msg to grp
@@ -125,9 +134,9 @@ fr:
       "!21 <reply> = reply to msg 21": !21 <reply> = reply to msg 21
     forwarded: "I forwarded your msg to %{to}. It would be better to contact him/her
               directly at %{number}."
-    message_being_sent: "Your message #%{id} 
-        is being sent to %{group_name} (%{count} recipients)"
-    name_not_found: "%{name} not found in database"
+    message_being_sent: "Votre message #%{id} 
+        est envoyé au groupe %{group_name} avec %{count} destinataires"
+    name_not_found: "Le nom %{name} n'a pas été trouvé dans l'annuaire."
     no_groups: "Error: no group %{target_group}. Send command 'groups' to list the main ones 
                incl %{primary_groups}"
     no_new_updates_with_keyword: "No new updates with keyword(s) '%{keyword}'. 
@@ -135,7 +144,7 @@ fr:
     no_updates_found: No new updates found. Contact your organization if you need more information.
     nothing_in_message: Nothing found in your message!
     sending_updates: "Sending %{count} updates"
-    some_groups: Some groups
+    some_groups: Quelques groupes
     thanks_but_not_found: "Thanks for responding, but message number %{id} was not found.
               Check the number again."
     thanks_for_response: Thanks for your response :-)
@@ -147,9 +156,10 @@ fr:
   success: Success
   system_notes_prompt: "Create a new entry if you find a bug or problem or just have a suggestion. 
         Category is optional and status is for developer use."
-  Thank_you: Thank you
-  Title: Title
-  unspecified_location: "Location not listed"
+  Thank_you: Merci
+  Title: Titre
+  unspecified_location: L'emplacement n'est pas indiqué
+  Use: Utiliser
   via: via
   "Yes": Oui
   activerecord:
@@ -227,10 +237,10 @@ fr:
     countries: Pays
     locations: Emplacements
   messages:
-    be_sure_to_follow_up: "Note: Be sure to follow up any critical messages you 
-              send with this system, and do not just assume that they are being 
-              delivered reliably and read by the recipient."
-    destination_groups: Destination Groupes$
+    be_sure_to_follow_up: "Remarque: Assurez-vous de suivi des messages essentiels que vous               envoyer avec ce système, 
+        et ne présumez pas qu'ils sont en cours distribués de manière fiable 
+        et lu par le destinataire."
+    destination_groups: Groupes Destinations
     email_body_label: "E-mail (ou plus d'informations pour les SMS)"
     subject_label: "Sujet"
     send_email: "Envoyer un email"
@@ -241,9 +251,9 @@ fr:
     sms_text_message_label: "Message SMS"
     followup:
       form_descr_1: "This form is for sending a follow-up for message #%{id}."
-      form_descr_2: "This follow-up message will be sent only to people who 
-              did not receive (or respond to) the original message %{id}. 
-              You can repeat part of the message and or remind people to respond."
+      form_descr_2: "Ce message de suivi sera envoyé uniquement aux personnes qui
+              n'ont pas reçu (ou répondre à) le message d'origine #%{id}. 
+              Vous pouvez répéter une partie du message et rappeler aux gens d'y répondre."
       subject_line: "Following up on message #%{id}: %{subject}"
       sms_line: "f/u msg #%{id}"
       body_content: "This is Josie, the Joslink database gopher. I haven't 
@@ -267,14 +277,15 @@ fr:
       description: "This will import members from a comma-separated (CSV) file 
                    on your computer."
       file_to_upload: File to upload
-      import_members: Import new members
-      notice: "Be sure to back up your database before importing new members. The
-               import feature is still experimental."
+      import_members: Importer de nouveaux membres
+      notice: "Assurez-vous de sauvegarder votre base de données avant d'importer de nouveaux membres. 
+            La fonction d'importation est encore au stade expérimental."
   groups:
     form:
       abbrev: Abbréviation
-      notice: "If this new group is to be a container for sub-groups, you should just add 
-              members to the sub-groups. They will automatically be included in this parent group." 
+      notice: "Si ce nouveau groupe sera un conteneur pour des sous-groupes, vous 
+        devez simplement ajouter des membres à des sous-groupes. Ils seront automatiquement 
+        inclus dans ce groupe de parents." 
   outgoing:
     confirmation_request: "The sender has requested confirmation within %{time_limit}
         that you have received this
@@ -287,33 +298,33 @@ fr:
     this_is_message_id: This is message #%{id}.      
   reports:
     directory:
-      asterisk: Asterisk (*) means presently out of the country.
-      title: Mission Contacts 
-      'Location not listed': Location not listed
+      asterisk: L'astérisque (*) désigne la personne est actuellement hors du pays.
+      title: Annuaire 
+      'Location not listed': L'emplacement n'est pas indiqué
     directory_by_location:
-      asterisk: Asterisk (*) means presently out of the country.
-      title: Mission Contacts 
-      'Location not listed': Location not listed
+      asterisk: L'astérisque (*) désigne la personne est actuellement hors du pays.
+      title: Annuaire  
+      'Location not listed': L'emplacement n'est pas indiqué
     index:
-      header: Directory (names, phone numbers and email addresses)$
-      by_family: By family (HTML)$
-      by_location: By location (HTML)$
-      font_size: Font size$
-      printable: Printable (PDF)$
-      reports: Reports$
-      report_sorted_by_name: Report sorted by name$
-      report_sorted_by_location: Report sorted by location$
-      view_in_browser: View in Browser$
-  safe_page_text: "Please select one of the options from the menu. 
-          If you are having problems, try signing out and then
-          signing in again."
+      header: Annuaire (names, phone numbers and email addresses)
+      by_family: Par famille (HTML)
+      by_location: Par emplacement (HTML)
+      font_size: Taille des caractères
+      printable: Imprimable (PDF)
+      reports: Rapports
+      report_sorted_by_name: Trié par nom
+      report_sorted_by_location: Trié par emplacement
+      view_in_browser: Afficher dans le navigateur
+  safe_page_text: "Veuillez sélectionner une des options du menu. Si vous 
+      rencontrez des problèmes, essayez de vous connecter à, puis vous connecter à nouveau."
   sessions:
     new:
-      facebook_disclaimer: "(Our using Facebook for login does not mean we endorse it 
-         or recommend your using it. It is simply an easy way to securely identify users.)"
+      facebook_disclaimer: "(Notre utiliser Facebook pour vous connecter ne signifie pas 
+          que nous l'approuver ou recommander que vous devez l'utiliser. 
+          Il s'agit simplement d'un moyen facile d'identifier en toute sécurité des utilisateurs.)"
       get_google: Obtenir un compte Google / Gmail
       get_facebook: Inscrivez-vous à Facebook
-      instructions_1: Use your existing account on FaceBook or Google/Gmail to log in. 
+      instructions_1: Utilisez votre compte Facebook ou Google / Gmail pour vous connecter. 
       instructions_2: "Votre adresse e-mail principale cotée sur Facebook ou Google doit
            correspondre à l'une de vos adresses figurant dans cet annuaire. Si vous n'avez 
            pas l'un des ceux alors vous aurez besoin d'obtenir l'un ou l'autre"
@@ -335,26 +346,26 @@ fr:
       auto_update_in_country_status: Auto update in-country status?
       auto_update_instructions: "If auto-update in-country status is selected, the system will check 
          members' arrival and departure dates, if any, and adjust their in_country status accordingly. 
-         This is done daily (in the early morning).$"
-      clickatell_user_name: Clickatell user name$
-      clickatell_password: Clickatell password$
-      contact_updates: Contact Updates$
+         This is done daily (in the early morning)."
+      clickatell_user_name: Clickatell user name
+      clickatell_password: Clickatell password
+      contact_updates: Contact Updates
       contact_update_instructions: "Specify who will receive various notifications from this program, 
-        and when they will be sent. Include email addresses only (no names), separated by commas.$"
-      contact_update_recipients: Contact update recipients$
-      default_outgoing_sms_gateway: Default outgoing SMS gateway$
-      maintenance tasks: Maintenance tasks$
-      notifications: Notifications$
-      sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.$
-      sms_text_messaging: SMS Text Messaging$
-      sendgrid_user_name: Sendgrid user name$
-      sendgrid_password: Sendgrid password$
-      title: Site Settings$
-      twilio_account_sid: Twilio account SID$
-      twilio_auth_token: Twilio authorization token$
-      twilio_api_version: Twilio API version$
-      twilio_phone_number: Twilio incoming phone number$
-      twilio_background: Twilio background service$
+        and when they will be sent. Include email addresses only (no names), separated by commas."
+      contact_update_recipients: Contact update recipients
+      default_outgoing_sms_gateway: Default outgoing SMS gateway
+      maintenance tasks: Maintenance tasks
+      notifications: Notifications
+      sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.
+      sms_text_messaging: SMS Text Messaging
+      sendgrid_user_name: Sendgrid user name
+      sendgrid_password: Sendgrid password
+      title: Site Settings
+      twilio_account_sid: Twilio account SID
+      twilio_auth_token: Twilio authorization token
+      twilio_api_version: Twilio API version
+      twilio_phone_number: Twilio incoming phone number
+      twilio_background: Twilio background service
   help_email: |
     Accessing the Joslink/Josalerts Database by Email
 

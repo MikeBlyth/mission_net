@@ -8,9 +8,10 @@ en:
   click_to_show_more_columns: Click to show more columns
   click_to_hide_some_columns: Click to hide some columns
   cancan_forbidden: Sorry, that action is not available to you.
+  Choose: Choose
   Directory: Directory
-  download: Download$
-  email: Email$
+  download: Download
+  email: Email
   email_address: Email address
   english: English
   error:
@@ -37,10 +38,10 @@ en:
                and be sure to follow the group or groups with a colon (':').
                \n\nFor example, \"email admin: This is a message for admin.\"
                \n\nWhat I got was \"%{text}.\""
-  export: Export$
+  export: Export
   export_confirm: "This will download all the %{model} data (most fields) for 
          use in your own spreadsheet or database, and may take a minute or 
-         two. Is this what you want to do?$"
+         two. Is this what you want to do?"
   Female: "Female"
   first_name: First name              
   follow_up: Follow up
@@ -81,12 +82,13 @@ en:
     Responded: Responded
   name: Name
   "Not signed in": Not signed in
-  "No": No$
+  "No": No
   no_response_needed: no reponse needed
-  none: none$
-  None: None$
+  none: none
+  None: None
   only_moderators_can: "Sorry, only moderators can %{action} at this time."
   Option_tables: Option tables
+  or: or
   Page: Page       # For page numbering
   passport_country: Passport country
   phone: Phone
@@ -98,7 +100,7 @@ en:
   Rejected: Rejected
   return: return
   second_email_address: Second email address
-  Save: Save$
+  Save: Save
   Send: Send
   send_info:
     emails: "  email:  %{emails}"
@@ -146,8 +148,9 @@ en:
   Thank_you: Thank you
   Title: Title
   unspecified_location: "Location not listed"
+  Use: Use
   via: via
-  "Yes": Yes$
+  "Yes": Yes
   activerecord:
     models:
       message: Messages
@@ -155,8 +158,8 @@ en:
       city: Cities
       country: Countries
       group: Groups
-      location: Locations$
-      member: Members$
+      location: Locations
+      member: Members
       settings: Settings
       system_note: System Note
     attributes:
@@ -226,7 +229,7 @@ en:
     be_sure_to_follow_up: "Note: Be sure to follow up any critical messages you 
               send with this system, and do not just assume that they are being 
               delivered reliably and read by the recipient."
-    destination_groups: Destination groups$
+    destination_groups: Destination groups
     email_body_label: 'Email Message (or "More Information" for SMS)'
     subject_label: "Subject"
     send_email: "Send email"
@@ -291,15 +294,15 @@ en:
       title: Mission Contacts 
       'Location not listed': Location not listed
     index:
-      header: Directory (names, phone numbers and email addresses)$
-      by_family: By family (HTML)$
-      by_location: By location (HTML)$
-      font_size: Font size$
-      printable: Printable (PDF)$
-      reports: Reports$
-      report_sorted_by_name: Report sorted by name$
-      report_sorted_by_location: Report sorted by location$
-      view_in_browser: View in Browser$
+      header: Directory (names, phone numbers and email addresses)
+      by_family: By family (HTML)
+      by_location: By location (HTML)
+      font_size: Font size
+      printable: Printable (PDF)
+      reports: Reports
+      report_sorted_by_name: Report sorted by name
+      report_sorted_by_location: Report sorted by location
+      view_in_browser: View in Browser
   safe_page_text: "Please select one of the options from the menu. 
           If you are having problems, try signing out and then
           signing in again."
@@ -332,26 +335,26 @@ en:
       auto_update_in_country_status: Auto update in-country status?
       auto_update_instructions: "If auto-update in-country status is selected, the system will check 
          members' arrival and departure dates, if any, and adjust their in_country status accordingly. 
-         This is done daily (in the early morning).$"
-      clickatell_user_name: Clickatell user name$
-      clickatell_password: Clickatell password$
-      contact_updates: Contact Updates$
+         This is done daily (in the early morning)."
+      clickatell_user_name: Clickatell user name
+      clickatell_password: Clickatell password
+      contact_updates: Contact Updates
       contact_update_instructions: "Specify who will receive various notifications from this program, 
-        and when they will be sent. Include email addresses only (no names), separated by commas.$"
-      contact_update_recipients: Contact update recipients$
-      default_outgoing_sms_gateway: Default outgoing SMS gateway$
-      maintenance tasks: Maintenance tasks$
-      notifications: Notifications$
-      sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.$
-      sms_text_messaging: SMS Text Messaging$
-      sendgrid_user_name: Sendgrid user name$
-      sendgrid_password: Sendgrid password$
-      title: Site Settings$
-      twilio_account_sid: Twilio account SID$
-      twilio_auth_token: Twilio authorization token$
-      twilio_api_version: Twilio API version$
-      twilio_phone_number: Twilio incoming phone number$
-      twilio_background: Twilio background service$
+        and when they will be sent. Include email addresses only (no names), separated by commas."
+      contact_update_recipients: Contact update recipients
+      default_outgoing_sms_gateway: Default outgoing SMS gateway
+      maintenance tasks: Maintenance tasks
+      notifications: Notifications
+      sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.
+      sms_text_messaging: SMS Text Messaging
+      sendgrid_user_name: Sendgrid user name
+      sendgrid_password: Sendgrid password
+      title: Site Settings
+      twilio_account_sid: Twilio account SID
+      twilio_auth_token: Twilio authorization token
+      twilio_api_version: Twilio API version
+      twilio_phone_number: Twilio incoming phone number
+      twilio_background: Twilio background service
   help_email: |
     Accessing the Joslink/Josalerts Database by Email
 
