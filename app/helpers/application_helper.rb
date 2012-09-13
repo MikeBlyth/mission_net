@@ -56,6 +56,23 @@ module ApplicationHelper
     time.in_time_zone(time_zone).to_s(format) if time.respond_to? :in_time_zone
   end  
 
+  # Clean log file
+  def clean_old_file_entries(model, options={})
+    return false unless model.respond_to?(:find_in_batches) &&  # An ActiveRecord table
+      options.any?   # something to delete
+    date_limit_count = 100.years.ago
+    date_limit_spec = options[:before_date] || 100.years.ago
+    if options[:max_to_keep]
+      log_max = options[:max_to_keep]
+      if log_max > 0 && model.count > log_max
+        date_limit_count = model.order('created_at DESC').offset(log_max).limit(1)[0].created_at
+      end
+    end
+    date_limit = [date_limit_spec, date_limit_count].max # Use most restrictive of date or count
+   # model.where('created_at < ?', date_limit).delete_all
+    puts "**** will delete =#{model.where('created_at < ?', date_limit).count } from #{model}"
+  end
+
     # Returns true unless x = false.
     # Same as x || x.nil?
     def default_true(x)

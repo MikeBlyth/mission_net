@@ -64,7 +64,7 @@ incoming_voice_number:
 
 default_outgoing_sms_gateway:
   name: SMS gateway for outgoing messages
-  default: ironworker_twilio
+  default: twilio
   type: string
 
 clickatell_user_name:
