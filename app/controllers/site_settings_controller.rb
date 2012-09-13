@@ -1,4 +1,4 @@
-class SiteSettingsController < ActionController::Base
+class SiteSettingsController < ApplicationController
   protect_from_forgery
 
 #  before_filter :authenticate_admin #, :only => [:edit, :update]

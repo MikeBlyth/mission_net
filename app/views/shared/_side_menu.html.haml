@@ -6,7 +6,7 @@
       = link_to t(:english), change_locale_to(:en)
       = t(:or)
       = link_to t(:french), change_locale_to(:fr)
-    %li= link_to t('side_menu.edit_your_user_info'), edit_member_path(current_user)
+    %li= link_to t('side_menu.edit_your_user_info'), edit_member_path(current_user, :locale=>I18n.locale)
     %li= link_to t('side_menu.sign_out'), sign_out_path 
     - if current_user.roles_include? :member
       %li= link_to t('side_menu.members'), members_path 
@@ -26,7 +26,7 @@
       %li= link_to t('side_menu.locations'), locations_path 
       %hr
       %h5= t('Admin_tasks')
-      %li= link_to t('side_menu.settings'), site_settings_path
+      %li= link_to t('side_menu.settings'), site_settings_path(:locale => I18n.locale)
   %hr
 - else 
 

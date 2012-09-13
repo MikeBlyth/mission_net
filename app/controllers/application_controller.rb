@@ -11,9 +11,9 @@ class ApplicationController < ActionController::Base
   end
 
   before_filter :require_https, :except => :update_status_clickatell #, :only => [:login, :signup, :change_password] 
+  before_filter :set_locale
   check_authorization  
 
-  before_filter :set_locale
   
   def require_https
     redirect_to :protocol => "https://" unless (request.protocol=='https://' or request.host=='localhost' or
@@ -29,6 +29,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     puts "**** Access denied by CanCan: #{exception.message} ****"# if Rails.env == 'test'
+  #  raise
     if !signed_in? 
       redirect_to sign_in_path
       puts "**** Not signed in!"
@@ -58,10 +59,12 @@ class ApplicationController < ActionController::Base
 private
 
   def set_locale
+#puts "**** params=#{params}"
     locale = (params[:locale] || 'en').to_sym
     if I18n.available_locales.include? locale
       I18n.locale = locale
     end
+#puts "**** I18n.locale set to =#{I18n.locale}"
   end
 
   def authorize

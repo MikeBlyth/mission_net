@@ -121,6 +121,7 @@ fr:
     privacy_note: "Notez que l'information privée est indiquée parce que vous avez demandé votre propre informations. 
           Il ne sera pas affiché quand les autres se renseigner sur vous.."
     private: (private!)
+  settings: Paramètres du système
   show_menu: Afficher le menu
   Sign_in: Connectez-vous
   "Signed in as": Connecté 
@@ -236,6 +237,7 @@ fr:
     cities: Villes
     countries: Pays
     locations: Emplacements
+    settings: Paramètres du système
   messages:
     be_sure_to_follow_up: "Remarque: Assurez-vous de suivi des messages essentiels que vous               envoyer avec ce système, 
         et ne présumez pas qu'ils sont en cours distribués de manière fiable 
@@ -343,29 +345,28 @@ fr:
   setup_title: Initial Setup
   site_settings:
     edit:
-      auto_update_in_country_status: Auto update in-country status?
-      auto_update_instructions: "If auto-update in-country status is selected, the system will check 
-         members' arrival and departure dates, if any, and adjust their in_country status accordingly. 
-         This is done daily (in the early morning)."
-      clickatell_user_name: Clickatell user name
-      clickatell_password: Clickatell password
-      contact_updates: Contact Updates
-      contact_update_instructions: "Specify who will receive various notifications from this program, 
-        and when they will be sent. Include email addresses only (no names), separated by commas."
-      contact_update_recipients: Contact update recipients
-      default_outgoing_sms_gateway: Default outgoing SMS gateway
-      maintenance tasks: Maintenance tasks
+      auto_update_in_country_status: Auto auto-mise à jour le statut 'sur place'?
+      auto_update_instructions: "Quand auto-mise à jour est sélectionné, le système 
+        ajuste le statut 'sur place' automatiquement chaque matin en fonction des dates d'arrivée et de départ."
+      clickatell_user_name: Nom d'utilisateur Clickatell
+      clickatell_password: Mot de passe Clickatell 
+      contact_updates: Notifications de changement des coordonnées
+      contact_update_instructions: "Préciser qui recevra les notifications quand on change les coordonnées. 
+         Inclure les adresses e-mail uniquement, séparés par des virgules."
+      contact_update_recipients: Envoyer des notifications aux
+      default_outgoing_sms_gateway: Passerelle par défaut de SMS sortants
+      maintenance tasks: Tâches de maintenance du système
       notifications: Notifications
-      sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.
-      sms_text_messaging: SMS Text Messaging
-      sendgrid_user_name: Sendgrid user name
-      sendgrid_password: Sendgrid password
-      title: Site Settings
+      sendgrid_instructions: Remplissez ces paramètres si le site utilise SendGrid pour le courrier sortant.
+      sms_text_messaging: La messagerie texte SMS
+      sendgrid_user_name: Nom d'utilisateur Sendgrid
+      sendgrid_password: Mot de passe Sendgrid
+      title: Paramètres du système
       twilio_account_sid: Twilio account SID
-      twilio_auth_token: Twilio authorization token
-      twilio_api_version: Twilio API version
-      twilio_phone_number: Twilio incoming phone number
-      twilio_background: Twilio background service
+      twilio_auth_token: Jeton d'autorisation (authorization token) pour Twilio
+      twilio_api_version: Version de l'API pour Twilio
+      twilio_phone_number: Numéro de téléphone entrant pour Twilio
+      twilio_background: Service de base pour Twilio
   help_email: |
     Accessing the Joslink/Josalerts Database by Email
 

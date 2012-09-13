@@ -10,9 +10,9 @@ scope "(:locale)", :locale => /en|fr/ do
   get '/:controller/export', :action => 'export'
   match '/:controller/import', :action => 'import'
 
-   get   'admin/site_settings' => 'site_settings#edit', :as=>'site_settings'
-   get   'admin/site_settings/index' => 'site_settings#index', :as=>'index_site_settings'
-   put  'admin/site_settings' => 'site_settings#update', :as=>'update_site_settings'
+  get 'admin/site_settings' => 'site_settings#edit', :as=>'site_settings'
+  get 'admin/site_settings/index' => 'site_settings#index', :as=>'index_site_settings'
+  put 'admin/site_settings' => 'site_settings#update', :as=>'update_site_settings'
   resources :app_logs do as_routes end
   resources :bloodtypes do as_routes end
   resources :incoming_mails do as_routes end

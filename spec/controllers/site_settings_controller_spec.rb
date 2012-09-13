@@ -12,7 +12,8 @@ describe SiteSettingsController do
   
     it 'does not allow moderator to edit settings' do
       user = test_sign_in(:moderator)
-      lambda {post :edit}.should raise_error(StandardError, /not authorized/i)
+      post :edit
+      flash[:alert].should =~ /not authorized/i    
     end
   
   end

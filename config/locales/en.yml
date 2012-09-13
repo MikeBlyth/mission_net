@@ -111,6 +111,7 @@ en:
     privacy_note: "Note that private info is shown because you are requesting your own 
                     information. It is not shown when others request your information."
     private: (private!)
+  settings: Settings
   show_menu: Show menu
   "Signed in as": Signed in as
   sms:
@@ -225,6 +226,7 @@ en:
     cities: Cities
     countries: Countries
     locations: Locations
+    settings: Settings
   messages:
     be_sure_to_follow_up: "Note: Be sure to follow up any critical messages you 
               send with this system, and do not just assume that they are being 
