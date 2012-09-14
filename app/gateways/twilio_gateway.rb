@@ -87,7 +87,8 @@ class TwilioGateway < SmsGateway
           :body => @body
          )
         rescue  # twilio-ruby indicates failed phone number by raising exception Twilio::REST::RequestError
-          AppLog.create(:code => "SMS.error.twilio", :description=>"#{$!}, #{$!.backtrace[0..2]}", :severity=>'Warning')  
+          name = Member.find_by_phone(number).full_name_short
+          AppLog.create(:code => "SMS.error.twilio", :description=>"for #{name}: #{$!}, #{$!.backtrace[0..2]}", :severity=>'Warning')  
           reply[number] = {:status => MessagesHelper::MsgError}
         else
           reply[number] = {:status => MessagesHelper::MsgSentToGateway}

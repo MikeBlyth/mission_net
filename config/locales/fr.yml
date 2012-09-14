@@ -91,7 +91,7 @@ fr:
     Responded: Répondu
   name: Nom
   "Not signed in": Vous n'êtes pas connecté
-  "No": Non
+  "xNo": Non
   no_response_needed: pas nécessaire
   none: rien
   None: Rien
@@ -162,7 +162,7 @@ fr:
   unspecified_location: L'emplacement n'est pas indiqué
   Use: Utiliser
   via: via
-  "Yes": Oui
+  "xYes": Oui
   activerecord:
     models:
       message: Messages

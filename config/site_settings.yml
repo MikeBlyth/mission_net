@@ -141,6 +141,27 @@ contact_update_recipients:
 
 auto_update_in_country_status:
   name: Auto-update in-country status?
-  type: integer
+  type: string
   default: 
+
+log_max_records:
+  name: Maximum number of log records to keep
+  type: string
+  default: 1000
+  
+log_retention_period:
+  name: Retention period for log (days)
+  type: string
+  default: 60
+  
+messages_max_records:
+  name: Maximum number of messages to keep
+  type: string
+  default: 1000
+  
+messages_retention_period:
+  name: Retention period for messages (days)
+  type: string
+  default: 365
+  
   

@@ -18,7 +18,7 @@ describe "Site_Settings" do
     # Check changes
     text_boxes.each {|item| SiteSetting.send(item.to_sym).should eq item}
     SiteSetting.default_outgoing_sms_gateway.should eq 'Clickatell'
-    SiteSetting.auto_update_in_country_status.should eq 0
+    SiteSetting.auto_update_in_country_status.should eq "0"
     SiteSetting.twilio_background.should eq 'IronWorker'
     
   end

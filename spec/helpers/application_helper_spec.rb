@@ -147,14 +147,16 @@ describe ApplicationHelper do
       end
 
       it 'deletes entries before a given date' do
-          clean_old_file_entries(AppLog, :retention_days => 6)
+          clean_old_file_entries(AppLog, :retention_days => '6')
           AppLog.count.should eq 7
       end
       it 'deletes entries to leave a fixed remaining number' do
-          clean_old_file_entries(AppLog, :max_to_keep => 5)
+          clean_old_file_entries(AppLog, :max_to_keep => '5')
           AppLog.count.should eq 5
       end
-      it 'deletes entries before a given date' do
+      it 'deletes entries before a given date, with maximum remaining number' do
+          clean_old_file_entries(AppLog, :max_to_keep => 5, :retention_days => 6)
+          AppLog.count.should eq 5
       end
     end # 
   end  # various tools

@@ -82,7 +82,7 @@ en:
     Responded: Responded
   name: Name
   "Not signed in": Not signed in
-  "No": No
+  "No": "No"
   no_response_needed: no reponse needed
   none: none
   None: None
@@ -151,7 +151,7 @@ en:
   unspecified_location: "Location not listed"
   Use: Use
   via: via
-  "Yes": Yes
+  Yes: "Yes"
   activerecord:
     models:
       message: Messages
