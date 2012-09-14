@@ -127,6 +127,35 @@ describe ApplicationHelper do
       a.not_blank!.should eq [1, 2, 3]
       a.should eq [1, 2, 3]  # Changed
     end
+
+    describe 'Clean old file entries' do
+      before(:each) do
+        # Build 10 records whose :created_at dates increment 1 day each.
+        model = (1..10).map {|i| FactoryGirl.build(:app_log)}
+        ActiveRecord::Base.transaction do
+          model.each {|m| m.save}
+        end        
+        ActiveRecord::Base.transaction do
+          i = 0
+          model.each do |m| 
+            i+=1
+            m.created_at = Date.new(2000,1,i) + 10.hours
+            m.save
+          end
+        end
+      end
+
+      it 'deletes entries before a given date' do
+          clean_old_file_entries(AppLog, :before_date => Date.new(2000,1,6))
+          AppLog.count.should eq 5
+      end
+      it 'deletes entries to leave a fixed remaining number' do
+          clean_old_file_entries(AppLog, :max_to_keep => 5)
+          AppLog.count.should eq 5
+      end
+      it 'deletes entries before a given date' do
+      end
+    end # 
   end  # various tools
   
     

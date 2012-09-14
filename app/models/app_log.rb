@@ -23,6 +23,6 @@ class AppLog < ActiveRecord::Base
   end
 
   def control_description_length
-    self.description = self.description[0..254]
+    self.description = self.description[0..254] if self.description
   end
 end

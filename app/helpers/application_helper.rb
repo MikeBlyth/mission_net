@@ -65,14 +65,27 @@ module ApplicationHelper
     if options[:max_to_keep]
       log_max = options[:max_to_keep]
       if log_max > 0 && model.count > log_max
-        date_limit_count = model.order('created_at DESC').offset(log_max).limit(1)[0].created_at
+        date_limit_count = model.order('created_at DESC').offset(log_max-1).limit(1)[0].created_at
       end
     end
     date_limit = [date_limit_spec, date_limit_count].max # Use most restrictive of date or count
-   # model.where('created_at < ?', date_limit).delete_all
-    puts "**** will delete =#{model.where('created_at < ?', date_limit).count } from #{model}"
+    model.where('created_at < ?', date_limit).delete_all
   end
 
+  # It can happen that the index to the last item in the database gets lost, so that an
+  # attempted assertion fails with a duplicate key value error. This method
+  # resets the indices on all the tables listed in the method. It would be possible to 
+  # do it for all the models, but that has other issues (what if a model hasn't been loaded
+  # yet--it can't be detected?)
+  def resync_pg_database_max_ids
+    %w(app_logs bloodtypes cities countries groups locations members messages 
+       sent_messages system_notes).each do |table|
+      sql = "select setval('#{table}_id_seq', (select max(id) + 1 from #{table}));"
+#      puts sql
+      ActiveRecord::Base.connection.execute(sql)
+    end
+  end
+  
     # Returns true unless x = false.
     # Same as x || x.nil?
     def default_true(x)
