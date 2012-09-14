@@ -61,7 +61,7 @@ module ApplicationHelper
     return false unless model.respond_to?(:find_in_batches) &&  # An ActiveRecord table
       options.any?   # something to delete
     date_limit_count = 100.years.ago
-    date_limit_spec = options[:before_date] || 100.years.ago
+    date_limit_spec = options[:retention_days] ? Date.today - options[:retention_days] : 100.years.ago
     if options[:max_to_keep]
       log_max = options[:max_to_keep]
       if log_max > 0 && model.count > log_max

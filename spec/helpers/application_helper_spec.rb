@@ -136,18 +136,19 @@ describe ApplicationHelper do
           model.each {|m| m.save}
         end        
         ActiveRecord::Base.transaction do
-          i = 0
+          i = -10
           model.each do |m| 
             i+=1
-            m.created_at = Date.new(2000,1,i) + 10.hours
+            m.created_at = Time.now + i.days
             m.save
+#            puts "**** m.id=#{m.id}, created at #{m.created_at}"
           end
         end
       end
 
       it 'deletes entries before a given date' do
-          clean_old_file_entries(AppLog, :before_date => Date.new(2000,1,6))
-          AppLog.count.should eq 5
+          clean_old_file_entries(AppLog, :retention_days => 6)
+          AppLog.count.should eq 7
       end
       it 'deletes entries to leave a fixed remaining number' do
           clean_old_file_entries(AppLog, :max_to_keep => 5)
