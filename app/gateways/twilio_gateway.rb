@@ -28,7 +28,7 @@ class TwilioGateway < SmsGateway
   # send an sms using Twilio-ruby interface
   # No error checking done in this method. Should eventually be added.
   #   See http://www.twilio.com/docs/api/rest/sending-sms for how to do status callbacks
-  def deliver(numbers=@numbers, body=@body)
+  def deliver(numbers=@numbers, body=@body, message_id=nil, log=nil)
     # NB: message#deliver_sms currently sends numbers as a string, not an array.
 #puts "**** Delivering with @background=#{@background}"
     if numbers.is_a? String
@@ -42,11 +42,11 @@ class TwilioGateway < SmsGateway
     # Use delivery system based on the parameter @background [i.e. background processing type]
     case @background
       when /iron/i
-        @numbers.count > 1 ? deliver_ironworker : deliver_direct
+        @numbers.count > 1 ? deliver_ironworker : deliver_direct(message_id)
       when /dj|delay.*job/i
-         @numbers.count > 1 ? deliver_delayed_job : deliver_direct
+         @numbers.count > 1 ? deliver_delayed_job(message_id) : deliver_direct(message_id)
       else
-        deliver_direct
+        deliver_direct(message_id)
     end
     AppLog.create(:code => "SMS.deliver.#{@gateway_name}", :description=>"background=#{@background || 'none'}, count = #{@numbers.count} messages")
     super
@@ -69,13 +69,13 @@ class TwilioGateway < SmsGateway
     @gateway_reply = nil    # because job will be run later, asynchronously
   end
   
-  def deliver_delayed_job
+  def deliver_delayed_job(message_id)
     heroku_set_workers(1)   # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
-    delay.deliver_direct
+    delay.deliver_direct(message_id)
     @gateway_reply = nil    # because job will be run later, asynchronously
   end
 
-  def deliver_direct
+  def deliver_direct(message_id)
     @client = Twilio::REST::Client.new @account_sid, @auth_token
     reply = {} # To make status hash
     @numbers.each do |number|
@@ -87,16 +87,24 @@ class TwilioGateway < SmsGateway
           :body => @body
          )
         rescue  # twilio-ruby indicates failed phone number by raising exception Twilio::REST::RequestError
-          name = Member.find_by_phone(number).full_name_short
-          AppLog.create(:code => "SMS.error.twilio", :description=>"for #{name}: #{$!}, #{$!.backtrace[0..2]}", :severity=>'Warning')  
+          if (member = Member.find_by_phone(number).first)
+            for_member = "for #{member.full_name_short}: "
+          else
+            for_member = ''
+          end
+          AppLog.create(:code => "SMS.error.twilio", :description=>"#{for_member}#{$!}, #{$!.backtrace[0..2]}", :severity=>'Warning')  
           reply[number] = {:status => MessagesHelper::MsgError}
+          
         else
           reply[number] = {:status => MessagesHelper::MsgSentToGateway}
        end     
     end
     AppLog.create(:code => "SMS.sent.#{@gateway_name}", 
       :description=>"#{@numbers.count} messages sent from=#{@phone_number}, msg=#{@body[0..30]}")
-    @gateway_reply = reply
+    if reply && message_id && (msg = Message.find_by_id(message_id))
+      msg.update_sent_messages_w_status(reply)
+    end
+    @gateway_reply = nil
   end
 end  
 

@@ -72,13 +72,16 @@ class SmsGateway
     return num_array.join(',').gsub('+', '') # Clickatell may not like '+' prefix
   end
     
-  def deliver(numbers=@numbers, body=@body, log=false)
+  def deliver(numbers=@numbers, body=@body, message_id=nil, log=false)
     @numbers=numbers
     @body=body
     if log
       log_numbers = numbers_to_string_list
       log_numbers = log_numbers[0..49]+'...' if log_numbers.length > 50
       AppLog.create(:code => "SMS.sent.#{@gateway_name}", :description=>"to #{@numbers}: #{@body[0..30]}, resp=#{@gateway_reply}")
+    end
+    if @gateway_reply && message_id && (msg = Message.find_by_id(message_id))
+      msg.update_sent_messages_w_status(@gateway_reply)
     end
     return @gateway_reply
   end

@@ -297,7 +297,7 @@ puts "**** Trying to deliver message ##{self.id} but no email addresses found."
     assemble_sms()
 #puts "**** sms_gateway.deliver #{sms_gateway} w #{phone_numbers}: #{sms_only}"
     #******* CONNECT TO GATEWAY AND DELIVER MESSAGES 
-    gateway_reply = sms_gateway.deliver(@phones, sms_only)
+    gateway_reply = sms_gateway.deliver(@phones, sms_only, self.id)
 #puts "**** sms_gateway=#{sms_gateway}"
 #puts "**** gateway_reply=#{gateway_reply}"
     #******* PROCESS GATEWAY REPLY (INITIAL STATUSES OF SENT MESSAGES)  

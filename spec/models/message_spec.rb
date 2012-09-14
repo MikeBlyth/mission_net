@@ -238,7 +238,8 @@ describe Message do
         @message.send_email = false
         @message.sms_only = "#"*50
         Notifier.should_not_receive(:send_group_message)
-        @gateway.should_receive(:deliver).with(nominal_phone_number_array, Regexp.new(@message.sms_only))
+        @gateway.should_receive(:deliver).with(nominal_phone_number_array, 
+          Regexp.new(@message.sms_only), instance_of(Fixnum))
         @message.deliver(:sms_gateway=>@gateway)
       end
       
@@ -378,7 +379,8 @@ describe Message do
         @members[1].update_attributes(:phone_1 => nil, :phone_2 => nil)
         @message.save
         @message.stub :update_sent_messages_w_status
-        @gateway.should_receive(:deliver).with([@members[0].phone_1.without_plus], /###/)
+        @gateway.should_receive(:deliver).with([@members[0].phone_1.without_plus], /###/,
+          instance_of(Fixnum))
         @message.deliver(:sms_gateway=>@gateway)
       end          
 
@@ -388,7 +390,8 @@ describe Message do
         @members[1].reload.phone_1.should == @members[0].reload.phone_1
         @message.create_sent_messages
         @message.stub :update_sent_messages_w_status
-        @gateway.should_receive(:deliver).with([@members[0].phone_1.without_plus], /###/)
+        @gateway.should_receive(:deliver).with([@members[0].phone_1.without_plus], /###/,
+          instance_of(Fixnum))
         @message.deliver(:sms_gateway=>@gateway)
       end
       

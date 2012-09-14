@@ -157,23 +157,29 @@ describe TwilioGateway do
 
     end # handles errors
 
-    describe 'returns status list' do
+    describe "calls message's update_status method" do
+      let(:ok_status) {MessagesHelper::MsgSentToGateway}
+      let(:bad_status) {MessagesHelper::MsgError}
       before(:each) do
         @phones = [@phone_1, @phone_2]
+        @mock_msg = mock('Message').as_null_object
+        Message.should_receive(:find_by_id).and_return(@mock_msg)
       end
 
       it 'as hash of statuses' do
-        response = @gateway.deliver(@phones, @body)
-        response[@phones[0]].should == {:status => MessagesHelper::MsgSentToGateway}
-        response[@phones[1]].should == {:status => MessagesHelper::MsgSentToGateway}
+        @mock_msg.should_receive(:update_sent_messages_w_status).with(
+          {@phone_1=>{:status => ok_status}, @phone_2=>{:status => ok_status}}
+          )
+        @gateway.deliver(@phones, @body, 1)
       end
 
       it 'marking errors' do
+        @mock_msg.should_receive(:update_sent_messages_w_status).with(
+          {@phone_1=>{:status => bad_status}, @phone_2=>{:status => ok_status}}
+          )
         @client.should_receive(:create).and_raise
         @client.should_receive(:create)
-        response = @gateway.deliver(@phones, @body)
-        response[@phones[0]].should == {:status => MessagesHelper::MsgError}
-        response[@phones[1]].should == {:status => MessagesHelper::MsgSentToGateway}
+        @gateway.deliver(@phones, @body, 1)
       end
     end
               

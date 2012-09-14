@@ -105,7 +105,7 @@ class Member < ActiveRecord::Base
     self
   end
 
-  def self.find_by_phone(phone_number).full_name_short
+  def self.find_by_phone(phone_number)
     target_phone = (phone_number[0] == '+' ? phone_number[1..20] : phone_number)
     Member.where("phone_1 = ? OR phone_2 = ?",target_phone, target_phone).readonly(false).all
   end

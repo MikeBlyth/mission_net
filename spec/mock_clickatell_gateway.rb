@@ -23,7 +23,7 @@ class MockClickatellGateway < ClickatellGateway
     "ERR: 105, INVALID DESTINATION ADDRESS"
   end
 
-  def deliver(numbers=@numbers, body=@body)
+  def deliver(numbers=@numbers, body=@body, message_id=nil)
 #puts "****MockClickatellGateway#Deliver numbers=#{numbers}, body=#{body}"
     if numbers.is_a? String
       @numbers = numbers.gsub("+","").split(/,\s*/)
