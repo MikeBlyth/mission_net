@@ -66,18 +66,18 @@ puts "**** Delivering Twilio with @background=#{@background}, numbers=#{numbers}
         :body => @body
       }
       )
-    @gateway_reply = nil    # because job will be run later, asynchronously
+    @status = nil    # because job will be run later, asynchronously
   end
   
   def deliver_delayed_job(message_id)
     heroku_set_workers(1)   # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
     delay.deliver_direct(message_id)
-    @gateway_reply = nil    # because job will be run later, asynchronously
+    @status = nil    # because job will be run later, asynchronously
   end
 
   def deliver_direct(message_id)
     @client = Twilio::REST::Client.new @account_sid, @auth_token
-    reply = {} # To make status hash
+    @status = {} # To make status hash
     @numbers.each do |number|
 #puts "****Delivering to number=#{number}"
       begin
@@ -93,18 +93,18 @@ puts "**** Delivering Twilio with @background=#{@background}, numbers=#{numbers}
             for_member = ''
           end
           AppLog.create(:code => "SMS.error.twilio", :description=>"#{for_member}#{$!}, #{$!.backtrace[0..2]}", :severity=>'Warning')  
-          reply[number] = {:status => MessagesHelper::MsgError}
-          
+          @status[number] = {:status => MessagesHelper::MsgError}
+
         else
-          reply[number] = {:status => MessagesHelper::MsgSentToGateway}
-       end     
+          @status[number] = {:status => MessagesHelper::MsgSentToGateway}
+       end
     end
     AppLog.create(:code => "SMS.sent.#{@gateway_name}", 
       :description=>"#{@numbers.count} messages sent from=#{@phone_number}, msg=#{@body[0..30]}")
-    if reply && message_id && (msg = Message.find_by_id(message_id))
-      msg.update_sent_messages_w_status(reply)
+    if @status && message_id && (msg = Message.find_by_id(message_id))
+      msg.update_sent_messages_w_status(@status)
     end
-    @gateway_reply = nil
+    @status= nil  # because we've already updated the sent messages
   end
 end  
 

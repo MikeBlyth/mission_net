@@ -26,7 +26,7 @@ require 'uri'
 #
 class SmsGateway
   attr_accessor :numbers, :body, :required_params
-  attr_reader :uri, :gateway_reply, :gateway_name, :errors, :status
+  attr_reader :uri, :gateway_name, :errors, :status
 
   def initialize
     get_required_params if @required_params && !@required_params.empty?
@@ -78,12 +78,13 @@ class SmsGateway
     if log
       log_numbers = numbers_to_string_list
       log_numbers = log_numbers[0..49]+'...' if log_numbers.length > 50
-      AppLog.create(:code => "SMS.sent.#{@gateway_name}", :description=>"to #{@numbers}: #{@body[0..30]}, resp=#{@gateway_reply}")
+      AppLog.create(:code => "SMS.sent.#{@gateway_name}", 
+        :description=>"to #{@numbers}: #{@body[0..30]}, resp=#{@status}")
     end
-    if @gateway_reply && message_id && (msg = Message.find_by_id(message_id))
-      msg.update_sent_messages_w_status(@gateway_reply)
+    if @status && message_id && (msg = Message.find_by_id(message_id))
+      msg.update_sent_messages_w_status(@status)
     end
-    return @gateway_reply
+    return @status
   end
 
   # Return instance of default gateway. The class is taken from the string in SiteSetting.gateway_name so

@@ -62,7 +62,6 @@ puts "**** deliver Clickatell, numbers=#{numbers}"
     @status = make_status_hash
     super  # Note that it's called AFTER we make the connection to Clickatell, so it can include
            #   the results in the log.
-    return @status
   end
 
   def make_status_hash
@@ -83,7 +82,7 @@ puts "**** deliver Clickatell, numbers=#{numbers}"
   #   for status of single and multiple messages
   def status_of_multiple_messages
     #  Parse the Clickatell reply into array of hash like {:id=>'asebi9xxke...', :phone => '2345552228372'}
-#puts "**** gateway_reply=#{gateway_reply}"
+#puts "**** @gateway_reply=#{@gateway_reply}"
     status_hash = {}
     @gateway_reply.split("\n").each do |s|
       if s =~ /ID:\s+(\w+)\s+To:\s+([0-9]+)/
