@@ -338,6 +338,7 @@ en:
       auto_update_instructions: "If auto-update in-country status is selected, the system will check 
          members' arrival and departure dates, if any, and adjust their in_country status accordingly. 
          This is done daily (in the early morning)."
+      be_sure_to_save: Be sure to click the save button after making any changes.
       clickatell_user_name: Clickatell user name
       clickatell_password: Clickatell password
       contact_updates: Contact Updates
@@ -345,6 +346,7 @@ en:
         and when they will be sent. Include email addresses only (no names), separated by commas."
       contact_update_recipients: Contact update recipients
       default_outgoing_sms_gateway: Default outgoing SMS gateway
+      alternate_outgoing_sms_gateway: Alternate outgoing SMS gateway
       maintenance tasks: Maintenance tasks
       notifications: Notifications
       sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.

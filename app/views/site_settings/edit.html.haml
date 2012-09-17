@@ -1,5 +1,6 @@
 .active-scaffold.site_settings{:style=>'width: 400px'}
   %h2= t('.title') 
+  %p= t('.be_sure_to_save')
   = form_tag(update_site_settings_path, :method => :put) do 
     %hr
     %h3= t(:email)
@@ -10,6 +11,8 @@
     %h3= t('.sms_text_messaging')
     = settings_field(:default_outgoing_sms_gateway, :label=> t('.default_outgoing_sms_gateway'),
       :choices => [['Twilio'], ['Clickatell']])
+    = settings_field(:alternate_outgoing_sms_gateway, :label=> t('.alternate_outgoing_sms_gateway'),
+      :choices => [['None', ''], ['Twilio'], ['Clickatell']])
     %h4 Clickatell 
     = settings_field(:clickatell_user_name, :label=> t('.clickatell_user_name'))
     = settings_field(:clickatell_password, :label=> t('.clickatell_password'))

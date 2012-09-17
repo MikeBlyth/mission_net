@@ -345,9 +345,11 @@ fr:
   setup_title: Initial Setup
   site_settings:
     edit:
+      alternate_outgoing_sms_gateway: Passerelle suppléant de SMS sortants
       auto_update_in_country_status: Auto auto-mise à jour le statut 'sur place'?
       auto_update_instructions: "Quand auto-mise à jour est sélectionné, le système 
         ajuste le statut 'sur place' automatiquement chaque matin en fonction des dates d'arrivée et de départ."
+      be_sure_to_save: N'oubliez pas de cliquer sur le bouton Enregistrer après avoir apporté des modifications.
       clickatell_user_name: Nom d'utilisateur Clickatell
       clickatell_password: Mot de passe Clickatell 
       contact_updates: Notifications de changement des coordonnées
