@@ -8,6 +8,8 @@ FactoryGirl.define do
     confirmed_time "2012-07-08 22:30:08"
     delivery_modes "DeliveryModes"
     confirmed_mode "ConfMode"
+    phone '55555'
+    email 'test@example.com'
     confirmation_message "ConfMsg"
     attempts 1
     gateway_message_id "GatewayMsgID"

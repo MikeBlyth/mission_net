@@ -431,6 +431,42 @@ describe Message do
 
   end # delivers to gateways
   
+  describe 'updates SentMessage statuses' do
+    let(:member) {FactoryGirl.build_stubbed(:member)}
+    let(:message) {FactoryGirl.create(:message, :send_sms => true)}
+    let(:sent_message) {FactoryGirl.create(:sent_message, :message => message, 
+        :member=>member)}
+    let(:sent_message_2) {
+       x = FactoryGirl.create(:sent_message, :message => message,:member=>member)
+       x.phone = '7777'
+       x.save
+       x}
+
+    before(:each) do
+    end
+    
+    it 'marks sent message as pending' do
+      gateway_reply = {sent_message.phone=>{:status => MessagesHelper::MsgSentToGateway}}
+      message.update_sent_messages_w_status(gateway_reply)
+      sent_message.reload.msg_status.should eq MessagesHelper::MsgSentToGateway
+    end
+    
+    it 'ignores status with wrong phone number' do
+      gateway_reply = {'badnumber'=>{:status => MessagesHelper::MsgSentToGateway}}
+    end
+  
+    it 'marks two sent messages as pending' do
+      gateway_reply = 
+        {sent_message.phone=>{:status => MessagesHelper::MsgSentToGateway},
+         sent_message_2.phone=>{:status => MessagesHelper::MsgSentToGateway}
+         }
+      message.update_sent_messages_w_status(gateway_reply)
+      sent_message.reload.msg_status.should eq MessagesHelper::MsgSentToGateway
+      sent_message_2.reload.msg_status.should eq MessagesHelper::MsgSentToGateway
+    end
+  
+  end # updates SentMessage statuses
+
   describe 'gives status reports:' do
     before(:each) do
       @sent_messages = (0..5).map {|i| mock_model(SentMessage, :id=>i, 
@@ -493,6 +529,7 @@ describe Message do
         :replied_names=>""
         }
     end
+    
     
   end # reports status
 
