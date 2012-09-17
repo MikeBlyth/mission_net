@@ -58,8 +58,11 @@ puts "**** deliver Clickatell, numbers=#{numbers}"
     outgoing_numbers = numbers_to_string_list
     @uri = base_uri + "sendmsg?&callback=2" +
             "&to=#{outgoing_numbers}&text=#{URI.escape(body)}"
+puts "**** Clickatell deliver 2"
     call_gateway
+puts "**** Clickatell deliver 3"
     @status = make_status_hash
+puts "**** Clickatell deliver 4"
     super  # Note that it's called AFTER we make the connection to Clickatell, so it can include
            #   the results in the log.
   end
@@ -136,6 +139,7 @@ puts "**** deliver Clickatell, numbers=#{numbers}"
   # Connect to Clickatell via the URI.
   # This can be overridden for testing; mock method can simply provide the desired reply
   def call_gateway
+puts "**** Clickatell call_gateway 1"
     if @uri =~ /password=/   # If we're using user_name and password, no need for session
       @gateway_reply = HTTParty::get @uri
     else
