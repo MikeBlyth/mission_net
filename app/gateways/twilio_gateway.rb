@@ -71,32 +71,40 @@ puts "**** Delivering Twilio with @background=#{@background}, numbers=#{numbers}
   
   def deliver_delayed_job(message_id)
     heroku_set_workers(1)   # For Heroku deployment only, of course. Need a worker to get the deliveries done in background.
+puts "deliver_delayed_job, message_id = #{message_id}"   
     delay.deliver_direct(message_id)
     @status = nil    # because job will be run later, asynchronously
   end
 
   def deliver_direct(message_id)
+puts "**** Starting deliver_direct"
     @client = Twilio::REST::Client.new @account_sid, @auth_token
     @status = {} # To make status hash
     @numbers.each do |number|
-#puts "****Delivering to number=#{number}"
+puts "****Deliver direct to number=#{number}"
       begin
+puts "**** deliver_direct 1"
         @client.account.sms.messages.create(
           :from => @phone_number,
           :to => number.with_plus,
           :body => @body
          )
+puts "**** deliver_direct 2"
         rescue  # twilio-ruby indicates failed phone number by raising exception Twilio::REST::RequestError
           if (member = Member.find_by_phone(number).first)
             for_member = "for #{member.full_name_short}: "
+puts "**** deliver_direct 3"
           else
             for_member = ''
+puts "**** deliver_direct 4"
           end
           AppLog.create(:code => "SMS.error.twilio", :description=>"#{for_member}#{$!}, #{$!.backtrace[0..2]}", :severity=>'Warning')  
+puts "**** deliver_direct 5"
           @status[number] = {:status => MessagesHelper::MsgError}
 
         else
           @status[number] = {:status => MessagesHelper::MsgSentToGateway}
+puts "**** deliver_direct 6"
        end
     end
     AppLog.create(:code => "SMS.sent.#{@gateway_name}", 

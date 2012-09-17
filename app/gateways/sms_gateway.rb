@@ -73,17 +73,25 @@ class SmsGateway
   end
     
   def deliver(numbers=@numbers, body=@body, message_id=nil, log=false)
+puts "**** SMS Gateway deliver 1"
     @numbers=numbers
     @body=body
     if log
       log_numbers = numbers_to_string_list
       log_numbers = log_numbers[0..49]+'...' if log_numbers.length > 50
+puts "**** SMS Gateway deliver 2"
       AppLog.create(:code => "SMS.sent.#{@gateway_name}", 
         :description=>"to #{@numbers}: #{@body[0..30]}, resp=#{@status}")
     end
+puts "**** SMS Gateway deliver 3"
+
     if @status && message_id && (msg = Message.find_by_id(message_id))
       msg.update_sent_messages_w_status(@status)
+puts "**** SMS Gateway deliver 4"
+      
     end
+puts "**** SMS Gateway deliver 5"
+
     return @status
   end
 
