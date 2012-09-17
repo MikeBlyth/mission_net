@@ -271,9 +271,8 @@ puts "**** Trying to deliver message ##{self.id} but no email addresses found."
   end
 
   def update_sent_messages_w_status(gateway_reply)
-#puts "**** update_sent_messages_w_status: gateway_reply=#{gateway_reply}"
+puts "**** update_sent_messages_w_status: gateway_reply=#{gateway_reply}"
     gateway_reply.each do |number, result|
-puts "Trying alt gateway, #@alt_gateway"
       # If sending resulted in error, try alternate gateway and use that result
       if result[:status] == MessagesHelper::MsgError && 
               (@alt_gateway ||= SmsGateway.alternate_sms_gateway)

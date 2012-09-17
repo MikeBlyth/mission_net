@@ -30,7 +30,7 @@ class TwilioGateway < SmsGateway
   #   See http://www.twilio.com/docs/api/rest/sending-sms for how to do status callbacks
   def deliver(numbers=@numbers, body=@body, message_id=nil, log=nil)
     # NB: message#deliver_sms currently sends numbers as a string, not an array.
-#puts "**** Delivering with @background=#{@background}"
+puts "**** Delivering Twilio with @background=#{@background}, numbers=#{numbers}"
     if numbers.is_a? String
       @numbers = numbers.gsub("+","").split(/,\s*/)    # Convert to array so we can do "each"
     else

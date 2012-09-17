@@ -34,6 +34,7 @@ class ClickatellGateway < SmsGateway
   def initialize
     @gateway_name = 'clickatell'
     @required_params = [:user_name, :password, :api_id]
+puts "**** Clickatell gateway initialized"
     super
   end
 
@@ -49,6 +50,7 @@ class ClickatellGateway < SmsGateway
   # If using a RESTFUL interface or other where a URI is called, you can follow this model. Otherwise,
   # this method will have to do whatever needed to tell the gateway service to send the message.
   def deliver(numbers=@numbers, body=@body, *)
+puts "**** deliver Clickatell, numbers=#{numbers}"
     @numbers = numbers  # Update instance variables (matters only if they were included in this call)
     @body = body
     raise('No phone numbers given') unless @numbers
