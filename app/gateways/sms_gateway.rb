@@ -104,7 +104,7 @@ class SmsGateway
   
   def self.alternate_sms_gateway
     gateway_name = SiteSetting.alternate_outgoing_sms_gateway
-    return nil unless gateway_name
+    return nil if gateway_name.blank?
     gateway_from_string(gateway_name)
   end
   
