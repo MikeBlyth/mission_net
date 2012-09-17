@@ -34,7 +34,7 @@ class ClickatellGateway < SmsGateway
   def initialize
     @gateway_name = 'clickatell'
     @required_params = [:user_name, :password, :api_id]
-puts "**** Clickatell gateway initialized"
+#puts "**** Clickatell gateway initialized"
     super
   end
 
@@ -50,7 +50,7 @@ puts "**** Clickatell gateway initialized"
   # If using a RESTFUL interface or other where a URI is called, you can follow this model. Otherwise,
   # this method will have to do whatever needed to tell the gateway service to send the message.
   def deliver(numbers=@numbers, body=@body, *)
-puts "**** deliver Clickatell, numbers=#{numbers}"
+#puts "**** deliver Clickatell, numbers=#{numbers}"
     @numbers = numbers  # Update instance variables (matters only if they were included in this call)
     @body = body
     raise('No phone numbers given') unless @numbers
@@ -58,18 +58,16 @@ puts "**** deliver Clickatell, numbers=#{numbers}"
     outgoing_numbers = numbers_to_string_list
     @uri = base_uri + "sendmsg?&callback=2" +
             "&to=#{outgoing_numbers}&text=#{URI.escape(body)}"
-puts "**** Clickatell deliver 2"
     call_gateway
-puts "**** Clickatell deliver 3, @gateway_reply = #@gateway_reply"
     @status = make_status_hash
-puts "**** Clickatell deliver 4"
     super  # Note that it's called AFTER we make the connection to Clickatell, so it can include
            #   the results in the log.
   end
 
   def make_status_hash
-puts "**** make_status_hash"
-    @numbers.count == 1 ? status_of_single_message : status_of_multiple_messages
+#puts "**** make_status_hash"
+    # reply format differs slightly depending on single or multiple messages
+    @gateway_reply.lines.count == 1 ? status_of_single_message : status_of_multiple_messages
   end
   
   # Return status hash like {'23480888888' => {:status => -1, :error => 'ERROR: No credit'}}
@@ -86,26 +84,18 @@ puts "**** make_status_hash"
   #   for status of single and multiple messages
   def status_of_multiple_messages
     #  Parse the Clickatell reply into array of hash like {:id=>'asebi9xxke...', :phone => '2345552228372'}
-puts "**** status_of_multiple 1"
     status_hash = {}
     @gateway_reply.split("\n").each do |s|
       if s =~ /ID:\s+(\w+)\s+To:\s+([0-9]+)/
-puts "**** status_of_multiple 2"
         status_hash[$2] = {:sms_id => $1, :status => MessagesHelper::MsgSentToGateway}
       end
     end
-puts "**** status_of_multiple 3"
     # Any sent_messages not now marked with gateway_message_id and msg_status must have errors
     @numbers.each do |number|
-puts "**** status_of_multiple 4"
       unless status_hash.has_key? number
-puts "**** status_of_multiple 5"
-
         status_hash[number] = {:status=> MessagesHelper::MsgError}
       end
     end
-puts "**** status_of_multiple 6"
-
     return status_hash
   end
 
@@ -122,7 +112,7 @@ puts "**** status_of_multiple 6"
       end
     end
   end
-            
+
   # Clickatell uses sessions as an alternative to basic authentication. 
   def get_session
     session_uri = base_uri.sub('http://', 'https://') + "auth?" + credentials
@@ -135,19 +125,18 @@ puts "**** status_of_multiple 6"
       return reply.body   # Which contains the error message
     end
   end
-    
+
   def session_expired
     @gateway_reply.body =~ Regexp.new("(Err: #{ExpiredSessionCode})|(Err: #{AuthenticationFailedCode})", 'i')
   end
-  
+
   def uri_with_session
     @uri+"&session_id="+@session
   end
-      
+
   # Connect to Clickatell via the URI.
   # This can be overridden for testing; mock method can simply provide the desired reply
   def call_gateway
-puts "**** Clickatell call_gateway 1"
     if @uri =~ /password=/   # If we're using user_name and password, no need for session
       @gateway_reply = HTTParty::get @uri
     else
@@ -160,7 +149,6 @@ puts "**** Clickatell call_gateway 1"
         @gateway_reply = HTTParty::get uri_with_session 
       end
     end
-#puts "**** CGtw#deliver @gateway_reply=#{@gateway_reply}"
   end
       
  

@@ -277,7 +277,7 @@ puts "**** update_sent_messages_w_status: gateway_reply=#{gateway_reply}"
       if result[:status] == MessagesHelper::MsgError && 
               (@alt_gateway ||= SmsGateway.alternate_sms_gateway)
         puts "Trying alt gateway, #@alt_gateway"
-        alt_reply = @alt_gateway.deliver(number, sms_only, self.id)
+        alt_reply = @alt_gateway.deliver([number], sms_only, self.id)
         result = alt_reply[number]
       end
       sent_messages.find_by_phone(number).
