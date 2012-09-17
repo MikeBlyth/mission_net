@@ -273,9 +273,17 @@ puts "**** Trying to deliver message ##{self.id} but no email addresses found."
   def update_sent_messages_w_status(gateway_reply)
 #puts "**** update_sent_messages_w_status: gateway_reply=#{gateway_reply}"
     gateway_reply.each do |number, result|
+puts "**** result = #{result}"
+      # If sending resulted in error, try alternate gateway and use that result
+      if result[:status] == MessagesHelper::MsgError && 
+              (@alt_gateway ||= SmsGateway.alternate_sms_gateway)
+        alt_reply = @alt_gateway.deliver(number, sms_only, self.id)
+        result = alt_reply[number]
+      end
       sent_messages.find_by_phone(number).
            update_attributes(:gateway_message_id => result[:sms_id] || result[:error], 
               :msg_status=> result[:status] )
+        
     end
   end
  

@@ -67,6 +67,11 @@ default_outgoing_sms_gateway:
   default: twilio
   type: string
 
+alternate_outgoing_sms_gateway:
+  name: Alternate SMS gateway for outgoing messages
+  default: clickatell
+  type: string
+
 clickatell_user_name:
   name: Clickatell User Name
   type: string

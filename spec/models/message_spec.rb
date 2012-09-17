@@ -314,6 +314,7 @@ describe Message do
         
         it "inserts error status into sent_message" do
           @gateway.stub(:deliver => errors_gateway_status(nominal_phone_number_array))
+          SmsGateway.stub(:alternate_sms_gateway).and_return(nil)
           @message.deliver(:sms_gateway=>@gateway)
           @sent_message = @message.sent_messages.first.reload
           @sent_message.msg_status.should == MessagesHelper::MsgError
@@ -355,6 +356,7 @@ describe Message do
         
         it "inserts error status into sent_message" do
           @gateway.stub(:deliver => errors_gateway_status(nominal_phone_number_array))
+          SmsGateway.stub(:alternate_sms_gateway).and_return(nil)
           @message.deliver(:sms_gateway=>@gateway)
           @sent_message = @message.sent_messages.first.reload
           @sent_message.msg_status.should == MessagesHelper::MsgError
@@ -464,7 +466,27 @@ describe Message do
       sent_message.reload.msg_status.should eq MessagesHelper::MsgSentToGateway
       sent_message_2.reload.msg_status.should eq MessagesHelper::MsgSentToGateway
     end
-  
+
+    it 'tries alternate gateway when first gives error' do
+      phone = sent_message.phone
+      gateway_reply = {phone=>{:status => MessagesHelper::MsgError}}
+      alt_gw = MockClickatellGateway.new
+      SmsGateway.should_receive(:alternate_sms_gateway).and_return(alt_gw)
+      alt_gw.should_receive(:deliver).with(phone,
+         message.sms_only, message.id).and_return(
+           {phone=>{:status => MessagesHelper::MsgPending}})
+      message.update_sent_messages_w_status(gateway_reply)
+      sent_message.reload.msg_status.should eq MessagesHelper::MsgPending
+    end  
+
+    it 'does not crash when alternate gateway is not defined' do
+      phone = sent_message.phone
+      gateway_reply = {phone=>{:status => MessagesHelper::MsgError}}
+      alt_gw = MockClickatellGateway.new
+      SmsGateway.should_receive(:alternate_sms_gateway).and_return(nil)
+      message.update_sent_messages_w_status(gateway_reply)
+      sent_message.reload.msg_status.should eq MessagesHelper::MsgError
+    end  
   end # updates SentMessage statuses
 
   describe 'gives status reports:' do

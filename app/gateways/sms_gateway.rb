@@ -94,10 +94,21 @@ class SmsGateway
   #   in production, a new instance of MysenderGateway is returned
   #   in testing and development, a new instance of MockMysenderGateway is returned if it's a defined class,
   #     otherwise a new instance of MockClickatellGateway is returned
+
   def self.default_sms_gateway
     gateway_name = SiteSetting.default_outgoing_sms_gateway
     raise "Trying to send SMS but no gateway defined in site settings" unless gateway_name
-    gateway_name = gateway_name.capitalize + "Gateway"
+    gateway_from_string(gateway_name)
+  end
+  
+  def self.alternate_sms_gateway
+    gateway_name = SiteSetting.alternate_outgoing_sms_gateway
+    return nil unless gateway_name
+    gateway_from_string(gateway_name)
+  end
+  
+  def self.gateway_from_string(gw_name)
+    gateway_name = gw_name.capitalize + "Gateway"
     if Rails.env == 'production'
       return gateway_name.constantize.new
     else    
