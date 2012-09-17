@@ -472,7 +472,7 @@ describe Message do
       gateway_reply = {phone=>{:status => MessagesHelper::MsgError}}
       alt_gw = MockClickatellGateway.new
       SmsGateway.should_receive(:alternate_sms_gateway).and_return(alt_gw)
-      alt_gw.should_receive(:deliver).with(phone,
+      alt_gw.should_receive(:deliver).with([phone],
          message.sms_only, message.id).and_return(
            {phone=>{:status => MessagesHelper::MsgPending}})
       message.update_sent_messages_w_status(gateway_reply)
