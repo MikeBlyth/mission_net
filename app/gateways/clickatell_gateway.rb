@@ -60,7 +60,7 @@ puts "**** deliver Clickatell, numbers=#{numbers}"
             "&to=#{outgoing_numbers}&text=#{URI.escape(body)}"
 puts "**** Clickatell deliver 2"
     call_gateway
-puts "**** Clickatell deliver 3"
+puts "**** Clickatell deliver 3, @gateway_reply = #@gateway_reply"
     @status = make_status_hash
 puts "**** Clickatell deliver 4"
     super  # Note that it's called AFTER we make the connection to Clickatell, so it can include
@@ -68,6 +68,7 @@ puts "**** Clickatell deliver 4"
   end
 
   def make_status_hash
+puts "**** make_status_hash"
     @numbers.count == 1 ? status_of_single_message : status_of_multiple_messages
   end
   
@@ -85,19 +86,26 @@ puts "**** Clickatell deliver 4"
   #   for status of single and multiple messages
   def status_of_multiple_messages
     #  Parse the Clickatell reply into array of hash like {:id=>'asebi9xxke...', :phone => '2345552228372'}
-#puts "**** @gateway_reply=#{@gateway_reply}"
+puts "**** status_of_multiple 1"
     status_hash = {}
     @gateway_reply.split("\n").each do |s|
       if s =~ /ID:\s+(\w+)\s+To:\s+([0-9]+)/
+puts "**** status_of_multiple 2"
         status_hash[$2] = {:sms_id => $1, :status => MessagesHelper::MsgSentToGateway}
       end
     end
+puts "**** status_of_multiple 3"
     # Any sent_messages not now marked with gateway_message_id and msg_status must have errors
     @numbers.each do |number|
+puts "**** status_of_multiple 4"
       unless status_hash.has_key? number
+puts "**** status_of_multiple 5"
+
         status_hash[number] = {:status=> MessagesHelper::MsgError}
       end
     end
+puts "**** status_of_multiple 6"
+
     return status_hash
   end
 
