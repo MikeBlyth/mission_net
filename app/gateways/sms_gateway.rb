@@ -82,7 +82,7 @@ class SmsGateway
         :description=>"to #{@numbers}: #{@body[0..30]}, resp=#{@status}")
     end
     if @status && message_id && (msg = Message.find_by_id(message_id))
-      msg.update_sent_messages_w_status(@status)
+      msg.update_sent_messages_w_status(@status, @gateway_name)
     end
     return @status
   end
