@@ -16,6 +16,7 @@
       = render 'shared/side_menu' 
       - if @notices
         #notices= @notices
+      = render 'system_notes/last_note'
       - if @compact == 'true'
         = link_to t('click_to_show_more_columns'), params_for(:action => :index).merge(:compact => false), :id => :compact
       - elsif @compact == 'false'

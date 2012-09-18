@@ -2,6 +2,9 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  date:
+    formats:
+      default: "%-1e %b %y"# 9 Mar 11
   Admin_tasks: Admin tasks
   both_have_phone: "(both)"
   by_deadline: "by %{deadline}"
@@ -59,6 +62,7 @@ en:
   immediately: immediately
   info_request_subject_line: Your request for info
   last_name: Last name               
+  latest_system_notices: Latest notices
   location: Location
   Main_Menu: Main Menu
   Male: Male
@@ -93,6 +97,7 @@ en:
   passport_country: Passport country
   phone: Phone
   "Please log in": Please sign in
+  previous_system_notices: View earlier notices
   printed_on_date: Printed on
   private_data: "**private**"
   private_dir: "---"     # Filler for private data in reports

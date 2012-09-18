@@ -12,10 +12,6 @@ module MessagesHelper
         :reply=>status[:replied], :err=>status[:errors])
   end
   
-  def created_at_column(record, column)
-    to_local_time(record.created_at)
-  end
-
   def body_column(record, column)
     if record.sms_only && record.sms_only.size > 40
       record.sms_only

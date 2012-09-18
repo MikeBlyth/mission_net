@@ -66,6 +66,7 @@ fr:
   immediately: immédiatement
   info_request_subject_line: Votre demande d'information
   last_name: Nom de famille
+  latest_system_notices: Voici les derniers avis
   location: Emplacement
   Main_Menu: Menu principal
   Male: Male
@@ -102,6 +103,7 @@ fr:
   passport_country: Pays
   phone: Phone
   "Please log in": Identifiez-vous SVP
+  previous_system_notices: Voir des avis plus âgés
   printed_on_date: Imprimé sur 
   private_data: "**privé**"
   private_dir: "---"     # Filler for private data in reports
@@ -194,6 +196,7 @@ fr:
         emergency_contact_phone: Téléphone de contact d'urgence
         emergency_contact_email: E-mail de contact d'urgence
         emergency_contact_name: Nom de contact d'urgence
+        groups: Groupes
         phone_1: Phone 1
         phone_2: Phone 2                 
         email_1: Email 1                 
@@ -208,28 +211,35 @@ fr:
         updated_at: Updated at
         phone_private: Téléphone privé?
         email_private: E-mail privé?
-        in_country: Sur place
+        in_country: Sur place?
         comments: Commentaires 
         short_name: Nom court
         wife: Femme                 
         sex: Sexe
       message:
         user: User
-        body: Email text
+        created_at: Date
+        body: Email
         importance: Importance
         keywords: Mots-clés
         sms_only: "Message SMS"
         send_sms: SMS
         send_email: Email
+        status_summary: Résumé
         response_time_limit: Délai de réponse
         to_groups: Groupes de destination
+      system_note:
+        updated_at: Mise à jour
+        category: Classe
+        note: Avis
+        status: Statut
   side_menu:
     edit_your_user_info: Modifier vos informations
     sign_out: Déconnecter
     members: Membres
     create_new_message: Créer un nouveau message
     reports: Rapports
-    system_notices: Notes sur le système
+    system_notices: Avis sur le système
     message_list: Messages
     groups: Groupes
     log: Fichier journal
@@ -308,7 +318,7 @@ fr:
       title: Annuaire  
       'Location not listed': L'emplacement n'est pas indiqué
     index:
-      header: Annuaire (names, phone numbers and email addresses)
+      header: Annuaire (noms, numéros de téléphone et adresses e-mail)
       by_family: Par famille (HTML)
       by_location: Par emplacement (HTML)
       font_size: Taille des caractères

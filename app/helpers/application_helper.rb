@@ -4,6 +4,15 @@ module ApplicationHelper
   DefaultReportedLocDuration = 6 # 6 hours
   MaxSmsLength = 160 # characters
   
+###### COLUMN HELPERS *********
+  def updated_at_column(record, column)
+    I18n.l record.updated_at, :format => :short
+  end    
+
+  def created_at_column(record, column)
+    I18n.l record.created_at, :format => :short
+  end    
+
   # Given an object (or nil) described by method description_method, return 
   # * nil_value if object is nil or its description is missing or is "unspecified"
   # * description_method otherwise

@@ -4,8 +4,8 @@
   %li#directory 
     = t '.view_in_browser'
     %ul 
-      %li= link_to t('.by_family'), '/reports/directory.html?by=family', :id=>'directory-family'
-      %li= link_to t('.by_location'), '/reports/directory.html?by=location', :id=>'directory-location'
+      %li= link_to t('.by_family'), directory_path(:by=>:family), :id=>'directory-family'
+      %li= link_to t('.by_location'), directory_path(:by=>:location), :id=>'directory-location'
   %li#directory_pdf
     = t('.printable')
     = form_tag('/reports/directory.pdf', :method => "get")  do

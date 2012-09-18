@@ -1,4 +1,7 @@
 class SystemNotesController < ApplicationController
+
+skip_authorization_check
+
   active_scaffold :system_note do |config|
     config.columns = [:updated_at, :category, :note, :status]
     config.columns[:category].inplace_edit = true
@@ -10,6 +13,5 @@ class SystemNotesController < ApplicationController
     @notices = I18n.t(:system_notes_prompt) 
     super
   end
-  
 
 end 

@@ -34,6 +34,9 @@ class MembersController < ApplicationController
     # Set which columns are to use a selection box
     [:country, :location, :wife, :bloodtype].each {|col| config.columns[col].form_ui = :select }
     
+    # Date format
+    config.columns[:arrival_date].options[:format] = :default
+
 #    config.columns[:sex].options= {:options => [['M', 'm'], ['F', 'f']], :include_blank => '---'}
     config.columns[:wife].options = { :options => [], :include_blank => '---'}
     # Any columns that should not be shown as links in the list view

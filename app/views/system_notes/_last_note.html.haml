@@ -1,0 +1,7 @@
+- last_note = SystemNote.last
+- if last_note
+  #system_note
+    .header= t('latest_system_notices')
+    .date= l last_note.created_at, :format => :short
+    .body= last_note.note
+    .link= link_to t('previous_system_notices'), system_notes_path

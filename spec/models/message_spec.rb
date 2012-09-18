@@ -467,7 +467,7 @@ describe Message do
       sent_message_2.reload.msg_status.should eq MessagesHelper::MsgSentToGateway
     end
 
-    it 'tries alternate gateway when first gives error' do
+    it 'tries alternate gateway when first one gives error' do
       phone = sent_message.phone
       gateway_reply = {phone=>{:status => MessagesHelper::MsgError}}
       alt_gw = MockClickatellGateway.new
@@ -477,15 +477,34 @@ describe Message do
            {phone=>{:status => MessagesHelper::MsgPending}})
       message.update_sent_messages_w_status(gateway_reply)
       sent_message.reload.msg_status.should eq MessagesHelper::MsgPending
+    end
+
+    it 'does not try to use alternate gateway when it is the same as original' do
+      phone = sent_message.phone
+      gateway_reply = {phone=>{:status => MessagesHelper::MsgError}}
+      alt_gw = MockClickatellGateway.new
+      SmsGateway.should_receive(:alternate_sms_gateway).and_return(alt_gw)
+      alt_gw.should_not_receive(:deliver)
+      alt_gateway_name = SiteSetting.alternate_outgoing_sms_gateway
+      message.update_sent_messages_w_status(gateway_reply, alt_gateway_name)
+      sent_message.reload.msg_status.should eq MessagesHelper::MsgError
     end  
 
     it 'does not crash when alternate gateway is not defined' do
       phone = sent_message.phone
       gateway_reply = {phone=>{:status => MessagesHelper::MsgError}}
-      alt_gw = MockClickatellGateway.new
       SmsGateway.should_receive(:alternate_sms_gateway).and_return(nil)
       message.update_sent_messages_w_status(gateway_reply)
       sent_message.reload.msg_status.should eq MessagesHelper::MsgError
+    end  
+
+    it 'logs error when corresponding sent_message not found' do
+      gateway_reply = {'bad_number'=>{:status => MessagesHelper::MsgError}}
+      alt_gw = MockClickatellGateway.new
+      SmsGateway.should_receive(:alternate_sms_gateway).and_return(alt_gw)
+      AppLog.should_receive(:create)
+      AppLog.should_receive(:create).with(hash_including(:severity => 'Warning'))
+      message.update_sent_messages_w_status(gateway_reply)
     end  
   end # updates SentMessage statuses
 
