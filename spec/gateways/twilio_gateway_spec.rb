@@ -168,15 +168,15 @@ describe TwilioGateway do
 
       it 'as hash of statuses' do
         @mock_msg.should_receive(:update_sent_messages_w_status).with(
-          {@phone_1=>{:status => ok_status}, @phone_2=>{:status => ok_status}}
-          )
+          {@phone_1=>{:status => ok_status}, @phone_2=>{:status => ok_status}},
+          'twilio')
         @gateway.deliver(@phones, @body, 1)
       end
 
       it 'marking errors' do
         @mock_msg.should_receive(:update_sent_messages_w_status).with(
-          {@phone_1=>{:status => bad_status}, @phone_2=>{:status => ok_status}}
-          )
+          {@phone_1=>{:status => bad_status}, @phone_2=>{:status => ok_status}},
+          'twilio')
         @client.should_receive(:create).and_raise
         @client.should_receive(:create)
         @gateway.deliver(@phones, @body, 1)

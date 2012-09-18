@@ -50,7 +50,7 @@ class ClickatellGateway < SmsGateway
   # If using a RESTFUL interface or other where a URI is called, you can follow this model. Otherwise,
   # this method will have to do whatever needed to tell the gateway service to send the message.
   def deliver(numbers=@numbers, body=@body, *)
-puts "**** deliver Clickatell, numbers=#{numbers}"
+#puts "**** deliver Clickatell, numbers=#{numbers}"
     @numbers = numbers  # Update instance variables (matters only if they were included in this call)
     @body = body
     raise('No phone numbers given') unless @numbers

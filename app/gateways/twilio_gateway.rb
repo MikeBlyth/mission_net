@@ -30,7 +30,7 @@ class TwilioGateway < SmsGateway
   #   See http://www.twilio.com/docs/api/rest/sending-sms for how to do status callbacks
   def deliver(numbers=@numbers, body=@body, message_id=nil, log=nil)
     # NB: message#deliver_sms currently sends numbers as a string, not an array.
-puts "**** Delivering Twilio with @background=#{@background}, numbers=#{numbers}"
+#puts "**** Delivering Twilio with @background=#{@background}, numbers=#{numbers}"
     if numbers.is_a? String
       @numbers = numbers.gsub("+","").split(/,\s*/)    # Convert to array so we can do "each"
     else
@@ -77,11 +77,11 @@ puts "**** Delivering Twilio with @background=#{@background}, numbers=#{numbers}
   end
 
   def deliver_direct(message_id)
-puts "**** Starting deliver_direct"
+#puts "**** Starting deliver_direct"
     @client = Twilio::REST::Client.new @account_sid, @auth_token
     @status = {} # To make status hash
     @numbers.each do |number|
-puts "****Deliver direct to number=#{number}"
+#puts "****Deliver direct to number=#{number}"
       begin
         @client.account.sms.messages.create(
           :from => @phone_number,
