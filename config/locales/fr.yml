@@ -103,7 +103,7 @@ fr:
   passport_country: Pays
   phone: Phone
   "Please log in": Identifiez-vous SVP
-  previous_system_notices: Voir des avis plus âgés
+  previous_system_notices: Voir tous les avis
   printed_on_date: Imprimé sur 
   private_data: "**privé**"
   private_dir: "---"     # Filler for private data in reports
@@ -231,6 +231,7 @@ fr:
         to_groups: Groupes de destination
       system_note:
         updated_at: Mise à jour
+        show_in_sidebar: $show in sidebar
         category: Classe
         note: Avis
         status: Statut

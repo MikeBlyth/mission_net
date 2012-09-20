@@ -98,7 +98,7 @@ en:
   passport_country: Passport country
   phone: Phone
   "Please log in": Please sign in
-  previous_system_notices: View earlier notices
+  previous_system_notices: View all notices
   printed_on_date: Printed on
   private_data: "**private**"
   private_dir: "---"     # Filler for private data in reports

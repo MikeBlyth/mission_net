@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120817134827) do
+ActiveRecord::Schema.define(:version => 20120920143447) do
 
   create_table "app_logs", :force => true do |t|
     t.string   "severity"
@@ -71,6 +71,12 @@ ActiveRecord::Schema.define(:version => 20120817134827) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
+
+  create_table "families", :force => true do |t|
+    t.integer  "head_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "groups", :force => true do |t|
     t.string   "group_name"
@@ -160,6 +166,31 @@ ActiveRecord::Schema.define(:version => 20120817134827) do
     t.boolean  "private"
   end
 
+  create_table "people", :force => true do |t|
+    t.integer  "family_id"
+    t.string   "last_name"
+    t.string   "first_name"
+    t.string   "middle_name"
+    t.integer  "country_id"
+    t.string   "emergency_contact_phone"
+    t.string   "emergency_contact_email"
+    t.string   "emergency_contact_name"
+    t.string   "phone_1"
+    t.string   "phone_2"
+    t.string   "email_1"
+    t.string   "email_2"
+    t.integer  "location_id"
+    t.string   "location_detail"
+    t.date     "arrival_date"
+    t.date     "departure_date"
+    t.boolean  "receive_sms"
+    t.boolean  "receive_email"
+    t.boolean  "blood_donor"
+    t.integer  "blood_type_id"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+  end
+
   create_table "sent_messages", :force => true do |t|
     t.integer  "message_id"
     t.integer  "member_id"
@@ -189,8 +220,9 @@ ActiveRecord::Schema.define(:version => 20120817134827) do
     t.string   "category"
     t.string   "note"
     t.string   "status"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.boolean  "show_in_sidebar"
   end
 
 end

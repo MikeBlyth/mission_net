@@ -147,8 +147,8 @@ a, a:visited {
   font-size: small;
   padding: 2px;  }
 
-#system_note .header {font-weight: bold}
-#system_note .date {font-size: 10px}
+#system_note .header {font-weight: bold; margin-top: 6px;}
+#system_note .date {font-size: 10px; margin-top: 4px;}
 #system_note .body {font-size: 10px}
 
 #compact {

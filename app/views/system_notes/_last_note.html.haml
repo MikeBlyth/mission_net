@@ -1,7 +1,10 @@
-- last_note = SystemNote.last
-- if last_note
+- selected_notes = SystemNote.where(:show_in_sidebar => true).limit(5)
+- if selected_notes.any?
   #system_note
     .header= t('latest_system_notices')
-    .date= l last_note.created_at, :format => :short
-    .body= last_note.note
+    - selected_notes.each do |note|
+      .date= l note.created_at, :format => :short
+      .body
+        = note.note
+        = "[#{note.status}]"
     .link= link_to t('previous_system_notices'), system_notes_path
