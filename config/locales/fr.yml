@@ -123,6 +123,7 @@ fr:
     privacy_note: "Notez que l'information privée est indiquée parce que vous avez demandé votre propre informations. 
           Il ne sera pas affiché quand les autres se renseigner sur vous.."
     private: (private!)
+  Sent_Messages: Sent Messages
   settings: Paramètres du système
   show_menu: Afficher le menu
   Sign_in: Connectez-vous
@@ -342,13 +343,13 @@ fr:
            pas l'un des ceux alors vous aurez besoin d'obtenir l'un ou l'autre"
       connect_facebook: Connecter avec votre compte Facebook
       connect_google: Connecter avec votre compte Google
-  setup_1: "The member database is empty, so presumably you want to set up
+  setup_1: "$The member database is empty, so presumably you want to set up
       a new installation. You will be added as an administrator.
       Please enter your email below. Note that at least one of the
       email addresses must one you use to log in with Facebook or
       Google, since that is how authentication is done by this
       system."
-  setup_2: "Note: Once you have been added to the database, you will no longer be 
+  setup_2: "$Note: Once you have been added to the database, you will no longer be 
       able to access this page, so be sure that the email you enter is correct or 
       you will not be able to log in and will have to re-start the installation."
 
@@ -367,12 +368,23 @@ fr:
          Inclure les adresses e-mail uniquement, séparés par des virgules."
       contact_update_recipients: Envoyer des notifications aux
       default_outgoing_sms_gateway: Passerelle par défaut de SMS sortants
+      log_explanation: "$The log stores system notices of events including errors and warnings.
+         It is only needed for debugging and archival purposes and does not affect the
+         operation of the program."
+      log_max_records: $Maximum number of items to keep in the application log
+      log_retention_period: $Maximum days to keep items in the application log
+      messages_max_records: $Maximum number of sent-messages items to keep
+      messages_retention_period: $Maximum days to keep sent-messages
       maintenance tasks: Tâches de maintenance du système
-      notifications: Notifications
+      notifications: $Notifications
       sendgrid_instructions: Remplissez ces paramètres si le site utilise SendGrid pour le courrier sortant.
       sms_text_messaging: La messagerie texte SMS
       sendgrid_user_name: Nom d'utilisateur Sendgrid
       sendgrid_password: Mot de passe Sendgrid
+      tab-sms: SMS
+      tab-email: Email
+      tab-maint: $Maintenance
+      tab-notifications: $Notifications
       title: Paramètres du système
       twilio_account_sid: Twilio account SID
       twilio_auth_token: Jeton d'autorisation (authorization token) pour Twilio

@@ -357,12 +357,11 @@ en:
       log_explanation: "The log stores system notices of events including errors and warnings.
          It is only needed for debugging and archival purposes and does not affect the
          operation of the program."
-      log_max_records: Maximum number of items to keep in the application log
-      log_retention_period: Maximum days to keep items in the application log
-      messages_max_records: Maximum number of sent-messages items to keep
-      messages_retention_period: Maximum days to keep sent-messages
+      log_max_records: Maximum number of items to keep
+      log_retention_period: Maximum days to keep items
+      messages_max_records: Maximum number of items to keep
+      messages_retention_period: Maximum days to keep 
       maintenance tasks: Maintenance tasks
-      notifications: Notifications
       sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.
       sms_text_messaging: SMS Text Messaging
       sendgrid_user_name: Sendgrid user name
@@ -371,6 +370,10 @@ en:
          given phone number or email address. Once messages have been sent and there is no need for
          further follow ups with that very message, they may be deleted unless needed for debugging or
          archival purposes."
+      tab-sms: SMS
+      tab-email: Email
+      tab-maint: Maintenance
+      tab-notifications: Notifications
       title: Site Settings
       twilio_account_sid: Twilio account SID
       twilio_auth_token: Twilio authorization token

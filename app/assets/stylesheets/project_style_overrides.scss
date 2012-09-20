@@ -428,6 +428,22 @@ div#groups {
   #record_type_of_group {
     width: 200px; } }
 
+/******* SITE SETTINGS FORM ***********/
+.site_settings {
+  p {font-size: 10px;}
+  $sms_tab_width: 200px;
+  #tabs-sms {
+    overflow: hidden;
+    }
+  #sms-default, #sms-service-1, #sms-service-2, #maint-1, #maint-2, #maint-3 {
+    float:left;
+    width: $sms_tab_width;
+    padding-left: 20px;}
+  }
+  
+  
+    
+
 /********************************/
 
 .not-implemented {
