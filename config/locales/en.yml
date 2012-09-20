@@ -64,6 +64,7 @@ en:
   last_name: Last name               
   latest_system_notices: Latest notices
   location: Location
+  Log: Log
   Main_Menu: Main Menu
   Male: Male
   Members: Members
@@ -116,6 +117,7 @@ en:
     privacy_note: "Note that private info is shown because you are requesting your own 
                     information. It is not shown when others request your information."
     private: (private!)
+  Sent_Messages: Sent Messages
   settings: Settings
   show_menu: Show menu
   "Signed in as": Signed in as
@@ -352,12 +354,23 @@ en:
       contact_update_recipients: Contact update recipients
       default_outgoing_sms_gateway: Default outgoing SMS gateway
       alternate_outgoing_sms_gateway: Alternate outgoing SMS gateway
+      log_explanation: "The log stores system notices of events including errors and warnings.
+         It is only needed for debugging and archival purposes and does not affect the
+         operation of the program."
+      log_max_records: Maximum number of items to keep in the application log
+      log_retention_period: Maximum days to keep items in the application log
+      messages_max_records: Maximum number of sent-messages items to keep
+      messages_retention_period: Maximum days to keep sent-messages
       maintenance tasks: Maintenance tasks
       notifications: Notifications
       sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.
       sms_text_messaging: SMS Text Messaging
       sendgrid_user_name: Sendgrid user name
       sendgrid_password: Sendgrid password
+      sent_message_log_explanation: "Sent Message records represent a message sent to a 
+         given phone number or email address. Once messages have been sent and there is no need for
+         further follow ups with that very message, they may be deleted unless needed for debugging or
+         archival purposes."
       title: Site Settings
       twilio_account_sid: Twilio account SID
       twilio_auth_token: Twilio authorization token
