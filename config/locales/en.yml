@@ -169,7 +169,7 @@ en:
       location: Locations
       member: Members
       settings: Settings
-      system_note: System Note
+      system_note: System Notes
     attributes:
       group:
         group_name: Group name
@@ -346,6 +346,9 @@ en:
          members' arrival and departure dates, if any, and adjust their in_country status accordingly. 
          This is done daily (in the early morning)."
       be_sure_to_save: Be sure to click the save button after making any changes.
+      cleanup_instructions: "Messages and log entries are removed from the system according
+         to the settings below. None of these items are required for the system to work,
+         and are only kept for archival or debugging purposes."
       clickatell_user_name: Clickatell user name
       clickatell_password: Clickatell password
       contact_updates: Contact Updates
@@ -354,26 +357,28 @@ en:
       contact_update_recipients: Contact update recipients
       default_outgoing_sms_gateway: Default outgoing SMS gateway
       alternate_outgoing_sms_gateway: Alternate outgoing SMS gateway
-      log_explanation: "The log stores system notices of events including errors and warnings.
-         It is only needed for debugging and archival purposes and does not affect the
-         operation of the program."
-      log_max_records: Maximum number of items to keep
-      log_retention_period: Maximum days to keep items
-      messages_max_records: Maximum number of items to keep
-      messages_retention_period: Maximum days to keep 
+      log_explanation: The log stores system notices of events including errors and warnings.
+      log_max_records: Maximum log entries to keep
+      log_retention_period: Maximum days to keep log
+      message_log_explanation: "Message entries include the message text, date & time, kind of message
+        (email, SMS, news update), and target groups."
+      messages_max_records: Maximum messages to keep
+      messages_retention_period: Maximum days to keep messages
       maintenance tasks: Maintenance tasks
       sendgrid_instructions: Fill in these settings if the site uses SendGrid for outgoing email.
       sms_text_messaging: SMS Text Messaging
       sendgrid_user_name: Sendgrid user name
       sendgrid_password: Sendgrid password
-      sent_message_log_explanation: "Sent Message records represent a message sent to a 
-         given phone number or email address. Once messages have been sent and there is no need for
-         further follow ups with that very message, they may be deleted unless needed for debugging or
-         archival purposes."
+      sent_messages_max_records: Maximum sent_messages to keep
+      sent_messages_retention_period: Maximum days to keep sent_messages
+      sent_message_log_explanation: "Sent Message records link a message to a 
+         given phone number or email address, recording when the message was sent
+         to that person, along with any error status."
       tab-sms: SMS
       tab-email: Email
       tab-maint: Maintenance
       tab-notifications: Notifications
+      tab-other: Other
       title: Site Settings
       twilio_account_sid: Twilio account SID
       twilio_auth_token: Twilio authorization token

@@ -13,14 +13,15 @@
     #signed_in
       = signed_in? ? t('Signed in as') + ' ' + current_user.name : t("Not signed in")
     #menu
-      = render 'shared/side_menu' 
-      - if @notices
-        #notices= @notices
-      = render 'system_notes/last_note'
-      - if @compact == 'true'
-        = link_to t('click_to_show_more_columns'), params_for(:action => :index).merge(:compact => false), :id => :compact
-      - elsif @compact == 'false'
-        = link_to t('click_to_hide_some_columns'), params_for(:action => :index).merge(:compact => true), :id => :compact
+      - if signed_in?
+        = render 'shared/side_menu' 
+        - unless @notices.blank?
+          #notices= @notices
+        = render 'system_notes/last_note'
+        - if @compact == 'true'
+          = link_to t('click_to_show_more_columns'), params_for(:action => :index).merge(:compact => false), :id => :compact
+        - elsif @compact == 'false'
+          = link_to t('click_to_hide_some_columns'), params_for(:action => :index).merge(:compact => true), :id => :compact
     #content  
       - if flash.any?  
         #notice

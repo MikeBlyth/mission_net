@@ -12,6 +12,7 @@ $( "#tabs" ).tabs();
     %li= link_to t(".tab-email"), "#tabs-email"
     %li= link_to t(".tab-notifications"), "#tabs-notifications"
     %li= link_to t(".tab-maint"), "#tabs-maint"
+    %li= link_to t(".tab-other"), "#tabs-other"
   .active-scaffold.site_settings
     = form_tag(update_site_settings_path, :method => :put) do 
       #tabs-sms
@@ -43,25 +44,28 @@ $( "#tabs" ).tabs();
         %p= t('.contact_update_instructions') 
         = settings_field(:contact_update_recipients, :label => t('.contact_update_recipients'))
       #tabs-maint
-        %div#maint-1
-          %h4= t('Log')
-          %p= t('.log_explanation')
-          %br
-          %br
-          = settings_field(:log_max_records, :label=> t('.log_max_records'))
-          = settings_field(:log_retention_period, :label=> t('.log_retention_period'))
-        %div#maint-2
-          %h4= t('Sent_Messages')
-          %p= t('.sent_message_log_explanation')
-          = settings_field(:messages_max_records, :label=> t('.messages_max_records'))
-          = settings_field(:messages_retention_period, :label=> t('.messages_retention_period'))
-        %div#maint-3
-          %h4= t('Auto-update')
-          %p= t('.auto_update_instructions')
-          %br
-          %br
-          = settings_field(:auto_update_in_country_status, :label => t('.auto_update_in_country_status'), :choices=> [[t('Yes'), 1], [t('No'), 0]])
-        %br{:clear=>:all}
+        %p= t('.cleanup_instructions')
+        %table#cleanup_table
+          %tr
+            %th= t('Log')
+            %th= t('Messages')
+            %th= t('Sent_Messages')
+          %tr
+            %td= t('.log_explanation')
+            %td= t('.message_log_explanation')
+            %td= t('.sent_message_log_explanation')
+          %tr
+            %td= settings_field(:log_max_records, :label=> t('.log_max_records'))  
+            %td= settings_field(:messages_max_records, :label=> t('.messages_max_records'))
+            %td= settings_field(:sent_messages_max_records, :label=> t('.sent_messages_max_records'))
+          %tr
+            %td= settings_field(:log_retention_period, :label=> t('.log_retention_period'))
+            %td= settings_field(:messages_retention_period, :label=> t('.messages_retention_period'))
+            %td= settings_field(:sent_messages_retention_period, :label=> t('.sent_messages_retention_period'))
+      #tabs-other
+        %h4= t('Auto-update')
+        %p= t('.auto_update_instructions')
+        = settings_field(:auto_update_in_country_status, :label => t('.auto_update_in_country_status'), :choices=> [[t('Yes'), 1], [t('No'), 0]])
       %hr
       = submit_tag t('Save')
     

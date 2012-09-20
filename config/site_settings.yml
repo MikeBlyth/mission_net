@@ -169,4 +169,14 @@ messages_retention_period:
   type: string
   default: 365
   
+sent_messages_max_records:
+  name: Maximum number of 'sent_messages' to keep
+  type: string
+  default: 5000
+  
+sent_messages_retention_period:
+  name: Retention period for 'sent_messages' (days)
+  type: string
+  default: 60
+  
   

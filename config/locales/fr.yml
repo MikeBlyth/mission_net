@@ -361,6 +361,9 @@ fr:
       auto_update_instructions: "Quand auto-mise à jour est sélectionné, le système 
         ajuste le statut 'sur place' automatiquement chaque matin en fonction des dates d'arrivée et de départ."
       be_sure_to_save: N'oubliez pas de cliquer sur le bouton Enregistrer après avoir apporté des modifications.
+      cleanup_instructions: "Messages and log entries are removed from the system according
+         to the settings below. None of these items are required for the system to work,
+         and are only kept for archival or debugging purposes."
       clickatell_user_name: Nom d'utilisateur Clickatell
       clickatell_password: Mot de passe Clickatell 
       contact_updates: Notifications de changement des coordonnées
@@ -368,11 +371,11 @@ fr:
          Inclure les adresses e-mail uniquement, séparés par des virgules."
       contact_update_recipients: Envoyer des notifications aux
       default_outgoing_sms_gateway: Passerelle par défaut de SMS sortants
-      log_explanation: "$The log stores system notices of events including errors and warnings.
-         It is only needed for debugging and archival purposes and does not affect the
-         operation of the program."
+      log_explanation: $The log stores system notices of events including errors and warnings.
       log_max_records: $Maximum number of items to keep in the application log
       log_retention_period: $Maximum days to keep items in the application log
+      message_log_explanation: "$Message entries include the message text, date & time, kind of message
+        (email, SMS, news update), and target groups."
       messages_max_records: $Maximum number of sent-messages items to keep
       messages_retention_period: $Maximum days to keep sent-messages
       maintenance tasks: Tâches de maintenance du système
@@ -385,6 +388,7 @@ fr:
       tab-email: Email
       tab-maint: $Maintenance
       tab-notifications: $Notifications
+      tab-other: Autre
       title: Paramètres du système
       twilio_account_sid: Twilio account SID
       twilio_auth_token: Jeton d'autorisation (authorization token) pour Twilio

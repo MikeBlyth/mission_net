@@ -146,7 +146,11 @@ a, a:visited {
   border: 1px solid red;
   font-size: small;
   padding: 2px;  }
-  
+
+#system_note .header {font-weight: bold}
+#system_note .date {font-size: 10px}
+#system_note .body {font-size: 10px}
+
 #compact {
   font-size: small;
   padding-left: 20px;
@@ -440,9 +444,14 @@ div#groups {
     width: $sms_tab_width;
     padding-left: 20px;}
   }
+
+#cleanup_table td {
+  vertical-align:top;  
+  font-size: 10px;
+  }
   
-  
-    
+#tabs-notifications p, #tabs-other p {width: 300px}    
+#tabs-maint p {width: 470px; margin-bottom: 10px}
 
 /********************************/
 
