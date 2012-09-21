@@ -3,7 +3,7 @@
   %head
     %meta{'content' => "text/html; charset=UTF-8", 'http-equiv' => "Content-Type" }
   %body
-    = html_format(@content)
+    = markdown_to_html(@content)
     %hr
     %p{'style' => "color: #666"}= t('outgoing.this_is_message_id_html', :id => @id)  
     - if @response_time_limit

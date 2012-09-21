@@ -1,3 +1,5 @@
+require 'rdiscount'
+
 module NotifierHelper
 
   # Given response_time_limit in minutes, using current time 
@@ -28,6 +30,10 @@ module NotifierHelper
 
   def html_format(content)
     simple_format(h(content))
+  end
+
+  def markdown_to_html(content)
+    markdown = RDiscount.new(h(content)).to_html.html_safe
   end
 
   def summary_header

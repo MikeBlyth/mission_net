@@ -152,10 +152,10 @@ describe Notifier do
       email.html_part.body.should_not match "<script>"
     end
 
-    it 'preserves line breaks' do
+    it 'converts double line break to paragraph' do
       @params[:content] = "Test\r\nsecond line\r\n\r\nNew paragraph\n\nThird paragraph"
       email = Notifier.send_group_message(@params)
-      email.html_part.body.should match /Test.*<br.*second line.*<p>New par.*<p>Third para/m
+      email.html_part.body.should match /Test.*second line.*<p>New par.*<p>Third para/m
     end
     
   end

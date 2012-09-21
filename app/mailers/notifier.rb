@@ -34,8 +34,6 @@ class Notifier < ActionMailer::Base
 
   def send_group_message(params) #recipients, content, subject, id, response_time_limit, bcc=false)
     @content = params[:content]
-#    @html_content = html_format(@content)
-#puts "**** @html_content=#{@html_content}"
     @id = params[:id]
     @response_time_limit = params[:response_time_limit]
 # puts "**** Notifier @response_time_limit=#{@response_time_limit}"
