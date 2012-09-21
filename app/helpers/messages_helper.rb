@@ -13,11 +13,12 @@ module MessagesHelper
   end
   
   def body_column(record, column)
-    if record.sms_only && record.sms_only.size > 40
-      record.sms_only
-    else
-      record.body[0..140] if record.body
-    end
+#    if record.sms_only && record.sms_only.size > 40
+#      record.sms_only
+#    else
+#      record.body[0..140] if record.body
+#    end
+simple_format(h(record.body)).gsub("\r\n", "\n").html_safe if record.body
   end
 
   # Unit in is always hours. Unit out can be hours or minutes

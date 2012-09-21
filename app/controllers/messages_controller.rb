@@ -23,7 +23,7 @@ class MessagesController < ApplicationController
   def after_create_save(record)
    deliver_message(record) # This delivers the message "automatically" when created in this controller, 
   end
-  
+
   def update
     params[:record][:to_groups] = params[:record][:to_groups].map {|g| !g.blank?}
     super

@@ -25,7 +25,11 @@ module NotifierHelper
     s += member_summary_footer
     return s
   end
-  
+
+  def html_format(content)
+    simple_format(h(content))
+  end
+
   def summary_header
     I18n.t(:summary_header, :organization => SiteSetting.organization)
   end

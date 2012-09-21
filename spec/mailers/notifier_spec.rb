@@ -144,7 +144,19 @@ describe Notifier do
     it 'includes does not include response info when response_time_limit > 0' do
       email = Notifier.send_group_message(@params.merge(:response_time_limit => nil))
       email.to_s.should_not =~ /The sender has requested/
-
     end
+
+    it 'sanitizes the body' do
+      @params[:content] = 'Test <script>bad stuff</script> and the rest'
+      email = Notifier.send_group_message(@params)
+      email.html_part.body.should_not match "<script>"
+    end
+
+    it 'preserves line breaks' do
+      @params[:content] = "Test\r\nsecond line\r\n\r\nNew paragraph\n\nThird paragraph"
+      email = Notifier.send_group_message(@params)
+      email.html_part.body.should match /Test.*<br.*second line.*<p>New par.*<p>Third para/m
+    end
+    
   end
 end

@@ -6,5 +6,5 @@
       .date= l note.created_at, :format => :short
       .body
         = note.note
-        = "[#{note.status}]"
+        = "[#{note.status}]" unless note.status.blank?
     .link= link_to t('previous_system_notices'), system_notes_path
