@@ -3,6 +3,8 @@ include SimTestHelper
 include ApplicationHelper
 include IncomingMailsHelper
 include MessagesHelper
+require 'openssl'
+require "base64"
 
 ActionMailer::Base.delivery_method.should == :test
   
@@ -471,4 +473,13 @@ describe IncomingMailsController do
       end
     end # (w duplicate email addr)
   end #    handles email responses to group messages   
+
+  describe "validation string" do
+    
+    it 'encrypts and decrypts text correctly' do
+      text = 'The farmer in the dell'
+      vstring = controller.validation_string(text)
+      controller.check_validation_string(vstring, text).should eq text
+    end
+  end #  validation_string(text)
 end

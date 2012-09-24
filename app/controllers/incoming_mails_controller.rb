@@ -1,5 +1,9 @@
 require 'application_helper'
+require 'openssl'
+require "base64"
+
 class IncomingMailsController < ApplicationController
+  EMAIL_KEY = "\x1E\x00?\xC2q\\\xA13|G\x19\xD2\xB3\xC0\x97h"
   require 'mail'
   skip_before_filter :verify_authenticity_token, :authorize
   skip_authorization_check
@@ -66,6 +70,30 @@ class IncomingMailsController < ApplicationController
     end
   end
 
+  def validation_string(text)
+    cipher = OpenSSL::Cipher.new("AES-128-CBC") 
+    cipher.encrypt
+    cipher.key = EMAIL_KEY
+    iv = cipher.random_iv # also sets the generated IV on the Cipher
+    encrypted_data = cipher.update(text) + cipher.final
+    combined= Base64.encode64(iv) + Base64.encode64(encrypted_data)
+    "Validation: #{combined}***********"
+  end
+  
+  def check_validation_string(string_to_validate, text)
+    decipher = OpenSSL::Cipher.new("AES-128-CBC")
+    decipher.decrypt
+    string_to_validate =~ /Validation: (.*?)\n(.*)/m
+#    puts "**** $1=#{$1}, $2=#{$2}"
+    decipher.key = EMAIL_KEY
+    decipher.iv = Base64.decode64($1)
+    encrypted_data = Base64.decode64($2)
+#    puts "**** decipher.iv=#{Base64.encode64 iv}"
+#    puts "**** encrypted=#{Base64.encode64 encrypted}"
+    plain = decipher.update(encrypted_data) + decipher.final
+#    puts "Plain = #{plain}"
+    plain == text ? text : nil
+  end
 private
 
   def process_commands(commands)
