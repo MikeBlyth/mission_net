@@ -60,18 +60,30 @@ class Notifier < ActionMailer::Base
     end 
   end
 
+  # Version with positional arguments, just wraps the hashed version
   def send_generic(recipients, content, bcc=false)
 #puts "**** send_generic recipients=#{recipients}, content=#{content}"
-    @content = content
+    send_generic_hashed(
+      :recipients => recipients,
+      :content => content,
+      :bcc => bcc)
+  end
+
+  def send_generic_hashed(options={})
+    @content = options[:content] || options[:body] || options[:text]
+    bcc = options[:bcc] || false
+    recipients = options[:to] || options[:recipients]
+    subject = options[:subject] || I18n.t(:generic_subject_line) 
     mail(
       :to => (bcc ? '' : recipients),
       :bcc => (bcc ? recipients : ''), 
-      :subject=> I18n.t(:generic_subject_line) 
+      :subject=> subject
                                            ) do |format|
       format.text {render 'generic'}
       format.html {render 'generic'}
     end 
-  end
+  end      
+
 
 #  def send_report(recipients, report_name, report)
 #  #puts "Send Report: recipients=#{recipients}, report_name=#{report_name}"

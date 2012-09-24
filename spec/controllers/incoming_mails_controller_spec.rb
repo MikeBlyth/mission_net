@@ -106,7 +106,7 @@ describe IncomingMailsController do
       test_sender
     end      
     
-    describe 'info sends contact info' do
+    describe 'INFO command sends contact info' do
 
       it 'sends the email' do
         @params['plain'] = "info stranger"
@@ -123,6 +123,104 @@ describe IncomingMailsController do
 
     end
 
+    describe 'HELP command' do
+      before(:each) {@params['plain'] = "help"}
+      
+      it 'sends basic help info' do
+        post :create, @params
+        ActionMailer::Base.deliveries.length.should == 1
+        ActionMailer::Base.deliveries.last.to.should == [@params['from']]
+        mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+        mail.should match 'Accessing the .* Database by Email'
+      end
+    end #help
+    
+    describe 'CHANGE command' do
+      let(:target) {mock_model(Member)}
+      let(:target_2) {mock_model(Member)}
+
+      let(:good_response) { {:members => [target], :updates => {:phone_1 => '123', :email_1 => 'a@b.test'}}}
+      let(:double_response) { {:members => [target, target_2], :updates => {:phone_1 => '123', :email_1 => 'a@b.test'}}}
+
+      before(:each) { @params['plain'] = "Update xxxxx vvvvv"}
+
+      it 'sends rest of line to Member#parse_update_command' do
+        Member.should_receive(:parse_update_command).with("xxxxx vvvvv")
+        @params['plain'] = "Update xxxxx vvvvv"
+        post :create, @params
+      end
+
+      # Now since Member#parse_update_command is tested separately, we can
+      # just stub its responses to make sure CHANGE responds appropriately
+      context 'a single member matches request' do
+        before(:each) {Member.should_receive(:parse_update_command).and_return(good_response)}
+
+        it 'updates record' do
+          target.should_receive(:update_attributes).with(hash_including (
+             {:phone_1 => '123',
+              :email_1 => 'a@b.test'}) )
+          post :create, @params
+        end
+
+        it 'sends confirmatory email' do
+          target.stub(:update_attributes).and_return true
+          target.stub(:name).and_return("Some name")
+          lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
+          ActionMailer::Base.deliveries.last.to.should == [@params['from']]
+          mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+          mail.should match 'updated'
+          mail.should match 'Some name'
+        end
+      end #a single member matches request
+        
+      context 'no member matches request' do
+        before(:each) {Member.should_receive(:parse_update_command).and_return(nil)}
+
+        it 'does not update record' do
+          target.should_not_receive(:update_attributes)
+          post :create, @params
+        end
+
+        it 'sends error email' do
+          lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
+          ActionMailer::Base.deliveries.last.to.should == [@params['from']]
+          mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+          mail.should match 'not found'
+          mail.should match 'xxxxx vvvvv'  # The mock updates string
+        end
+      end #a single member matches request
+        
+      context 'more than one member matches request' do
+        before(:each) {Member.should_receive(:parse_update_command).and_return(double_response)}
+
+        it 'does not update record' do
+          target.should_not_receive(:update_attributes)
+          post :create, @params
+        end
+
+        it 'sends error email' do
+          target.stub(:name => "Target 1 name")
+          target_2.stub(:name => "Target 2 name")
+          lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
+          ActionMailer::Base.deliveries.last.to.should == [@params['from']]
+          mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+          mail.should match 'More than one person'
+          mail.should match "Target 1 name"  # The mock updates string
+          mail.should match "Target 2 name"  # The mock updates string
+        end
+      end #a single member matches request
+    end # CHANGE command
+    
+#    describe 'location' do
+#      it 'sends basic help info' do
+#        Contact.stub_chain(:where, :member).and_return(@member)
+#        @member.should_receive(:update_attributes).with('Cannes', instance_of(Date))
+#        Notifier.should_receive(:send_generic).with(/Cannes/)
+#        @params['plain'] = "location Cannes"
+#        post :create, @params
+#      end
+#    end      
+    
 
 #    describe 'directory' do
 #      before(:each) {@params['plain'] = "directory"}
@@ -139,28 +237,6 @@ describe IncomingMailsController do
 #        attachment.filename.should == Settings.reports.filename_prefix + 'directory.pdf'
 #      end
 #    end #directory
-    
-    describe 'help command' do
-      before(:each) {@params['plain'] = "help"}
-      
-      it 'sends basic help info' do
-        post :create, @params
-        ActionMailer::Base.deliveries.length.should == 1
-        ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-        mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
-        mail.should match 'Accessing the .* Database by Email'
-      end
-    end #help
-    
-#    describe 'location' do
-#      it 'sends basic help info' do
-#        Contact.stub_chain(:where, :member).and_return(@member)
-#        @member.should_receive(:update_attributes).with('Cannes', instance_of(Date))
-#        Notifier.should_receive(:send_generic).with(/Cannes/)
-#        @params['plain'] = "location Cannes"
-#        post :create, @params
-#      end
-#    end      
     
   end # handles these commands
    

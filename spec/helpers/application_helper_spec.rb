@@ -46,7 +46,12 @@ describe ApplicationHelper do
     it 'removes parens, hyphen, space and period' do
       std_phone('(+234) 803-38.5 4268').should eq '2348033854268'
     end
-
+    
+    it 'returns nil when invalid characters/format present' do
+      std_phone('0x8033854268').should be_nil
+      std_phone('0803+3854268').should be_nil
+    end
+    
   end
 
   describe 'various tools:' do

@@ -197,13 +197,14 @@ class String
     return self  # nothing to do
   end
 
-  # Standardize phone number string to "+2349999999" format
+  # Standardize phone number string to "2349999999" format
   # * replace leading zero with country code
   # * strip leading + 
   # * remove -, space, and . characters (why not just remove all non-digits??)
   def phone_std(options={})
     return nil if self.blank?
     raw = self.strip
+    return nil unless raw =~ /\A(\+?|\(\+?)[0-9\-\. \(\)]+\Z/ # make sure only allowed characters
     # Replace initial 0 with country code (configurable, but probably includes +) and remove punctuation and spaces
     return raw.sub(/\A0/,Settings.contacts.local_country_code).gsub(/[\+\(\)\-\. ]/, '')
   end

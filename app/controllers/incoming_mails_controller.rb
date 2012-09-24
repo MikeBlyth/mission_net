@@ -70,7 +70,7 @@ private
 
   def process_commands(commands)
     successful = true
-    from = params['from']
+    from = @from_address
     # Special case for commands 'd' and/or sms = distribute to one or more groups, 
     #   because the rest of the body will be sent without scanning for further commands
     #   ('email' is an alias for 'd'. 
@@ -84,6 +84,8 @@ private
       case command[0]
         when 'help'
           Notifier.send_help(from).deliver
+        when 'change', 'update'
+          update_member(command[1])  # command[1] is the parameter string
         when 'test'
           Notifier.send_test(from, 
              "You sent 'test' with parameter string (#{command[1]})").deliver
@@ -114,6 +116,36 @@ private
     end # commands.each
     return successful    
   end # process_commands
+
+  def update_member(values)
+    update_hash = Member.parse_update_command(values)
+#puts "**** update_hash=#{update_hash}"
+    case
+      when update_hash.nil?
+        Notifier.send_generic_hashed(
+         :to=> @from_address,
+         :subject => 'Error in your update command',
+         :body => "Error in your update command. The name was not found or not given.\n\n" +
+            values).deliver
+      when update_hash[:members].many?
+        names = update_hash[:members].map {|m| m.name}.join('; ')
+        Notifier.send_generic_hashed(
+         :to=> @from_address,
+         :subject => 'More info needed for your update command',
+         :body => "More than one person fits the name you sent in the command\n\n" +
+            values +
+            "\n\nThese were: #{names}\n\nPlease select one name and retry the update."
+            ).deliver
+      else
+        update_hash[:members][0].update_attributes(update_hash[:updates])
+        Notifier.send_generic_hashed(
+         :to=> @from_address,
+         :subject => 'Update successful',
+         :body => "Information updated for #{update_hash[:members][0].name}\n\n" +
+            update_hash[:updates].map {|k,v| "#{k}: #{v}"}.join("\n")
+            ).deliver
+    end
+  end
 
   def do_info(from, from_member, name)
     members = Member.find_with_name(name)

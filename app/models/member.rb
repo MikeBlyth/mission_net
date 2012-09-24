@@ -74,6 +74,11 @@ class Member < ActiveRecord::Base
 #    false # or some test for current user
 #  end
 
+  def self.auto_update_all_in_country_statuses
+    do_updates = [1, '1', 'Yes', 'yes', true].include? SiteSetting.auto_update_in_country_status
+    self.all.each {|m| m.auto_update_in_country_status(do_updates)}
+  end
+  
   def self.find_with_name(name, conditions="true")
 #puts "Find_with_name #{name}"
     return [] if name.blank?
@@ -94,15 +99,31 @@ class Member < ActiveRecord::Base
     return result.uniq.compact
   end
 
-  def <=>(other)
-    self.name <=> other.name
-  end  
-
-
-  # This stub helps bridge from the larger program that uses separate contact records. It would be best for clarity to change 
-  # all "member.primary_contact." to "member" but this accomplishes the same thing.
-  def primary_contact
-    self
+  # Use a string like "Al Wright 0803-388-8888" to update Al Wright's data
+  # Return {:member => <some member>, updates => <update attribute hash>}
+  def self.parse_update_command(s)
+    tokens = s.split
+    names = []
+    phones = []
+    emails = []
+    updates = {}
+    tokens.each do |token|
+      case 
+        when phone = token.phone_std
+          phones << phone
+        when token =~ /\A[^@ ]+@[^@ ]+\.[^@ ]+\Z/  # Very broad email address validator
+          emails << token
+        else
+          names << token
+      end
+    end
+    return nil if (member = Member.find_with_name(names.join(' '))).empty?
+    (0..1).each do |i|
+      updates["phone_#{i+1}".to_sym] = phones[i] if phones[i]
+      updates["email_#{i+1}".to_sym] = emails[i] if emails[i]
+    end
+#puts "**** member=#{member}, updates=#{updates}"
+    return {:members => member, :updates => updates}
   end
 
   def self.find_by_phone(phone_number)
@@ -112,6 +133,26 @@ class Member < ActiveRecord::Base
 
   def self.find_by_email(email)
     Member.where("email_1 = ? OR email_2 = ?", email, email).readonly(false).all
+  end
+
+  # This is a stub that can be filled in later to limit outgoing messages to people who are still
+  # in the country, on location, active, or whatever. Or we could simply define another column for 
+  # members, since we don't plan to do travel-tracking in this version
+  def self.those_in_country
+    return self.where(:in_country => true)
+  end
+
+#******** INSTANCE METHODS **************
+
+  def <=>(other)
+    self.name <=> other.name
+  end  
+
+
+  # This stub helps bridge from the larger program that uses separate contact records. It would be best for clarity to change 
+  # all "member.primary_contact." to "member" but this accomplishes the same thing.
+  def primary_contact
+    self
   end
 
   # Generate hash of contact info ready for display;
@@ -157,13 +198,6 @@ class Member < ActiveRecord::Base
     return phone
   end
 
-  # This is a stub that can be filled in later to limit outgoing messages to people who are still
-  # in the country, on location, active, or whatever. Or we could simply define another column for 
-  # members, since we don't plan to do travel-tracking in this version
-  def self.those_in_country
-    return self.where(:in_country => true)
-  end
-
   # Use the Departure and Arrival dates to calculate whether person is in country.
   def calculate_in_country_status
     today = Date.today
@@ -201,11 +235,6 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
     self.save if do_updates
   end
 
-  def self.auto_update_all_in_country_statuses
-    do_updates = [1, '1', 'Yes', 'yes', true].include? SiteSetting.auto_update_in_country_status
-    self.all.each {|m| m.auto_update_in_country_status(do_updates)}
-  end
-  
   def primary_email(options={})
     return email_1 || email_2
   end

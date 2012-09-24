@@ -542,5 +542,57 @@ describe Member do
     end # uses Redis
   end  # Roles (privilege levels):
 
+  describe 'Parse_update_command method' do
+    let(:member) {FactoryGirl.build_stubbed(:member)}
+    let(:member_name) {"#{member.first_name} #{member.last_name}"}
+    let(:phone_1){"2342223334444"}
+    let(:email_1){"abc@example.com"} 
+    let(:phone_2){"2349993334444"}
+    let(:email_2){"xyz@example.com"} 
+    let(:s){"#{member.name} #{phone_1} #{email_1}"}
+    let(:s2){"#{member.name} #{phone_1} #{email_1} #{phone_2} #{email_2}"}
+
+    context 'when member is not found' do  
+      it 'returns nil if member not found' do
+        Member.should_receive(:find_with_name).and_return([])
+        Member.parse_update_command(s).should be_nil
+      end
+    end
+    
+    context 'when member is found' do
+      before(:each) do
+        Member.should_receive(:find_with_name).with(member_name).and_return([member])
+      end
+
+      it 'returns non-nil result when member found' do
+        result = Member.parse_update_command(s)
+        result.should_not be_nil
+        result[:members].should eq [member]
+      end
+
+      it 'finds phone number to update' do
+        results = Member.parse_update_command(s)
+        results[:updates][:phone_1].should eq phone_1
+      end
+
+      it 'finds phone numbers and email addresses' do
+        results = Member.parse_update_command(s2)
+        results[:updates][:phone_1].should eq phone_1
+        results[:updates][:phone_2].should eq phone_2
+        results[:updates][:email_1].should eq email_1
+        results[:updates][:email_2].should eq email_2
+      end
+    end #when member is found    
+
+    context 'when two members are found' do
+      it 'returns both members' do
+        second_member = mock('second member')
+        Member.should_receive(:find_with_name).with(member_name).
+           and_return([member, second_member])
+        results = Member.parse_update_command(s)
+        results[:members].should eq [member, second_member]      
+      end
+    end # when two members are found
+  end # Parse_update_command method
 end
 
