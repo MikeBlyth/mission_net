@@ -117,6 +117,10 @@ private
     return successful    
   end # process_commands
 
+  def update_authorized?(target)
+    @from_member.roles_include?(:moderator) || target == @from_member
+  end
+
   def update_member(values)
     update_hash = Member.parse_update_command(values)
 #puts "**** update_hash=#{update_hash}"
@@ -137,13 +141,22 @@ private
             "\n\nThese were: #{names}\n\nPlease select one name and retry the update."
             ).deliver
       else
-        update_hash[:members][0].update_attributes(update_hash[:updates])
-        Notifier.send_generic_hashed(
-         :to=> @from_address,
-         :subject => 'Update successful',
-         :body => "Information updated for #{update_hash[:members][0].name}\n\n" +
-            update_hash[:updates].map {|k,v| "#{k}: #{v}"}.join("\n")
-            ).deliver
+        target = update_hash[:members][0]
+        if update_authorized?(target)
+          target.update_attributes(update_hash[:updates])
+          Notifier.send_generic_hashed(
+           :to=> @from_address,
+           :subject => 'Update successful',
+           :body => "Information updated for #{update_hash[:members][0].name}\n\n" +
+              update_hash[:updates].map {|k,v| "#{k}: #{v}"}.join("\n")
+              ).deliver
+        else
+          Notifier.send_generic_hashed(
+           :to=> @from_address,
+           :subject => 'Update not successful',
+           :body => "Only moderators are allowed to change other people's contact information.\n\n" +
+            values).deliver
+        end          
     end
   end
 

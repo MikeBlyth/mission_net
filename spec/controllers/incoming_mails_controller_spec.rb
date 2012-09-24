@@ -103,7 +103,7 @@ describe IncomingMailsController do
 
   describe 'handles these commands:' do
     before(:each) do
-      test_sender
+      @sender = test_sender
     end      
     
     describe 'INFO command sends contact info' do
@@ -153,24 +153,69 @@ describe IncomingMailsController do
       # Now since Member#parse_update_command is tested separately, we can
       # just stub its responses to make sure CHANGE responds appropriately
       context 'a single member matches request' do
-        before(:each) {Member.should_receive(:parse_update_command).and_return(good_response)}
 
-        it 'updates record' do
-          target.should_receive(:update_attributes).with(hash_including (
-             {:phone_1 => '123',
-              :email_1 => 'a@b.test'}) )
-          post :create, @params
-        end
+        context 'sender is a moderator' do
+          before(:each) do 
+            @sender.stub(:role => :moderator)
+            Member.should_receive(:parse_update_command).and_return(good_response)
+          end
+          
+          it 'updates record' do
+            target.should_receive(:update_attributes).with(hash_including (
+               {:phone_1 => '123',
+                :email_1 => 'a@b.test'}) )
+            post :create, @params
+          end
 
-        it 'sends confirmatory email' do
-          target.stub(:update_attributes).and_return true
-          target.stub(:name).and_return("Some name")
-          lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-          ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-          mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
-          mail.should match 'updated'
-          mail.should match 'Some name'
-        end
+          it 'sends confirmatory email' do
+            target.stub(:update_attributes).and_return true
+            target.stub(:name).and_return("Some name")
+            lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
+            ActionMailer::Base.deliveries.last.to.should == [@params['from']]
+            mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+            mail.should match 'updated'
+            mail.should match 'Some name'
+          end
+        end # sender is a moderator
+        
+        context 'sender is not a moderator' do
+          before(:each) {@sender.stub(:role => :member)}
+
+          context 'but trying to change some record' do
+            before(:each) {Member.should_receive(:parse_update_command).and_return(good_response)}
+
+            it 'does not update other record' do
+              target.should_not_receive(:update_attributes)
+              post :create, @params
+            end
+
+            it 'sends error email' do
+              post :create, @params
+              mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+              mail.should match 'Only moderators'
+            end
+          end # but trying to change some record
+          context 'but trying to change own record' do
+            before(:each) do
+              Member.should_receive(:parse_update_command).
+                and_return({:members => [@sender], :updates => {:phone_1 => '123'}})
+            end
+
+            it "does update sender's own record" do
+              @sender.should_receive(:update_attributes)
+              post :create, @params
+            end
+
+            it "sends confirmation email" do
+              @sender.should_receive(:update_attributes)
+              post :create, @params
+              mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+              mail.should match 'updated'
+              mail.should match @sender.name
+            end
+          end # 'but trying to change own record'
+        end # sender is not a moderator
+        
       end #a single member matches request
         
       context 'no member matches request' do
