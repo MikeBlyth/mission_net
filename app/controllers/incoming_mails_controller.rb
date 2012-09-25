@@ -203,9 +203,11 @@ private
 
   def update_member(values)
     update_hash = Member.parse_update_command(values)
-#puts "**** update_hash=#{update_hash}"
+puts "**** update_hash=#{update_hash}"
+AppLog.create(:code=>'Email.update', :description => update_hash.to_s, :severity=>'Info')      
     case
       when update_hash.nil?
+puts "**** Delivering error response"
         Notifier.send_generic_hashed(
          :to=> @from_address,
          :subject => 'Error in your update command',
@@ -213,6 +215,7 @@ private
             values).deliver
       when update_hash[:members].many?
         names = update_hash[:members].map {|m| m.name}.join('; ')
+puts "**** Delivering multiple targets response"
         Notifier.send_generic_hashed(
          :to=> @from_address,
          :subject => 'More info needed for your update command',
@@ -225,8 +228,10 @@ private
         if update_authorized?(target)
           if check_validation_string(@body)
             target.update_attributes(update_hash[:updates])
+puts "**** Delivering confirmation"
             send_confirmation_email(update_hash)
           else
+puts "**** Delivering verify request"
             send_pls_verify_email(update_hash)
           end
         else

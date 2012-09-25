@@ -82,6 +82,7 @@ class Notifier < ActionMailer::Base
       format.text {render 'generic'}
       format.html {render 'generic'}
     end 
+AppLog.create(:code => 'Email.outgoing', :description => "For #{recipients}, subject=#{subject}", :severity => 'Info')
   end      
 
 
