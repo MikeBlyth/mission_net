@@ -8,6 +8,7 @@ $( "#tabs" ).tabs();
 %p= t('.be_sure_to_save')
 #tabs
   %ul
+    %li= link_to t(".site"), "#tabs-site"
     %li= link_to t(".tab-sms"), "#tabs-sms"
     %li= link_to t(".tab-email"), "#tabs-email"
     %li= link_to t(".tab-notifications"), "#tabs-notifications"
@@ -15,8 +16,15 @@ $( "#tabs" ).tabs();
     %li= link_to t(".tab-other"), "#tabs-other"
   .active-scaffold.site_settings
     = form_tag(update_site_settings_path, :method => :put) do 
+      #tabs-site
+        = settings_field(:organization)
+        = settings_field(:org_system_name)
+        = settings_field(:base_url)
+        = settings_field(:message_id_string)
       #tabs-sms
         #sms-default
+          = settings_field(:incoming_sms_number)
+          = settings_field(:incoming_voice_number)
           %h4=  t('.default_outgoing_sms_gateway')
           = settings_field(:default_outgoing_sms_gateway, :label => '',
           :choices => [['Twilio'], ['Clickatell']])
@@ -37,12 +45,15 @@ $( "#tabs" ).tabs();
           = settings_field(:twilio_background, :label => t('.twilio_background'), :choices=>[[t('None'), ''], ['DelayedJob'], ['IronWorker']])
       #tabs-email
         %p= t('.sendgrid_instructions')
+        = settings_field(:base_email_address)
         = settings_field(:sendgrid_user_name, :label=> t('.sendgrid_user_name'))
         = settings_field(:sendgrid_password, :label=> t('.sendgrid_password'))
       #tabs-notifications
         %h4= t('.contact_updates')
         %p= t('.contact_update_instructions') 
         = settings_field(:contact_update_recipients, :label => t('.contact_update_recipients'))
+        %br
+        = settings_field(:default_news_update_expiration)
       #tabs-maint
         %p= t('.cleanup_instructions')
         %table#cleanup_table
@@ -66,6 +77,7 @@ $( "#tabs" ).tabs();
         %h4= t('Auto-update')
         %p= t('.auto_update_instructions')
         = settings_field(:auto_update_in_country_status, :label => t('.auto_update_in_country_status'), :choices=> [[t('Yes'), 1], [t('No'), 0]])
+        = settings_field(:directory_title)
       %hr
       = submit_tag t('Save')
     
