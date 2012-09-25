@@ -25,12 +25,12 @@ class IncomingMailsController < ApplicationController
     @body = params['plain']
     AppLog.create(:code => 'Message.create', :description => "Email from #{@from_address}, body = #{@body[0..99]}")
     process_message_response
-    commands = extract_commands(@body)
-    if commands.nil? || commands.empty?
+    @commands = extract_commands(@body)
+    if @commands.nil? || @commands.empty?
       Notifier.send_generic(@from_address, I18n.t('error_msg.nothing_in_message', :body => @body[0..160])).deliver
       success = false
     else
-      success = process_commands(commands)
+      success = process_commands
     end
 
     # if the message was handled successfully then send a status of 200,
@@ -70,45 +70,66 @@ class IncomingMailsController < ApplicationController
     end
   end
 
-  def validation_string(text)
+  def encrypt(text)
     cipher = OpenSSL::Cipher.new("AES-128-CBC") 
     cipher.encrypt
     cipher.key = EMAIL_KEY
     iv = cipher.random_iv # also sets the generated IV on the Cipher
     encrypted_data = cipher.update(text) + cipher.final
     combined= Base64.encode64(iv) + Base64.encode64(encrypted_data)
-    "Validation: #{combined}***********"
+  end
+
+  def validation_string
+    encrypted = encrypt([@user_email, Date.today].to_yaml)
+    "Validation: #{encrypted}***********"
   end
   
-  def check_validation_string(string_to_validate, text)
-    decipher = OpenSSL::Cipher.new("AES-128-CBC")
-    decipher.decrypt
-    string_to_validate =~ /Validation: (.*?)\n(.*)/m
-#    puts "**** $1=#{$1}, $2=#{$2}"
-    decipher.key = EMAIL_KEY
-    decipher.iv = Base64.decode64($1)
-    encrypted_data = Base64.decode64($2)
-#    puts "**** decipher.iv=#{Base64.encode64 iv}"
-#    puts "**** encrypted=#{Base64.encode64 encrypted}"
-    plain = decipher.update(encrypted_data) + decipher.final
-#    puts "Plain = #{plain}"
-    plain == text ? text : nil
+  def check_validation_string(vstring=@body)
+#puts "**** vstring=#{vstring}"
+    decrypted = decrypt(vstring)  # just look for validation string in whole body
+    return nil if decrypted.nil?
+    email, date_s = YAML.load(decrypted)
+#puts "**** email=#{email}"
+    return (email == @user_email) && (Date.parse(date_s) == Date.today)
+  end
+
+  # Input should be like:
+  # Validation: okrQCRqGng8bvWdI1zsVlg==
+  # y4P5vq7yAPfsJhgHXiC/0lARyjt5ns9EfltyYz3/gLA=
+  # ***********
+  # Delimited by "Validation:" and the string of '*'
+  # decrypt method returns the decrypted string without those delimiters
+  def decrypt(encrypted)
+    return nil unless encrypted =~ /Validation: (.*?)\n(.*)\n\*\*\*/m
+    begin
+      decipher = OpenSSL::Cipher.new("AES-128-CBC")
+      decipher.decrypt
+  #    puts "**** $1=#{$1}, $2=#{$2}"
+      decipher.key = EMAIL_KEY
+      decipher.iv = Base64.decode64($1)
+      encrypted_data = Base64.decode64($2)
+  #    puts "**** decipher.iv=#{Base64.encode64 iv}"
+  #    puts "**** encrypted=#{Base64.encode64 encrypted}"
+      return decipher.update(encrypted_data) + decipher.final 
+    rescue
+      return nil
+    end 
   end
 private
 
-  def process_commands(commands)
+  def process_commands
     successful = true
     from = @from_address
     # Special case for commands 'd' and/or sms = distribute to one or more groups, 
     #   because the rest of the body will be sent without scanning for further commands
     #   ('email' is an alias for 'd'. 
-    first_command = commands[0][0].sub("&", "+").sub('sms', 'd')  # just the command itself, from the first line
+    first_command = @commands[0][0].sub("&", "+").sub('sms', 'd')  # just the command itself, from the first line
     if ['d', 'email', 'd+email', 'email+d'].include? first_command
       result = group_deliver(@body, first_command)
       Notifier.send_generic(from, result).deliver  # Let the sender know success, errors, etc.
       return successful
     end
-    commands.each do |command|
+    @commands.each do |command|
       case command[0]
         when 'help'
           Notifier.send_help(from).deliver
@@ -141,12 +162,36 @@ private
 #                              output).deliver
       else
       end # case
-    end # commands.each
+    end # @commands.each
     return successful    
   end # process_commands
 
   def update_authorized?(target)
     @from_member.roles_include?(:moderator) || target == @from_member
+  end
+
+  def update_summary(update_hash)
+    "#{update_hash[:members][0].name}: " +
+     update_hash[:updates].map {|k,v| "#{k}: #{v}"}.join("; ")
+  end              
+
+  def send_confirmation_email(update_hash)
+      Notifier.send_generic_hashed(
+       :to=> @from_address,
+       :subject => 'Update successful',
+       :body => "Successful updates #{update_summary(update_hash)}"
+          ).deliver
+  end
+
+  def send_pls_verify_email(update_hash)
+      original_commands = @commands[0].join(' ')
+      Notifier.send_generic_hashed(
+       :to=> @from_address,
+       :subject => 'Please confirm updates',
+       :body => "#{original_commands}\n\nThese changes will be made for #{update_summary(update_hash)}\n\n" +
+          "To verify, please reply to this email, being sure to leave the verification code " +
+          "below intact.\n\n#{validation_string}"
+          ).deliver
   end
 
   def update_member(values)
@@ -171,13 +216,12 @@ private
       else
         target = update_hash[:members][0]
         if update_authorized?(target)
-          target.update_attributes(update_hash[:updates])
-          Notifier.send_generic_hashed(
-           :to=> @from_address,
-           :subject => 'Update successful',
-           :body => "Information updated for #{update_hash[:members][0].name}\n\n" +
-              update_hash[:updates].map {|k,v| "#{k}: #{v}"}.join("\n")
-              ).deliver
+          if check_validation_string(@body)
+            target.update_attributes(update_hash[:updates])
+            send_confirmation_email(update_hash)
+          else
+            send_pls_verify_email(update_hash)
+          end
         else
           Notifier.send_generic_hashed(
            :to=> @from_address,

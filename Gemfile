@@ -21,6 +21,7 @@ gem 'iron_worker_ng'
 gem 'rdiscount'
 gem 'cancan'
 gem 'redis'
+gem 'timecop'
 gem 'rb-readline'
 gem 'thin', :platforms => :ruby
 gem 'prawn', "0.11.1"# , :git => "git://github.com/sandal/prawn" #, :submodules => true
