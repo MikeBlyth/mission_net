@@ -101,7 +101,8 @@ class Member < ActiveRecord::Base
 
   # Use a string like "Al Wright 0803-388-8888" to update Al Wright's data
   # Return {:member => <some member>, updates => <update attribute hash>}
-  def self.parse_update_command(s)
+  def self.parse_update_command(str)
+    s = str.gsub(/<mailto.*>/,'')
     tokens = s.split
     names = []
     phones = []
@@ -114,7 +115,7 @@ class Member < ActiveRecord::Base
         when token =~ /\A[^@ ]+@[^@ ]+\.[^@ ]+\Z/  # Very broad email address validator
           emails << token
         else
-          names << token
+          names << token if (phones + emails).empty?
       end
     end
     return nil if (member = Member.find_with_name(names.join(' '))).empty?

@@ -204,7 +204,7 @@ private
   def update_member(values)
     update_hash = Member.parse_update_command(values)
 puts "**** update_hash=#{update_hash}"
-AppLog.create(:code=>'Email.update', :description => update_hash.to_s, :severity=>'Info')      
+AppLog.create(:code=>'Email.update', :description => "updates hash=#{update_hash.to_s}", :severity=>'Info')      
     case
       when update_hash.nil?
 puts "**** Delivering error response"

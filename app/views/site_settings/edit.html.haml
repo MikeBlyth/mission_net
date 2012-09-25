@@ -78,6 +78,7 @@ $( "#tabs" ).tabs();
         %p= t('.auto_update_instructions')
         = settings_field(:auto_update_in_country_status, :label => t('.auto_update_in_country_status'), :choices=> [[t('Yes'), 1], [t('No'), 0]])
         = settings_field(:directory_title)
+        = settings_field(:email_command_delimiter)
       %hr
       = submit_tag t('Save')
     

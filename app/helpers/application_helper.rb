@@ -159,8 +159,9 @@ module ApplicationHelper
   #   ...
   # make array like [ [command_1, ''], [command_2, 'Parameters for this command']]
   # where a command is the first word on each line
-  def extract_commands(body)
+  def extract_commands(body, command_delim=SiteSetting.email_command_delimiter)
     commands = body.lines.map do |line| 
+      next unless command_delim.blank? || line.strip!.first == command_delim
       line =~ /\s*(\S+)\s*(.*)?/ 
       [($1 || '').downcase, ($2 || '').chomp]
     end  

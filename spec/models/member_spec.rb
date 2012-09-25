@@ -570,6 +570,17 @@ describe Member do
         result[:members].should eq [member]
       end
 
+      it 'ignores mailto: links after email address' do
+        results = Member.parse_update_command(s+"<mailto:xyz@test.com>")
+        results.should_not be_nil
+        results[:updates][:email_1].should eq email_1
+      end
+      
+      it 'ignores unknown tokens after name is complete' do
+        results = Member.parse_update_command(s+" garbage_data")
+        # Test is just the Member.should_receive ... in the before(:each) section
+      end
+
       it 'finds phone number to update' do
         results = Member.parse_update_command(s)
         results[:updates][:phone_1].should eq phone_1
