@@ -70,6 +70,27 @@ class IncomingMailsController < ApplicationController
     end
   end
 
+  def validation_string
+    encrypted = encrypt([@user_email, Time.now].to_yaml)
+    "Validation: #{encrypted}***********"
+  end
+  
+  # Given a string containing a validation string (or message @body by default),
+  # decrypt and check that string. It is valid if the email address is the same as
+  # the current user's email address and if the time is less than 24 hours ago.
+  def check_validation_string(vstring=@body)
+#puts "**** vstring=#{vstring}"
+    begin
+      decrypted = decrypt(vstring)  # just look for validation string in whole body
+      return nil if decrypted.nil?
+      email, time_s = YAML.load(decrypted)
+      return (email == @user_email) && (Time.now - time_s < 1.day)
+    rescue
+      puts "**** Error #{$!}"
+      return nil
+    end
+  end
+
   def encrypt(text)
     cipher = OpenSSL::Cipher.new("AES-128-CBC") 
     cipher.encrypt
@@ -77,20 +98,6 @@ class IncomingMailsController < ApplicationController
     iv = cipher.random_iv # also sets the generated IV on the Cipher
     encrypted_data = cipher.update(text) + cipher.final
     combined= Base64.encode64(iv) + Base64.encode64(encrypted_data)
-  end
-
-  def validation_string
-    encrypted = encrypt([@user_email, Date.today].to_yaml)
-    "Validation: #{encrypted}***********"
-  end
-  
-  def check_validation_string(vstring=@body)
-#puts "**** vstring=#{vstring}"
-    decrypted = decrypt(vstring)  # just look for validation string in whole body
-    return nil if decrypted.nil?
-    email, date_s = YAML.load(decrypted)
-#puts "**** email=#{email}"
-    return (email == @user_email) && (Date.parse(date_s) == Date.today)
   end
 
   # Input should be like:
