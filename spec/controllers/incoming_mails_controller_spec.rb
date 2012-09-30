@@ -31,6 +31,18 @@ def add_member_string(member)
   member.groups.map {|g| g.abbrev}.join(' ')
 end
 
+# Directly access the controller's validation_string method
+# This also sets @from_address in the controller to email_address, so
+# subsequent testing of checking validation string will expect to see
+# email_address in the encrypted validation string
+def create_validation_string(email_address)
+#  saved_from_address = controller.instance_variable_get(:@from_address)
+  controller.instance_variable_set(:@from_address, email_address)
+  vstring = controller.validation_string
+#  controller.instance_variable_set(:@from_address, saved_from_address)
+  vstring
+end
+
 describe IncomingMailsController do
   before(:each) do
     @params = HashWithIndifferentAccess.new(
@@ -162,13 +174,16 @@ describe IncomingMailsController do
       # With a validated request, the new name should be added if it is still unique
       context 'when incoming email is validated' do
         before(:each) do 
-          controller.instance_variable_set(:@user_email, @params_from)
-          @vstring = controller.validation_string
-          @params['plain'] = "add xxxxx vvvvv\n\n#@vstring"  # include validation
+          @vstring = create_validation_string(@params[:from])
+          @member = FactoryGirl.build(:member, :email_2=>'second@test.com', :phone_2=>'08094444444')
+          @params['plain'] = "add #{add_member_string(@member)}\n\n#@vstring"  # include validation
         end
 
         context 'when name is still unique' do
-          #
+          it 'adds the member' do
+            Member.should_receive(:create).and_return(true)
+            post :create, @params
+          end
         end
         
         context 'when name has been taken' do
@@ -387,8 +402,7 @@ describe IncomingMailsController do
       context 'a single member matches request' do
         context 'incoming email is validated' do
           before(:each) do 
-            controller.instance_variable_set(:@user_email, @params_from)
-            @vstring = controller.validation_string
+            @vstring = create_validation_string(@params[:from])
             @params['plain'] = "update xxxxx vvvvv\n\n#@vstring"  # include validation
           end
 
@@ -470,6 +484,7 @@ describe IncomingMailsController do
             it 'sends validation email' do
               target.stub(:update_attributes).and_return true
               target.stub(:name).and_return("Some name")
+puts "**** @params=#{@params}"
               lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
               ActionMailer::Base.deliveries.last.to.should == [@params['from']]
               mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
@@ -782,9 +797,12 @@ puts "**** mail=#{mail}"
     
     describe "is formed and checked correctly" do
     
+      it 'returning nil when @from_address is empty' do
+        create_validation_string('').should be_nil
+      end
+
       it 'accepting its own generated validation' do
-        controller.instance_variable_set(:@user_email, 'user@something.com')
-        v = controller.validation_string
+        v = create_validation_string('user@something.com')
         body = "All kinds of\n\nheaders and other stuff \n\n #{v} and even more garbage"
         controller.check_validation_string(body).should be_true
       end
@@ -794,15 +812,14 @@ puts "**** mail=#{mail}"
       end
       
       it 'rejecting validition with wrong email' do
-        controller.instance_variable_set(:@user_email, 'user@something.com')
-        v = controller.validation_string
-        controller.instance_variable_set(:@user_email, 'someone_else@something.com')
+        v = create_validation_string('user@something.com')
+        # Make it appear that the email is from someone_else
+        controller.instance_variable_set(:@from_address, 'someone_else@something.com')
         controller.check_validation_string(v).should be_false
       end
       
       it 'rejecting out of date validation' do
-        controller.instance_variable_set(:@user_email, 'user@something.com')
-        v = controller.validation_string
+        v = create_validation_string('user@something.com')
         Timecop.travel(Date.today + 10.days)
         result = controller.check_validation_string(v)
         Timecop.return  # We don't really want to error-out of test before returning to real time

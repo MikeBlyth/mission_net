@@ -549,13 +549,15 @@ describe Member do
     let(:email_1){"abc@example.com"} 
     let(:phone_2){"2349993334444"}
     let(:email_2){"xyz@example.com"} 
-    let(:s){"#{member.name} #{phone_1} #{email_1}"}
-    let(:s2){"#{member.name} #{phone_1} #{email_1} #{phone_2} #{email_2}"}
+    let(:s){"#{member_name} #{phone_1} #{email_1}"}
+    let(:s2){"#{member_name} #{phone_1} #{email_1} #{phone_2} #{email_2}"}
 
     context 'when member is not found' do  
       it 'returns nil if member not found' do
         Member.should_receive(:find_with_name).and_return([])
-        Member.parse_update_command(s).should be_nil
+        result = Member.parse_update_command(s)
+        result[:members].should be_empty
+        result[:updates][:first_name].should eq member.first_name.gsub('_', ' ')
       end
     end
     

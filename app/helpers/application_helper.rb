@@ -172,6 +172,35 @@ module ApplicationHelper
   def change_locale_to(new_locale)
     url_for(params.merge(:locale => new_locale))
   end
+
+  #******* METHODS TO DO WITH NAMES ************#
+  #**** see also names_helper *****#
+  def add_indexed_name(name_hash)
+    name_hash[:name] = name_hash[:last_name] +
+      (name_hash[:first_name] ? ", #{name_hash[:first_name]}" : '') +
+      (name_hash[:middle_name] ? " #{name_hash[:middle_name]}" : '')
+    return name_hash  
+  end
+
+  def parse_namestring(name)
+    return {} if name.blank?
+    names = name.split("\s").map {|n| n.gsub(/[_\+]/, ' ')}
+    name_hash = {}
+    case names.count
+      when 1 
+       name_hash[:last_name] = names[0]
+      when 2 
+       name_hash[:last_name] = names[1]
+       name_hash[:first_name] = names[0]
+      when 3..100
+       name_hash[:last_name] = names[-1]
+       name_hash[:first_name] = names[0]
+       name_hash[:middle_name] = names[1]
+    end
+    add_indexed_name(name_hash)
+  end
+  
+
 #******* Anything below this point is not in the module itself *********
 end  # ApplicationHelper module
 

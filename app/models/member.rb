@@ -36,6 +36,7 @@
 
 
 ############## JOSLINK ###################
+
 class Member < ActiveRecord::Base
   include NameHelper
   require 'sessions_helper'
@@ -107,6 +108,7 @@ class Member < ActiveRecord::Base
     names = []
     phones = []
     emails = []
+    groups = []
     updates = {}
     tokens.each do |token|
       case 
@@ -118,13 +120,19 @@ class Member < ActiveRecord::Base
           names << token if (phones + emails).empty?
       end
     end
-    return nil if (member = Member.find_with_name(names.join(' '))).empty?
     (0..1).each do |i|
       updates["phone_#{i+1}".to_sym] = phones[i] if phones[i]
       updates["email_#{i+1}".to_sym] = emails[i] if emails[i]
     end
+    name_string = names.join(' ')
+    member = Member.find_with_name(name_string) # may match none, one, or many members
+    return add_member_params(name_string, updates) if member.empty?  # assume it's for adding a new member
 #puts "**** member=#{member}, updates=#{updates}"
     return {:members => member, :updates => updates}
+  end
+  
+  def self.add_member_params(name, updates)
+    {:members => [], :updates => parse_namestring(name).merge(updates)}
   end
 
   def self.find_by_phone(phone_number)

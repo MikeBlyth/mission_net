@@ -164,6 +164,21 @@ describe ApplicationHelper do
           AppLog.count.should eq 5
       end
     end # 
+
+    describe 'parse_namestring' do
+      it 'parses names correctly' do
+        parse_namestring('Jack Spratt').should eq ({:last_name=>'Spratt', :first_name=>'Jack', :name => 'Spratt, Jack'})
+        parse_namestring('Jack R. Spratt').should == 
+          ({:last_name=>'Spratt', :first_name=>'Jack', :middle_name => "R.", :name => 'Spratt, Jack R.'})
+        parse_namestring('Jack_Box R. Spratt').should == 
+          ({:last_name=>'Spratt', :first_name=>'Jack Box', :middle_name => "R.", :name => 'Spratt, Jack Box R.'})
+        parse_namestring('Spratt,+Inc.').should == 
+          ({:last_name=>'Spratt, Inc.', :name => 'Spratt, Inc.'})
+        parse_namestring('').should == {}
+        parse_namestring(nil).should == {}
+      end
+    end
+
   end  # various tools
   
     

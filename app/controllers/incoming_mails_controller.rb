@@ -71,7 +71,10 @@ class IncomingMailsController < ApplicationController
   end
 
   def validation_string
-    encrypted = encrypt([@user_email, Time.now].to_yaml)
+puts "**** @from_address=#{@from_address}"
+puts "**** No @from_address for validation string"  if @from_address.blank? 
+    return nil if @from_address.blank?
+    encrypted = encrypt([@from_address, Time.now].to_yaml)
     "Validation: #{encrypted}***********"
   end
   
@@ -84,7 +87,7 @@ class IncomingMailsController < ApplicationController
       decrypted = decrypt(vstring)  # just look for validation string in whole body
       return nil if decrypted.nil?
       email, time_s = YAML.load(decrypted)
-      return (email == @user_email) && (Time.now - time_s < 1.day)
+      return (email == @from_address) && (Time.now - time_s < 1.day)
     rescue
       puts "**** Error #{$!}"
       return nil
@@ -142,6 +145,8 @@ private
           Notifier.send_help(from).deliver
         when 'change', 'update'
           update_member(command[1])  # command[1] is the parameter string
+        when 'add', 'new'
+          create_member(command[1])
         when 'test'
           Notifier.send_test(from, 
              "You sent 'test' with parameter string (#{command[1]})").deliver
@@ -201,13 +206,17 @@ private
           ).deliver
   end
 
+  def create_member(values)
+    params_hash = Member.parse_update_command(values)
+  end
+  
   def update_member(values)
     update_hash = Member.parse_update_command(values)
-puts "**** update_hash=#{update_hash}"
+#puts "**** update_hash=#{update_hash}"
 AppLog.create(:code=>'Email.update', :description => "updates hash=#{update_hash.to_s}", :severity=>'Info')      
     case
       when update_hash.nil?
-puts "**** Delivering error response"
+#puts "**** Delivering error response"
         Notifier.send_generic_hashed(
          :to=> @from_address,
          :subject => 'Error in your update command',
@@ -215,7 +224,7 @@ puts "**** Delivering error response"
             values).deliver
       when update_hash[:members].many?
         names = update_hash[:members].map {|m| m.name}.join('; ')
-puts "**** Delivering multiple targets response"
+#puts "**** Delivering multiple targets response"
         Notifier.send_generic_hashed(
          :to=> @from_address,
          :subject => 'More info needed for your update command',
@@ -228,10 +237,11 @@ puts "**** Delivering multiple targets response"
         if update_authorized?(target)
           if check_validation_string(@body)
             target.update_attributes(update_hash[:updates])
-puts "**** Delivering confirmation"
+#puts "**** Delivering confirmation"
             send_confirmation_email(update_hash)
           else
-puts "**** Delivering verify request"
+#puts "**** Delivering verify request"
+puts "**** @from_address=#{@from_address}"
             send_pls_verify_email(update_hash)
           end
         else
