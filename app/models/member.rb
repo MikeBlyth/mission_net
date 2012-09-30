@@ -84,8 +84,7 @@ class Member < ActiveRecord::Base
 #puts "Find_with_name #{name}"
     return [] if name.blank?
     filtered = self.where(conditions)
-    result = filtered.where("first_name LIKE ?", name+"%") + filtered.where("last_name LIKE ?", name+"%") + 
-      filtered.where("name LIKE ?", name+"%") 
+    result = filtered.where("first_name LIKE ? OR last_name LIKE ? OR name LIKE ?", name+"%", name+"%", name+"%")  
     if name =~ /(.*),\s*(.*)/
       last_name, first_name = $1, $2
     elsif name =~ /(.*)\s(.*)/
@@ -94,8 +93,8 @@ class Member < ActiveRecord::Base
       last_name = first_name = nil
     end
     if last_name && first_name      
-      result += filtered.where("last_name LIKE ? AND ((first_name LIKE ?) )", 
-          last_name+"%", first_name+"%")
+      result += filtered.where("last_name LIKE ? AND ((first_name LIKE ? OR short_name LIKE ?) )", 
+          last_name+"%", first_name+"%", first_name+"%")
     end
     return result.uniq.compact
   end

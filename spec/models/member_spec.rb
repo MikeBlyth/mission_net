@@ -54,9 +54,15 @@ describe Member do
       Member.find_with_name(nil).should == []
     end
 
-    it 'finds simple name' do  # searching for ONE of last name, first name, full name
-      Member.find_with_name(@member.first_name).should == [@member]
+    it 'finds by last name' do  # searching for ONE of last name, first name, full name
       Member.find_with_name(@member.last_name).should == [@member]
+    end
+
+    it 'finds by first name' do  # searching for ONE of last name, first name, full name
+      Member.find_with_name(@member.first_name).should == [@member]
+    end
+
+    it 'finds by [full] name' do  # searching for ONE of last name, first name, full name
       Member.find_with_name(@member.name).should == [@member]
     end
 
@@ -68,7 +74,15 @@ describe Member do
     it 'finds "last_name, initial"' do  
       Member.find_with_name("#{@member.last_name}, #{@member.first_name[0]}").should == [@member]
     end
-      
+    
+    it 'finds "short_name last_name"' do  
+      Member.find_with_name("#{@member.short_name} #{@member.last_name}").should == [@member]
+    end
+    
+    it 'finds "last_name, short_name"' do  
+      Member.find_with_name("#{@member.last_name}, #{@member.short_name}").should == [@member]
+    end
+    
     it 'finds "first_name last_name"' do  
       Member.find_with_name("#{@member.first_name} #{@member.last_name}").should == [@member]
     end
@@ -553,11 +567,28 @@ describe Member do
     let(:s2){"#{member_name} #{phone_1} #{email_1} #{phone_2} #{email_2}"}
 
     context 'when member is not found' do  
-      it 'returns nil if member not found' do
-        Member.should_receive(:find_with_name).and_return([])
+      before(:each) do
+        Member.should_receive(:find_with_name).and_return([]) # i.e., name does not exist in database
+      end
+      
+      it 'returns empty array of members' do
         result = Member.parse_update_command(s)
         result[:members].should be_empty
+      end
+
+      it 'returns names hash' do
+        s_w_middle = "#{member.first_name} #{member.middle_name} #{member.last_name} #{phone_1} #{email_1}"
+        result = Member.parse_update_command(s_w_middle)
         result[:updates][:first_name].should eq member.first_name.gsub('_', ' ')
+        result[:updates][:last_name].should eq member.last_name.gsub('_', ' ')
+        result[:updates][:middle_name].should eq member.middle_name.gsub('_', ' ')
+        result[:updates][:name].should eq "#{member.last_name}, #{member.first_name} #{member.middle_name}".gsub('_', ' ')
+      end
+
+      it 'returns phones & emails' do
+        result = Member.parse_update_command(s)
+        result[:updates][:phone_1].should eq phone_1
+        result[:updates][:email_1].should eq email_1
       end
     end
     
