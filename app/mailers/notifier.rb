@@ -70,6 +70,7 @@ class Notifier < ActionMailer::Base
   end
 
   def send_generic_hashed(options={})
+#puts "**** send_generic_hashed with options=#{options}"
     @content = options[:content] || options[:body] || options[:text]
     bcc = options[:bcc] || false
     recipients = options[:to] || options[:recipients]

@@ -71,8 +71,8 @@ class IncomingMailsController < ApplicationController
   end
 
   def validation_string
-puts "**** @from_address=#{@from_address}"
-puts "**** No @from_address for validation string"  if @from_address.blank? 
+#puts "**** @from_address=#{@from_address}"
+#puts "**** No @from_address for validation string"  if @from_address.blank? 
     return nil if @from_address.blank?
     encrypted = encrypt([@from_address, Time.now].to_yaml)
     "Validation: #{encrypted}***********"
@@ -178,13 +178,20 @@ private
     return successful    
   end # process_commands
 
+  # ToDo: Change these two authorization methods to use CanCan directly, which
+  # will probably mean that the current user has to be set to the @from_member
   def update_authorized?(target)
     @from_member.roles_include?(:moderator) || target == @from_member
   end
 
+  def create_authorized?
+#puts "**** @from_member.groups=#{@from_member.groups}"
+    @from_member.roles_include?(:moderator)
+  end
+
   def update_summary(update_hash)
-    "#{update_hash[:members][0].name}: " +
-     update_hash[:updates].map {|k,v| "#{k}: #{v}"}.join("; ")
+    reply = update_hash[:members].any? ? "#{update_hash[:members][0].name}: " : ''
+    reply << update_hash[:updates].map {|k,v| "#{k}: #{v}"}.join("\n\t")
   end              
 
   def send_confirmation_email(update_hash)
@@ -195,19 +202,62 @@ private
           ).deliver
   end
 
-  def send_pls_verify_email(update_hash)
-      original_commands = @commands[0].join(' ')
+  def return_email(options)
       Notifier.send_generic_hashed(
        :to=> @from_address,
+       :subject => options[:subject],
+       :body => options[:body]
+          ).deliver
+  end
+
+  def send_pls_verify_email(update_hash)
+      original_commands = @commands[0].join(' ')
+      return_email(
        :subject => 'Please confirm updates',
        :body => "#{original_commands}\n\nThese changes will be made for #{update_summary(update_hash)}\n\n" +
           "To verify, please reply to this email, being sure to leave the verification code " +
           "below intact.\n\n#{validation_string}"
-          ).deliver
+          )
   end
 
   def create_member(values)
+    # Filter 1: Authorization
+    unless create_authorized?
+      return_email(:subject=>'Unauthorized to add new entries',
+        :body => "Your account is not authorized to add new members/entries to the " +
+                 "database. Please send your request through a moderator.")
+      return
+    end
+    # Filter 2: Existing member?
     params_hash = Member.parse_update_command(values)
+#puts "**** params_hash=#{params_hash}"
+    if params_hash[:members].any?
+        return_email(
+         :subject => 'Name already exists',
+         :body => "That name already exists in the database so cannot be added.\n\n" +
+            values)
+        return
+    end
+    # Filter 3: Validation string
+    if check_validation_string(@body)
+#puts "**** validation string OK"
+      new_member = Member.create(params_hash[:updates])
+#puts "**** new_member=#{new_member}, valid=#{new_member.valid?}"
+      if new_member.valid?
+        return_email(:subject => "Confirming new entry '#{new_member.name}'",
+          :body => "A new entry has been added to the database:\n\t#{update_summary(params_hash)}")
+      else
+        return_email(
+          :subject => 'Error adding new entry',
+          :body => "That entry could not be added because: .\n\n" +
+             new_member.errors.full_messages.join("\n\t") + "\n\n" +
+             values)
+      end
+      return
+    end
+    # Valid add request but needs validation
+#puts "**** Sending verification request"
+    send_pls_verify_email(params_hash)
   end
   
   def update_member(values)
@@ -236,12 +286,19 @@ AppLog.create(:code=>'Email.update', :description => "updates hash=#{update_hash
         target = update_hash[:members][0]
         if update_authorized?(target)
           if check_validation_string(@body)
-            target.update_attributes(update_hash[:updates])
+            if target.update_attributes(update_hash[:updates])
 #puts "**** Delivering confirmation"
-            send_confirmation_email(update_hash)
+              send_confirmation_email(update_hash)
+            else
+              # send error message
+              return_email(
+                :subject => 'Error updating entry',
+                :body => "That entry could not be updated because: .\n\n" +
+                   target.errors.full_messages.join("\n\t") + "\n\n" +
+                   values)
+            end
           else
 #puts "**** Delivering verify request"
-puts "**** @from_address=#{@from_address}"
             send_pls_verify_email(update_hash)
           end
         else
