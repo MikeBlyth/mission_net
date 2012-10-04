@@ -147,6 +147,10 @@ module ApplicationHelper
       return s.phone_std
     end
 
+    # [object_1, object_27 ...] => ['1', '27']
+    def to_id_set
+      self.map {|x| x.id.to_s}.to_set
+    end
 #    # Standardize phone number string to "+2349999999" format
 #    def phone_std(s,options={})
 #      return s unless s.respond_to? :phone_std

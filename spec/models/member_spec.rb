@@ -565,6 +565,9 @@ describe Member do
     let(:email_2){"xyz@example.com"} 
     let(:s){"#{member_name} #{phone_1} #{email_1}"}
     let(:s2){"#{member_name} #{phone_1} #{email_1} #{phone_2} #{email_2}"}
+    let(:s_groups) {:s + " group_1 grp2"}
+    let(:group_1) {FactoryGirl.create(:group, :group_name => 'group_1', :abbrev=>'grp1')}
+    let(:group_2) {FactoryGirl.create(:group, :group_name => 'group_2', :abbrev=>'grp2')}
 
     context 'when member is not found' do  
       before(:each) do
@@ -626,6 +629,12 @@ describe Member do
         results[:updates][:email_1].should eq email_1
         results[:updates][:email_2].should eq email_2
       end
+
+      describe 'sets groups array' do
+        let(:results) {Member.parse_update_command(s_groups)}
+      end
+        
+        
     end #when member is found    
 
     context 'when two members are found' do

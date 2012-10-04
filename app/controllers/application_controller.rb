@@ -52,7 +52,6 @@ class ApplicationController < ActionController::Base
 
   def current_user
     current_user ||= (Member.find(session[:user_id]) if session[:user_id])
-    $current_user = current_user
     return current_user
   end
 

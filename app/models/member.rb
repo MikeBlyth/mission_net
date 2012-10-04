@@ -111,7 +111,7 @@ class Member < ActiveRecord::Base
     updates = {}
     tokens.each do |token|
       case 
-        when phone = token.phone_std
+        when phone = token.phone_std  # phone_std returns nil if not a valid phone number
           phones << phone
         when token =~ /\A[^@ ]+@[^@ ]+\.[^@ ]+\Z/  # Very broad email address validator
           emails << token
@@ -309,14 +309,19 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
   def format_phone_numbers
     self.phone_1, self.phone_2 = std_phone(phone_1), std_phone(phone_2)
   end
-#Not working
-#  def authorized_for_read?
-#    false
-#  end
 
-#  def phone_1_authorized_for_read?
-#    $current_user.roles_include? :moderator
-#    false
-#  end
+  def merge_group_ids(params=params, selectable=nil)
+    if current_user.roles_include? :moderator
+      selectable ||= Group.where("administrator = ? OR administrator IS ?", false, nil).to_id_set
+    else
+      selectable ||= Group.where("user_selectable").to_id_set
+    end
+    original_groups = self.groups.to_id_set
+    unchangeable = original_groups - selectable
+    updates = (params[:record][:groups] || []).to_set
+    valid_updates = updates & selectable
+    return (unchangeable + valid_updates).compact.to_a
+  end
+
 
  end
