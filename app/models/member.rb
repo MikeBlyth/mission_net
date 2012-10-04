@@ -277,17 +277,21 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
     return nil
   end
  
+#  def role
+#    userkey = "user:#{self.id}"
+## puts "**** Member.role $redis.hget(userkey, :role)=#{$redis.hget(userkey, :role)}"
+#    unless myrole = $redis.hget(userkey, :role)  # This is INTENTIONALLY an assignment, not a "==" comparison
+#      myrole = recalc_highest_role
+#      $redis.hset(userkey, :role, myrole) # Cache role so we don't have to check it a zillion times from the DB 
+#      $redis.expire(userkey, @role_cache_duration)  # keep cached for 60 seconds 
+##puts "**** caching role for @role_cache_duration=#{@role_cache_duration} sec"
+#    end
+##puts "**** Member.role: user=[#{self.id}] #{self}, role=#{myrole}" 
+#    return myrole.nil? ? nil : myrole.downcase.to_sym      
+#  end
+
   def role
-    userkey = "user:#{self.id}"
-# puts "**** Member.role $redis.hget(userkey, :role)=#{$redis.hget(userkey, :role)}"
-    unless myrole = $redis.hget(userkey, :role)  # This is INTENTIONALLY an assignment, not a "==" comparison
-      myrole = recalc_highest_role
-      $redis.hset(userkey, :role, myrole) # Cache role so we don't have to check it a zillion times from the DB 
-      $redis.expire(userkey, @role_cache_duration)  # keep cached for 60 seconds 
-#puts "**** caching role for @role_cache_duration=#{@role_cache_duration} sec"
-    end
-#puts "**** Member.role: user=[#{self.id}] #{self}, role=#{myrole}" 
-    return myrole.nil? ? nil : myrole.downcase.to_sym      
+    @role ||= recalc_highest_role
   end
 
   def roles_include?(queried_role)

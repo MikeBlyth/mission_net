@@ -1,8 +1,11 @@
 module SessionsHelper
 
   def current_user
-    current_user ||= (Member.find(session[:user_id]) if session[:user_id])
-    return current_user
+    @current_user ||= (Member.find(session[:user_id]) if session[:user_id])
+  end
+
+  def current_user_role
+    @current_user_role ||= current_user.recalc_highest_role
   end
 
   # Is user (the parameter) the currently logged in user?
@@ -19,17 +22,6 @@ module SessionsHelper
     self.current_user = nil
   end
 
-#  # There is probably a much faster and elegant way to do this, but as it is rarely called I'm just leaving it
-#  def highest_role_by_email(user_email)
-#    members_with_email = Member.find_by_email(user_email)
-#    # Have to go through each group in priority order so that we return the member with the highest privileges
-#    members_with_email.each {|m| return m if m.role == :administrator}
-#    members_with_email.each {|m| return m if m.role == :moderator}
-#    members_with_email.each {|m| return m if m.role == :member}
-#    members_with_email.each {|m| return m if m.role == :limited}
-#    return nil
-#  end
-#  
   def login_allowed(user_email)
     members_with_email = Member.find_by_email(user_email)
     # Have to go through each group in priority order so that we return the member with the highest privileges

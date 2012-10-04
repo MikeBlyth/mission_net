@@ -20,7 +20,7 @@ gem 'heroku-api'
 gem 'iron_worker_ng'
 gem 'rdiscount'
 gem 'cancan'
-gem 'redis'
+# gem 'redis'
 gem 'timecop'
 gem 'rb-readline'
 gem 'thin', :platforms => :ruby

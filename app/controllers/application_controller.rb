@@ -50,10 +50,10 @@ class ApplicationController < ActionController::Base
     @iron_worker_client ||= IronWorkerNG::Client.new
   end  
 
-  def current_user
-    current_user ||= (Member.find(session[:user_id]) if session[:user_id])
-    return current_user
-  end
+#  def current_user
+#    current_user ||= (Member.find(session[:user_id]) if session[:user_id])
+#    return current_user
+#  end
 
 private
 
