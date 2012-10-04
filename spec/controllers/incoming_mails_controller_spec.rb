@@ -18,7 +18,7 @@ end
 
 
 def test_sender(role=nil)
-  member = FactoryGirl.create(:member)
+  member = FactoryGirl.build_stubbed(:member)
   member.stub(:role => role) if role   # Role needed for some tests and not others
   controller.stub(:login_allowed => member)
   Member.stub(:find_by_email => [member])
@@ -36,14 +36,15 @@ end
 # subsequent testing of checking validation string will expect to see
 # email_address in the encrypted validation string
 def create_validation_string(email_address)
-#  saved_from_address = controller.instance_variable_get(:@from_address)
   controller.instance_variable_set(:@from_address, email_address)
-  vstring = controller.validation_string
-#  controller.instance_variable_set(:@from_address, saved_from_address)
-  vstring
+  return controller.validation_string
 end
 
 describe IncomingMailsController do
+  let(:mail_queue) {ActionMailer::Base.deliveries}
+  let(:mail) {ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")}
+  let(:mail_destination) {mail_queue.last.to}
+  let(:mail_subject) {mail_queue.last.subject}
   before(:each) do
     @params = HashWithIndifferentAccess.new(
              'from' => 'member@example.com',
@@ -52,7 +53,7 @@ describe IncomingMailsController do
              'plain' => '--content--'
              )
     rebuild_message
-    ActionMailer::Base.deliveries.clear  # clear incoming mail queue
+    mail_queue.clear  # clear incoming mail queue
     @mock_message = mock_model(Message, :deliver=>true)
   end
 
@@ -75,7 +76,7 @@ describe IncomingMailsController do
 
   describe 'processes' do
     before(:each) do
-      test_sender
+      test_sender  # Set up valid sender of email (but with no roles)
     end      
     
     it 'variety of "command" lines without crashing' do
@@ -103,20 +104,15 @@ describe IncomingMailsController do
 
     it 'single command on first line' do
       @params['plain'] = 'Test with parameters list'
-      rebuild_message # needed only if the controller gets info from mail object made from params['message']
-      post :create, @params
-      response.status.should == 200
-      lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-#puts ActionMailer::Base.deliveries.first.to_s
+      lambda{post :create, @params}.should change(mail_queue, :length).by(1)
     end
 
     it 'commands on two lines' do
       @params['plain'] = "Test for line 1\nTest for line 2"
-      rebuild_message # needed only if the controller gets info from mail object made from params['message']
-      lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(2)
+      lambda{post :create, @params}.should change(mail_queue, :length).by(2)
       response.status.should == 200
-      ActionMailer::Base.deliveries.last.to_s.should =~ /line 2/
-      ActionMailer::Base.deliveries.last.to_s.should match("To: #{@params['from']}")
+      mail.should =~ /line 2/
+      mail_destination.should == [@params['from']]
 #puts ActionMailer::Base.deliveries.last.to_s
     end
 
@@ -124,21 +120,21 @@ describe IncomingMailsController do
 
   describe 'handles these commands:' do
     before(:each) do
-      @sender = test_sender
+      @sender = test_sender  # Set up valid sender of email (but with no roles)
     end      
     
     describe 'INFO command sends contact info' do
 
       it 'sends the email' do
         @params['plain'] = "info stranger"
-        lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-        ActionMailer::Base.deliveries.last.to.should == [@params['from']]
+        lambda{post :create, @params}.should change(mail_queue, :length).by(1)
+#puts "**** mail_destination=#{mail_destination}"
+        mail_destination.should == [@params['from']]
       end  
 
       it "gives error message if name not found" do
         @params['plain'] = "info stranger"
         post :create, @params
-        mail = ActionMailer::Base.deliveries.last.to_s
         mail.should =~ /no.*found/i      
       end
 
@@ -149,9 +145,8 @@ describe IncomingMailsController do
       
       it 'sends basic help info' do
         post :create, @params
-        ActionMailer::Base.deliveries.length.should == 1
-        ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-        mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+        mail_queue.length.should == 1
+        mail_destination.should == [@params['from']]
         mail.should match 'Accessing the .* Database by Email'
       end
     end #help
@@ -160,8 +155,6 @@ describe IncomingMailsController do
     describe 'ADD command' do
       let(:new_member) {FactoryGirl.build(:member)}
       let(:command_string) { "add #{add_member_string(new_member)}"}
-      let(:mail_queue) {ActionMailer::Base.deliveries}
-      let(:mail) {ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")}
 
       it 'authorizes a sender who is a moderator' do
         @params['plain'] = command_string
@@ -183,7 +176,7 @@ describe IncomingMailsController do
 
         it 'sends rest of line to Member.parse_update_command' do
           Member.should_receive(:parse_update_command).with("xxxxx vvvvv").
-            and_return({:members=>[], :updates=>{}}) 
+            and_return({:members=>[], :updates=>{}}) # just returns empty hash
           @params['plain'] = "add xxxxx vvvvv"
           post :create, @params
         end
@@ -192,43 +185,40 @@ describe IncomingMailsController do
 
         context 'incoming email is validated' do
           before(:each) do 
-            @vstring = create_validation_string(@params[:from])
-            @member = FactoryGirl.build(:member, :email_2=>'second@test.com', :phone_2=>'08094444444')
-            @params['plain'] = "add #{add_member_string(@member)}\n\n#@vstring"  # include validation
+            vstring = create_validation_string(@params[:from])
+            @params['plain'] = "#{command_string}\n\n#{vstring}"  # add validation
           end
 
           context 'when name is still unique' do
             it 'adds the member and sends confirming message' do
               lambda{post :create, @params}.should change(Member, :count).by(1)
-              ActionMailer::Base.deliveries.last.subject.should match 'Confirming'
-    puts "**** mail=#{mail}"
+              mail_subject.should match 'Confirming'
+  #  puts "**** mail=#{mail}"
             end
           end
           
           context 'when name has been taken' do
     
             it 'returns an error message' do
-              @member.save.should be_true  # Create record with name
+              new_member.save.should be_true  # Create record with name
 #  puts "**** posted @params=#{@params}"
-              lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-              ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-              mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+              lambda{post :create, @params}.should change(mail_queue, :length).by(1)
+              mail_destination.should == [@params['from']]
               mail.should match 'That name already exists'
-              mail.should match @member.last_name
+              mail.should match new_member.last_name
             end
           end
 
           context 'when record is invalid on save' do
     
             it 'returns an error message' do
-              @member.errors.add(:name, 'Too silly')
-              @member.errors.add(:phone, 'Too short')
-              @member.stub(:save => nil) # in case the save rather than create method is used
-              @member.stub(:valid? => false)
-              Member.should_receive(:create).and_return(@member) # simulate error on create
-              lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-              ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-              mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+              new_member.errors.add(:name, 'Too silly')
+              new_member.errors.add(:phone, 'Too short')
+              new_member.stub(:save => nil) # in case the save rather than create method is used
+              new_member.stub(:valid? => false)
+              Member.should_receive(:create).and_return(new_member) # simulate error on create
+              lambda{post :create, @params}.should change(mail_queue, :length).by(1)
+              mail_destination.should == [@params['from']]
               mail.should match 'Too silly'
               mail.should match 'Too short'
             end
@@ -248,7 +238,7 @@ describe IncomingMailsController do
           
           context 'when name is taken' do
             it 'returns an error message' do
-              new_member.save.should be_true
+              new_member.save.should be_true  # save so the email add command will be a duplicate
               lambda{post :create, @params}.should change(mail_queue, :length).by(1)
               mail.should_not match 'Validation: '
               mail.should match 'already exists'
@@ -279,8 +269,8 @@ describe IncomingMailsController do
       context 'a single member matches request' do
         context 'incoming email is validated' do
           before(:each) do 
-            @vstring = create_validation_string(@params[:from])
-            @params['plain'] = "update xxxxx vvvvv\n\n#@vstring"  # include validation
+            vstring = create_validation_string(@params[:from])
+            @params['plain'] = "update xxxxx vvvvv\n\n#{vstring}"  # include validation
           end
 
           context 'sender is a moderator' do
@@ -300,20 +290,19 @@ describe IncomingMailsController do
               it 'sends confirmatory email' do
                 target.stub(:update_attributes).and_return true
                 target.stub(:name).and_return("Some name")
-                lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-                ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-                mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+                lambda{post :create, @params}.should change(mail_queue, :length).by(1)
+                mail_destination.should == [@params['from']]
                 mail.should match 'Successful updates'
                 mail.should match 'Some name'
               end
             end #updates are successful
+ 
             context 'updates are unsuccessful' do
               it 'returns an error message' do
                 target.stub(:update_attributes).and_return false
                 target.stub_chain(:errors, :full_messages => ['You forgot something'])
-                lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-                ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-                mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+                lambda{post :create, @params}.should change(mail_queue, :length).by(1)
+                mail_destination.should == [@params['from']]
                 mail.should match 'You forgot something'
               end
             end # updates are unsuccessful  
@@ -332,10 +321,10 @@ describe IncomingMailsController do
 
               it 'sends error email' do
                 post :create, @params
-                mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
                 mail.should match 'Only moderators'
               end
             end # but trying to change some record
+
             context 'but trying to change own record' do
               before(:each) do
                 Member.should_receive(:parse_update_command).
@@ -350,7 +339,6 @@ describe IncomingMailsController do
               it "sends confirmation email" do
                 @sender.should_receive(:update_attributes).and_return(true)
                 post :create, @params
-                mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
                 mail.should match 'Successful updates'
                 mail.should match @sender.name
               end
@@ -371,12 +359,10 @@ describe IncomingMailsController do
             end
 
             it 'sends validation email' do
-              target.stub(:update_attributes).and_return true
               target.stub(:name).and_return("Some name")
 puts "**** @params=#{@params}"
-              lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-              ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-              mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+              lambda{post :create, @params}.should change(mail_queue, :length).by(1)
+              mail_destination.should == [@params['from']]
               mail.should match @params['plain'] # original command(s) should be included
               mail.should match 'These changes will be made'
               mail.should match 'Some name'
@@ -398,7 +384,6 @@ puts "**** mail=#{mail}"
 
               it 'sends error email' do
                 post :create, @params
-                mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
                 mail.should match 'Only moderators'
               end
             end # but trying to change some record
@@ -417,7 +402,6 @@ puts "**** mail=#{mail}"
               it "sends validation email" do
                 @sender.should_not_receive(:update_attributes)
                 post :create, @params
-                mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
                 mail.should match 'These changes will be made'
                 mail.should match 'Validation: '
                 mail.should match @sender.name
@@ -437,9 +421,8 @@ puts "**** mail=#{mail}"
         end
 
         it 'sends error email' do
-          lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-          ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-          mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+          lambda{post :create, @params}.should change(mail_queue, :length).by(1)
+          mail_destination.should == [@params['from']]
           mail.should match 'not found'
           mail.should match 'xxxxx vvvvv'  # The mock updates string
         end
@@ -456,9 +439,8 @@ puts "**** mail=#{mail}"
         it 'sends error email' do
           target.stub(:name => "Target 1 name")
           target_2.stub(:name => "Target 2 name")
-          lambda{post :create, @params}.should change(ActionMailer::Base.deliveries, :length).by(1)
-          ActionMailer::Base.deliveries.last.to.should == [@params['from']]
-          mail = ActionMailer::Base.deliveries.last.to_s.gsub("\r", "")
+          lambda{post :create, @params}.should change(mail_queue, :length).by(1)
+          mail_destination.should == [@params['from']]
           mail.should match 'More than one person'
           mail.should match "Target 1 name"  # The mock updates string
           mail.should match "Target 2 name"  # The mock updates string
@@ -496,11 +478,11 @@ puts "**** mail=#{mail}"
   end # handles these commands
    
   describe 'distributes email & sms to groups' do
+    let(:group_1) { FactoryGirl.create(:group)}
+    let(:group_2) { FactoryGirl.create(:group)}
     before(:each) do
       Message.stub(:create).and_return(@mock_message)
-      @member = test_sender(:member)
-      @group_1 = FactoryGirl.create(:group)
-      @group_2 = FactoryGirl.create(:group)
+      test_sender(:member)
       @body = 'Test message'
       @params[:from] = 'test@test.com'
     end
@@ -509,29 +491,29 @@ puts "**** mail=#{mail}"
       
       it 'distributes email to groups when groups are found' do
         Message.should_receive(:create).with(hash_including({:send_sms=>false, :send_email=>true, 
-                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
-        @params['plain'] = "email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+                            :to_groups=>[group_1.id, group_2.id], :body=>@body}))
+        @params['plain'] = "email #{group_1.abbrev} #{group_2.abbrev}: #{@body}"
         post :create, @params
       end
 
       it 'distributes sms to groups when groups are found' do
         Message.should_receive(:create).with(hash_including({:send_sms=>true, :send_email=>false, 
-                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
-        @params['plain'] = "sms #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+                            :to_groups=>[group_1.id, group_2.id], :body=>@body}))
+        @params['plain'] = "sms #{group_1.abbrev} #{group_2.abbrev}: #{@body}"
         post :create, @params
       end
 
       it 'distributes sms & email to groups when groups are found' do
         Message.should_receive(:create).with(hash_including({:send_sms=>true, :send_email=>true, 
-                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
-        @params['plain'] = "d+email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+                            :to_groups=>[group_1.id, group_2.id], :body=>@body}))
+        @params['plain'] = "d+email #{group_1.abbrev} #{group_2.abbrev}: #{@body}"
         post :create, @params
       end
 
       it 'distributes to found groups when only some groups are found' do
         Message.should_receive(:create).with(hash_including({:send_sms=>false, :send_email=>true, 
-                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
-        @params['plain'] = "email badGroup #{@group_1.abbrev} sadGroup #{@group_2.abbrev}: #{@body}"
+                            :to_groups=>[group_1.id, group_2.id], :body=>@body}))
+        @params['plain'] = "email badGroup #{group_1.abbrev} sadGroup #{group_2.abbrev}: #{@body}"
         post :create, @params
       end
 
@@ -542,7 +524,7 @@ puts "**** mail=#{mail}"
       end
       
       it 'warns sender when SMS message is too long' do
-        @params['plain'] = "sms #{@group_1.abbrev} #{@group_2.abbrev}: #{@body} #{'x' * 200}"
+        @params['plain'] = "sms #{group_1.abbrev} #{group_2.abbrev}: #{@body} #{'x' * 200}"
         Notifier.should_receive(:send_generic).with(@params[:from], /only the first 150/i).
           and_return(@mock_message)
         post :create, @params
@@ -567,17 +549,17 @@ puts "**** mail=#{mail}"
 
         it 'warns that one group was not found' do
           Notifier.should_receive(:send_generic).with(@params[:from], 
-            Regexp.new("was sent to groups #{@group_1.group_name}.* badGroup was not found")).
+            Regexp.new("was sent to groups #{group_1.group_name}.* badGroup was not found")).
             and_return(@mock_mail)
-          @params['plain'] = "d badGroup #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+          @params['plain'] = "d badGroup #{group_1.abbrev} #{group_2.abbrev}: #{@body}"
           post :create, @params
         end
 
         it 'warns that some groups were not found' do
           Notifier.should_receive(:send_generic).with(@params[:from], 
-            Regexp.new("was sent to groups #{@group_1.group_name}.* sadGroup were not found")).
+            Regexp.new("was sent to groups #{group_1.group_name}.* sadGroup were not found")).
             and_return(@mock_mail)
-          @params['plain'] = "d badGroup sadGroup #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+          @params['plain'] = "d badGroup sadGroup #{group_1.abbrev} #{group_2.abbrev}: #{@body}"
           post :create, @params
         end
 
@@ -599,15 +581,15 @@ puts "**** mail=#{mail}"
       
       it 'does not send email to groups' do
         Message.should_not_receive(:create).with(hash_including({:send_sms=>true, :send_email=>true, 
-                            :to_groups=>[@group_1.id, @group_2.id], :body=>@body}))
-        @params['plain'] = "email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+                            :to_groups=>[group_1.id, group_2.id], :body=>@body}))
+        @params['plain'] = "email #{group_1.abbrev} #{group_2.abbrev}: #{@body}"
         post :create, @params
       end
 
       it 'sends rejected email to moderators' do
         Message.should_receive(:create).with(hash_including({:send_sms=>false, :send_email=>true, 
                             :to_groups=>[@mod_group.id], :body=>"Rejected: #{@body}"}))
-        @params['plain'] = "email #{@group_1.abbrev} #{@group_2.abbrev}: #{@body}"
+        @params['plain'] = "email #{group_1.abbrev} #{group_2.abbrev}: #{@body}"
         post :create, @params
       end
     end # when sender is forbidden
@@ -617,14 +599,14 @@ puts "**** mail=#{mail}"
     
     describe '(unique email addr)' do
       before(:each) do
-        @responding_to = 25  # This is the id of the message being responded to
+        responding_to = 25  # This is the id of the message being responded to
         @message = mock_model(Message, :deliver=>true, :process_response => nil)
-        Message.stub(:find_by_id).with(@responding_to).and_return(@message)
+        Message.stub(:find_by_id).with(responding_to).and_return(@message)
         @member = test_sender(:member)
         @subject_with_tag = 'Re: Important ' + 
-          message_id_tag(:id=>@responding_to, :location => :subject, :action=>:generate)
+          message_id_tag(:id=>responding_to, :location => :subject, :action=>:generate)
         @user_reply = "I'm in Kafanchan"
-        @body_with_tag = message_id_tag(:id=>@responding_to, :location => :body, :action=>:confirm_tag) +
+        @body_with_tag = message_id_tag(:id=>responding_to, :location => :body, :action=>:confirm_tag) +
           ' ' + @user_reply
       end
       
