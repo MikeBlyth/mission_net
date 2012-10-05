@@ -131,13 +131,15 @@ class Member < ActiveRecord::Base
     end
     name_string = names.join(' ')
     member = Member.find_with_name(name_string) # may match none, one, or many members
-    return add_member_params(name_string, updates) if member.empty?  # assume it's for adding a new member
+    group_ids = Group.ids_from_names(groups).to_strings
+    return add_member_params(name_string, updates, group_ids) if member.empty?  # assume it's for adding a new member
 #puts "**** member=#{member}, updates=#{updates}"
-    return {:members => member, :updates => updates}
+    return {:members => member, :updates => updates.merge({:groups => group_ids})}
   end
   
-  def self.add_member_params(name, updates)
-    {:members => [], :updates => parse_namestring(name).merge(updates)}
+  def self.add_member_params(name, updates, group_ids)
+    {:members => [], :updates => parse_namestring(name).merge(updates).
+      merge(:groups=>group_ids)}
   end
 
   def self.find_by_phone(phone_number)
@@ -327,14 +329,25 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
   # Given (a) the incoming group_ids from the form (params[:record][:groups]), and
   #       (b) the set of which groups are changeable for this user (selectable)
   # return the set of group_ids as they should be after the update.
-  # 
-  def merge_group_ids(params=params, selectable=nil)
-    selected_groups = params[:record][:groups] # Array of groups selected for this member
+  # ToDo: It's probably not worth the trouble of using sets rather than arrays
+  def merge_group_ids(selected_groups, options={})
+    selectable = options[:selectable]
     return selected_groups if selectable.nil?  # consider nil to mean "all groups selectable," i.e. by administrator
-    unchangeable = group_ids_set - selectable  # existing groups which are not selectable
+    if options[:add]  # keep all existing groups, possibly add some
+      groups_to_keep = group_ids_set
+    else
+      # only keep existing groups which are not selectable
+      groups_to_keep = group_ids_set - selectable 
+    end
     updates = (selected_groups || []).to_set
     valid_updates = updates & selectable  # The selected groups which are changeable
-    return (unchangeable + valid_updates).to_a  # Add back the non-chosen groups which are not changeable
+#puts "**** selected_groups=#{selected_groups}"
+#puts "**** selectable=#{selectable.to_a}"
+#puts "**** groups_to_keep=#{groups_to_keep.to_a}"
+#puts "**** group_ids_set=#{group_ids_set.to_a}"
+#puts "**** updates=#{updates.to_a}"
+#puts "**** valid_updates=#{valid_updates.to_a}"
+    return (groups_to_keep + valid_updates).to_a  # Add back the non-chosen groups which are not changeable
   end
 
  end

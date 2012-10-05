@@ -72,7 +72,7 @@ class MembersController < ApplicationController
     super
   end
   
-  # Given params hash, change :something_id to :something
+  # Given params hash, change :something to :something_id 
   def convert_keys_to_id(params, *keys_to_change)
     return params if keys_to_change.nil? || params.nil?
     keys_to_change.each do |k|
@@ -159,7 +159,8 @@ class MembersController < ApplicationController
 #puts "****in update, current_user=#{current_user.id}, role=#{current_user_role}"
     unless current_user_role == :administrator
 #      merged = merge_group_ids
-      merged = Member.find(params[:id]).merge_group_ids(params, controllable_groups)
+      merged = Member.find(params[:id]).
+        merge_group_ids(params[:record][:groups], :selectable => controllable_groups)
 #puts "**** controllable_groups=#{controllable_groups.to_a}"
 #puts "**** merged=#{merged}"
 #puts "**** merged=#{merged}"
