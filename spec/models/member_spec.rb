@@ -662,5 +662,49 @@ describe Member do
       end
     end # when two members are found
   end # Parse_update_command method
+
+  describe 'merge_group_ids method yields valid new group_ids' do
+    # This method handles the incoming (from form) group ids and only allows changes to
+    # the groups allowed for the given user role (privilege).
+    let(:member) {FactoryGirl.build_stubbed(:member)}
+    let(:selectable) {[11, 12, 13].to_set}
+    before(:each) do  
+      member.stub(:group_ids_set => [1, 11].to_set)  # this what groups member appears to belong to
+    end             
+
+    it 'adds new selectable group' do
+      member.merge_group_ids({:record=>{:groups=>[1, 11, 12]}}, selectable).
+        sort.should eq [1, 11, 12]
+    end
+ 
+    it 'does not add new non-selectable group' do
+      member.merge_group_ids({:record=>{:groups=>[1, 2, 11]}}, selectable).
+        sort.should eq [1, 11]
+    end
+ 
+    it 'removes selectable group' do
+      member.merge_group_ids({:record=>{:groups=>[1]}}, selectable).should eq [1]
+    end
+    it 'does not remove non-selectable group' do
+      member.merge_group_ids({:record=>{:groups=>[11]}}, selectable).sort.should eq [1, 11]
+    end
+
+    it 'adds/removes mix of updates' do
+       member.merge_group_ids({:record=>{:groups=>[2, 12, 13]}}, selectable).
+        sort.should eq [1, 12, 13]
+    end
+
+    it 'returns all group updates when selectable is nil' do
+      member.merge_group_ids({:record=>{:groups=>[2, 11, 12, 99]}}, nil).
+        sort.should eq [2, 11, 12, 99]
+    end
+ 
+    it 'returns unchangeable groups when selected is empty' do
+      member.merge_group_ids({:record=>{:groups=>[]}}, selectable).should eq [1]
+      member.merge_group_ids({:record=>{:groups=>['']}}, selectable).should eq [1]
+    end
+
+  end # merge_group_ids method yields valid new group_ids
+
 end
 

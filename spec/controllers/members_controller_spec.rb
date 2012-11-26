@@ -139,7 +139,7 @@ describe MembersController do
   end # Export
 
   describe 'Updating groups:' do
-    
+
     def create_test_groups_for_selectability
       # Create 2 groups that are user selectable, 2 that are not, and 1 administrator group
       @selectable_1 = FactoryGirl.create(:group, :id => 1, :user_selectable => true)
@@ -147,8 +147,49 @@ describe MembersController do
       @un_selectable_3 = FactoryGirl.create(:group, :id => 3, :user_selectable => false)
       @un_selectable_4 = FactoryGirl.create(:group, :id => 4, :user_selectable => false)
       @admin_group_5 = FactoryGirl.create(:group, :id => 5, :administrator => true)
-      @original_groups = [@selectable_1, @un_selectable_3] # One selectable and one un-selectable group are originally in record
     end
+
+    describe 'controllable_groups method' do
+    # Return a set of groups which can be added or removed from a member by the
+    # current user (depending on permissions)
+      before(:all) {create_test_groups_for_selectability}
+      after(:all) {Group.destroy_all}
+
+      it 'returns nil for administrator' do
+      # Nil for selectable means that all groups are selectable. Go figure.
+        controller.instance_variable_set(:@current_user_role, :administrator)
+        controller.controllable_groups.should eq nil
+      end
+
+      it 'returns all non-administrator groups for moderator' do
+      # Nil for selectable means that all groups are selectable. Go figure.
+        controller.instance_variable_set(:@current_user_role, :moderator)
+        controller.controllable_groups.should eq ['1', '2', '3', '4'].to_set
+      end
+
+      it 'returns all user_selectable groups for others' do
+      # Nil for selectable means that all groups are selectable. Go figure.
+        controller.instance_variable_set(:@current_user_role, :member)
+        controller.controllable_groups.should eq ['1', '2'].to_set
+      end
+      
+      describe 'update method sets groups correctly' do
+        let(:member) {FactoryGirl.create(:member, :groups=>[@selectable_1, @un_selectable_3])}
+        
+        it 'changes all groups for administrator' do
+          test_sign_in(:administrator)
+          post :update, :id=>member.id, :record=>{:groups=>['2', '4', '5']}
+          member.reload.group_ids.should eq [2, 4, 5]
+        end
+
+        it 'changes all but admin group for moderator' do
+          test_sign_in(:moderator)
+          post :update, :id=>member.id, :record=>{:groups=>['2', '4', '5']}
+          member.reload.group_ids.sort.should eq [2, 4]
+        end
+
+      end # update method sets groups correctly
+    end # controllable_groups method
 
     describe 'filter for group selection:' do
 
@@ -177,117 +218,117 @@ describe MembersController do
       end
     end # filter for group selection:
     
-    describe 'merge_group_ids method yields valid new group_ids' do
-      # This method handles the incoming (from form) group ids and only allows changes to
-      # the groups allowed for the given user role (privilege).
-      before(:each) do  
-        create_test_groups_for_selectability
-      end             
+#    describe 'merge_group_ids method yields valid new group_ids' do
+#      # This method handles the incoming (from form) group ids and only allows changes to
+#      # the groups allowed for the given user role (privilege).
+#      before(:each) do  
+#        create_test_groups_for_selectability
+#      end             
 
-      it 'handles empty update list' do
-        test_sign_in(:moderator)  # Not administrator, since admin doesn't use merge_group_ids anyway
-        Member.stub_chain(:find, :groups).and_return(@original_groups)
-        controller.merge_group_ids({:record=>{:groups => []}, :id => 1}).sort.should == []
-        controller.merge_group_ids({:record=>{:groups => ['']}, :id => 1}).sort.should == []
-        controller.merge_group_ids({:record=>{:id => 1}}).sort.should == []
-      end
+#      it 'handles empty update list' do
+#        test_sign_in(:moderator)  # Not administrator, since admin doesn't use merge_group_ids anyway
+#        Member.stub_chain(:find, :groups).and_return(@original_groups)
+#        controller.merge_group_ids({:record=>{:groups => []}, :id => 1}).sort.should == []
+#        controller.merge_group_ids({:record=>{:groups => ['']}, :id => 1}).sort.should == []
+#        controller.merge_group_ids({:record=>{:id => 1}}).sort.should == []
+#      end
 
-      it 'does not drop an assigned, unselectable group' do
-        # This just tests the merge_group_ids method directly without going through Member.update
-        test_sign_in(:member)
-        Member.stub_chain(:find, :groups).and_return(@original_groups)
-        Member.find(1).groups.should == @original_groups
-        controller.merge_group_ids({:record=>{:groups => ["1", '3']}, :id => 1}).sort.should == ['1', '3']
-        #          method          {incoming parameters from form},   record being edited})
-        controller.merge_group_ids({:record=>{:groups => ["2", '4']}, :id => 1}).sort.should == ['2', '3']
-        # i.e., (1 and 2) can be updated (from '1' to '2') but (3 and 4) are not (so 3 remains as 3)
-      end
-    end # merge_group_ids method yields valid new group_ids
+#      it 'does not drop an assigned, unselectable group' do
+#        # This just tests the merge_group_ids method directly without going through Member.update
+#        test_sign_in(:member)
+#        Member.stub_chain(:find, :groups).and_return(@original_groups)
+#        Member.find(1).groups.should == @original_groups
+#        controller.merge_group_ids({:record=>{:groups => ["1", '3']}, :id => 1}).sort.should == ['1', '3']
+#        #          method          {incoming parameters from form},   record being edited})
+#        controller.merge_group_ids({:record=>{:groups => ["2", '4']}, :id => 1}).sort.should == ['2', '3']
+#        # i.e., (1 and 2) can be updated (from '1' to '2') but (3 and 4) are not (so 3 remains as 3)
+#      end
+#    end # merge_group_ids method yields valid new group_ids
 
-    describe 'only changeable groups are changed on update' do
+#    describe 'only changeable groups are changed on update' do
 
-      before(:each) do  
-        create_test_groups_for_selectability
-      end             
-              
-      it 'member can change only the selectable groups in the database record' do
-        member = create_signed_in_member(:member)
-        role_group = member.groups[0]  # This is one we had to create to give the member privilege
-        member.groups << [@selectable_1, @un_selectable_3]
-        member.role.should eq :member
-        params = member.attributes.merge({:groups => ['2', '4', '5']})
-        put :update, :id => member.id, :record => params
-        member.reload.group_ids.sort.should eq [2, 3, role_group.id].sort  # 4 doesn't appear, 3 doesn't disappear; role_group is left over from first line
-      end
+#      before(:each) do  
+#        create_test_groups_for_selectability
+#      end             
+#              
+#      it 'member can change only the selectable groups in the database record' do
+#        member = create_signed_in_member(:member)
+#        role_group = member.groups[0]  # This is one we had to create to give the member privilege
+#        member.groups << [@selectable_1, @un_selectable_3]
+#        member.role.should eq :member
+#        params = member.attributes.merge({:groups => ['2', '4', '5']})
+#        put :update, :id => member.id, :record => params
+#        member.reload.group_ids.sort.should eq [2, 3, role_group.id].sort  # 4 doesn't appear, 3 doesn't disappear; role_group is left over from first line
+#      end
 
-      it 'moderator can change selectable and un-selectable groups in the database record' do
-        test_sign_in(:moderator)
-        member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
-        params = member.attributes.merge({:groups => ['2', '4']})
-        put :update, :id => member.id, :record => params
-        member.reload.group_ids.sort.should eq [2, 4]  # 4 does appear and 3 is dropped, even though un-selectable
-      end
+#      it 'moderator can change selectable and un-selectable groups in the database record' do
+#        test_sign_in(:moderator)
+#        member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
+#        params = member.attributes.merge({:groups => ['2', '4']})
+#        put :update, :id => member.id, :record => params
+#        member.reload.group_ids.sort.should eq [2, 4]  # 4 does appear and 3 is dropped, even though un-selectable
+#      end
 
-      it 'moderator cannot add or remove member from administrator group' do
-        test_sign_in(:moderator)
-        member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
-        params = member.attributes.merge({:groups => ['2', '4', '5']})
-        put :update, :id => member.id, :record => params
-        member.reload.group_ids.sort.should eq [2, 4]  # 5 (admin) does not appear
-      end
+#      it 'moderator cannot add or remove member from administrator group' do
+#        test_sign_in(:moderator)
+#        member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
+#        params = member.attributes.merge({:groups => ['2', '4', '5']})
+#        put :update, :id => member.id, :record => params
+#        member.reload.group_ids.sort.should eq [2, 4]  # 5 (admin) does not appear
+#      end
 
-      it 'administrator can change all groups including administrator groups' do
-        test_sign_in(:administrator)
-        member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
-        params = member.attributes.merge({:groups => ['2', '4', '5']})  # where '5' is administrator group
-        put :update, :id => member.id, :record => params
-        member.reload.group_ids.sort.should eq [2, 4, 5]  # '5' means admin group has been added
-      end
+#      it 'administrator can change all groups including administrator groups' do
+#        test_sign_in(:administrator)
+#        member = FactoryGirl.create(:member, :groups => [@selectable_1, @un_selectable_3])
+#        params = member.attributes.merge({:groups => ['2', '4', '5']})  # where '5' is administrator group
+#        put :update, :id => member.id, :record => params
+#        member.reload.group_ids.sort.should eq [2, 4, 5]  # '5' means admin group has been added
+#      end
 
-    end # only changeable groups are changed on update
-
-    describe 'imports member data' do
-      before :each do
-        test_sign_in(:administrator)
-        @file = Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/files/members.csv'), 'text/csv')
-      end
-      
-      it 'uploads the file' do   # Just a sanity check on the setup
-        post :import, :file => @file
-        Member.count.should be > 0
-        response.should redirect_to members_path
-      end
-
-      # NB: This test is dependent on the content of the test file!
-      it 'correctly imports specified data from csv file' do
-        post :import, :file => @file
-        m = Member.find_by_last_name 'Nasrudeen'
-        m.first_name.should == 'Mohammed'
-        m.phone_1.should == '2341112223333'
-        m.phone_2.should be_nil
-        m.email_1.should == 'abc@example.com'
-        m.email_2.should be_nil
-        m.in_country.should be_true
-        m.groups.should_not be_empty
-        m.groups[0].group_name.should eq 'Visitors'
-        m = Member.find_by_last_name 'Hernandez'
-        m.first_name.should eq 'Jorge'
-        m.phone_1.should eq '2342223334444'
-        m.phone_2.should eq '2342223335555'
-        m.email_1.should eq 'def@example.com'
-        m.email_2.should eq 'g@example.com'
-        m.in_country.should_not be_true
-        m.comments.should eq 'Evangel'
-        Group.should exist :group_name => 'Friends'
-        m.groups.count.should eq 2
-      end
-      
-    end # imports member data
-
-    describe 'convert_keys_to_id' do
-      it 'adds "_id" to end of hash key' do
-        controller.convert_keys_to_id({:cat=>1, :dog=>2, :mouse=>3}, :dog).should == {:cat=>1, :dog_id=>2, :mouse=>3}
-      end
-    end  # convert_keys_to_id
+#    end # only changeable groups are changed on update
   end # updating groups
+
+  describe 'imports member data' do
+    before :each do
+      test_sign_in(:administrator)
+      @file = Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/files/members.csv'), 'text/csv')
+    end
+    
+    it 'uploads the file' do   # Just a sanity check on the setup
+      post :import, :file => @file
+      Member.count.should be > 0
+      response.should redirect_to members_path
+    end
+
+    # NB: This test is dependent on the content of the test file!
+    it 'correctly imports specified data from csv file' do
+      post :import, :file => @file
+      m = Member.find_by_last_name 'Nasrudeen'
+      m.first_name.should == 'Mohammed'
+      m.phone_1.should == '2341112223333'
+      m.phone_2.should be_nil
+      m.email_1.should == 'abc@example.com'
+      m.email_2.should be_nil
+      m.in_country.should be_true
+      m.groups.should_not be_empty
+      m.groups[0].group_name.should eq 'Visitors'
+      m = Member.find_by_last_name 'Hernandez'
+      m.first_name.should eq 'Jorge'
+      m.phone_1.should eq '2342223334444'
+      m.phone_2.should eq '2342223335555'
+      m.email_1.should eq 'def@example.com'
+      m.email_2.should eq 'g@example.com'
+      m.in_country.should_not be_true
+      m.comments.should eq 'Evangel'
+      Group.should exist :group_name => 'Friends'
+      m.groups.count.should eq 2
+    end
+    
+  end # imports member data
+
+  describe 'convert_keys_to_id' do
+    it 'adds "_id" to end of hash key' do
+      controller.convert_keys_to_id({:cat=>1, :dog=>2, :mouse=>3}, :dog).should == {:cat=>1, :dog_id=>2, :mouse=>3}
+    end
+  end  # convert_keys_to_id
 end

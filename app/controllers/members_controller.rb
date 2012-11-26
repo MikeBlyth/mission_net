@@ -155,32 +155,15 @@ class MembersController < ApplicationController
   end
   
   def update
-#puts "**** params=#{params}"
+#puts "**** update: params=#{params}"
 #puts "****in update, current_user=#{current_user.id}, role=#{current_user.role}"
     unless current_user.role == :administrator
-      merged = merge_group_ids
+#      merged = merge_group_ids
+      merged = Member.find(params[:id]).merge_group_ids(params, controllable_groups)
 #puts "**** merged=#{merged}"
-      params[:record][:groups] = merge_group_ids if merged.any?
+      params[:record][:groups] = merged.any? ? merged : ['']
     end
     super
-  end
-
-  # Given (a) the incoming group_ids from the form (params[:record][:groups]), and
-  #       (b) the existing group_ids of the record (original_groups)
-  #       (c) the set of which groups are changeable for this user (selectable)
-  # return the set of group_ids as they should be after the update.
-  # 
-  def merge_group_ids(params=params, selectable=nil)
-    if current_user.role == :moderator
-      selectable ||= Group.where("administrator = ? OR administrator IS ?", false, nil).map {|g| g.id.to_s}
-    else
-      selectable ||= Group.where("user_selectable").map {|g| g.id.to_s}
-    end
-    original_groups = Member.find(params[:id]).groups.map {|g| g.id.to_s}
-    unchangeable = original_groups.map{|g| g.to_s unless selectable.include? g.to_s}
-    updates = params[:record][:groups] || []
-    valid_updates = updates & selectable
-    return (unchangeable + valid_updates).compact.uniq
   end
 
   def wife_select
