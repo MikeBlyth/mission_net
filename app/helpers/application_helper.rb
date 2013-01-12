@@ -204,6 +204,19 @@ module ApplicationHelper
     add_indexed_name(name_hash)
   end
   
+  def to_strings
+    return self.to_s unless self.respond_to? :map
+    self.map {|x| x.to_s}
+  end
+  
+  def to_integers
+    if self.respond_to? :map
+      self.map {|x| x.respond_to?(:to_i) ? x.to_i : nil }
+    else
+      self.respond_to? :to_i ? self.to_i : nil 
+    end
+  end
+  
   ### GROUPS ##
 
   # Which groups can the current user control (add or remove from users)?

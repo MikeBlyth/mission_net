@@ -580,9 +580,6 @@ describe Member do
     let(:email_2){"xyz@example.com"} 
     let(:s){"#{member_name} #{phone_1} #{email_1}"}
     let(:s2){"#{member_name} #{phone_1} #{email_1} #{phone_2} #{email_2}"}
-    let(:s_groups) {:s + " group_1 grp2"}
-    let(:group_1) {FactoryGirl.create(:group, :group_name => 'group_1', :abbrev=>'grp1')}
-    let(:group_2) {FactoryGirl.create(:group, :group_name => 'group_2', :abbrev=>'grp2')}
 
     context 'when member is not found' do  
       before(:each) do
@@ -646,8 +643,33 @@ describe Member do
       end
 
       describe 'sets groups array' do
-        let(:results) {Member.parse_update_command(s_groups)}
-      end
+        let(:s_groups) {s + " group_1 grp2"}
+        before(:all) do
+          @group_1 = FactoryGirl.create(:group, :group_name => 'group_1', :abbrev=>'grp1')
+          @group_2 = FactoryGirl.create(:group, :group_name => 'group_2', :abbrev=>'grp2')
+        end
+        after(:all) {Group.destroy_all}
+        
+        it 'returns array of group ids' do
+          results = Member.parse_update_command(s_groups)[:updates][:groups].sort
+          expected = [@group_1.id.to_s, @group_2.id.to_s]
+ puts "**** s_groups=#{s_groups}"
+          results.should eq expected
+        end
+
+        it 'includes invalid group name as a string' do
+          results = Member.parse_update_command(s_groups + ' bad_name')[:updates][:groups].sort
+          expected = [@group_1.id.to_s, @group_2.id.to_s, 'bad_name']
+ puts "**** s_groups=#{s_groups}"
+          results.should eq expected
+        end
+  
+        it 'returns empty array if no groups specified' do
+          results = Member.parse_update_command(s)[:updates][:groups].sort
+          expected = []
+          results.should eq expected
+        end
+      end # sets groups array
         
         
     end #when member is found    
@@ -667,43 +689,57 @@ describe Member do
     # This method handles the incoming (from form) group ids and only allows changes to
     # the groups allowed for the given user role (privilege).
     let(:member) {FactoryGirl.build_stubbed(:member)}
-    let(:selectable) {[11, 12, 13].to_set}
+    let(:selectable) {['11', '12', '13'].to_set}
     before(:each) do  
-      member.stub(:group_ids_set => [1, 11].to_set)  # this what groups member appears to belong to
+      member.stub(:group_ids => [1, 11])  # this what groups member appears to belong to
     end             
 
-    it 'adds new selectable group' do
-      member.merge_group_ids({:record=>{:groups=>[1, 11, 12]}}, selectable).
-        sort.should eq [1, 11, 12]
-    end
- 
-    it 'does not add new non-selectable group' do
-      member.merge_group_ids({:record=>{:groups=>[1, 2, 11]}}, selectable).
-        sort.should eq [1, 11]
-    end
- 
-    it 'removes selectable group' do
-      member.merge_group_ids({:record=>{:groups=>[1]}}, selectable).should eq [1]
-    end
-    it 'does not remove non-selectable group' do
-      member.merge_group_ids({:record=>{:groups=>[11]}}, selectable).sort.should eq [1, 11]
-    end
+    context 'by default (merge) removes unselected groups if they are selectable' do
+      it 'merges new selectable group' do
+        member.merge_group_ids(['1', '11', '12'], {:selectable=>selectable}).
+          sort.should eq ['1', '11', '12']
+      end
+   
+      it 'does not merge new non-selectable group' do
+        member.merge_group_ids(['1', '2', '11'], {:selectable=>selectable}).
+          sort.should eq ['1', '11']
+      end
+   
+      it 'removes selectable group' do
+        member.merge_group_ids(['1'], {:selectable=>selectable}).should eq ['1']
+      end
+      it 'does not remove non-selectable group' do
+        member.merge_group_ids([ '11'], {:selectable=>selectable}).sort.should eq ['1', '11']
+      end
 
-    it 'adds/removes mix of updates' do
-       member.merge_group_ids({:record=>{:groups=>[2, 12, 13]}}, selectable).
-        sort.should eq [1, 12, 13]
-    end
+      it 'merges/removes mix of updates' do
+         member.merge_group_ids(['2', '12', '13'], {:selectable=>selectable}).
+          sort.should eq ['1', '12', '13']
+      end
 
-    it 'returns all group updates when selectable is nil' do
-      member.merge_group_ids({:record=>{:groups=>[2, 11, 12, 99]}}, nil).
-        sort.should eq [2, 11, 12, 99]
-    end
- 
-    it 'returns unchangeable groups when selected is empty' do
-      member.merge_group_ids({:record=>{:groups=>[]}}, selectable).should eq [1]
-      member.merge_group_ids({:record=>{:groups=>['']}}, selectable).should eq [1]
-    end
+      it 'returns all group updates when selectable is nil' do
+        member.merge_group_ids(['2', '11', '12', '99']).
+          to_set.should eq ['2', '11', '12', '99'].to_set
+      end
+   
+      it 'returns unchangeable groups when selected is empty' do
+        member.merge_group_ids([], {:selectable=>selectable}).should eq ['1']
+        member.merge_group_ids([''], {:selectable=>selectable}).should eq ['1']
+      end
+    end # by default ... (merge mode)
+    
+    context 'in add mode, only adds and never removes groups' do
+    
+      it 'adds selectable groups' do
+        member.merge_group_ids(['12', '13'], {:selectable=>selectable, :add=>true}).
+          sort.should eq ['1', '11', '12', '13']
+      end
 
+      it 'does not add non-selectable groups' do
+        member.merge_group_ids(['2', '12'], {:selectable=>selectable, :add=>true}).
+          sort.should eq ['1', '11', '12']
+      end
+    end # in add mode, only...
   end # merge_group_ids method yields valid new group_ids
 
 end

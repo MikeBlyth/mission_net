@@ -188,6 +188,13 @@ describe MembersController do
           member.reload.group_ids.sort.should eq [2, 4]
         end
 
+        it 'changes only selectable groups for others' do
+          user = test_sign_in(:member)
+          user.stub(:id => member.id) # i.e. user is editing her own record, otherwise she can't post updates
+          post :update, :id=>member.id, :record=>{:groups=>['2', '4', '5']}
+          member.reload.group_ids.sort.should eq [2, 3] # 1 dropped, 2 added, 3 unchanged, 4 & 5 ignored
+        end
+
       end # update method sets groups correctly
     end # controllable_groups method
 

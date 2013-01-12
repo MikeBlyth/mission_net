@@ -241,6 +241,7 @@ private
     # Filter 3: Validation string
     if check_validation_string(@body)
 #puts "**** validation string OK"
+      # ToDo: Need to filter the groups being added ---------
       new_member = Member.create(params_hash[:updates])
 #puts "**** new_member=#{new_member}, valid=#{new_member.valid?}"
       if new_member.valid?
