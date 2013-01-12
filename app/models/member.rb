@@ -68,7 +68,9 @@ class Member < ActiveRecord::Base
     @role_cache_duration = 60 # seconds
     super
   end
-  
+
+  RoleHierarchy = [:limited, :member, :moderator, :administrator]
+
 # *************** Class methods *************
 
 #  def self.authorized_for_create?
@@ -111,12 +113,16 @@ class Member < ActiveRecord::Base
     updates = {}
     tokens.each do |token|
       case 
-        when phone = token.phone_std
+        when phone = token.phone_std  # phone_std returns nil if not a valid phone number
           phones << phone
         when token =~ /\A[^@ ]+@[^@ ]+\.[^@ ]+\Z/  # Very broad email address validator
           emails << token
         else
-          names << token if (phones + emails).empty?
+          if (phones + emails).empty?
+            names << token 
+          else
+            groups << token
+          end
       end
     end
     (0..1).each do |i|
@@ -125,13 +131,15 @@ class Member < ActiveRecord::Base
     end
     name_string = names.join(' ')
     member = Member.find_with_name(name_string) # may match none, one, or many members
-    return add_member_params(name_string, updates) if member.empty?  # assume it's for adding a new member
+    group_ids = Group.ids_from_names(groups).to_strings
+    return add_member_params(name_string, updates, group_ids) if member.empty?  # assume it's for adding a new member
 #puts "**** member=#{member}, updates=#{updates}"
-    return {:members => member, :updates => updates}
+    return {:members => member, :updates => updates.merge({:groups => group_ids})}
   end
   
-  def self.add_member_params(name, updates)
-    {:members => [], :updates => parse_namestring(name).merge(updates)}
+  def self.add_member_params(name, updates, group_ids)
+    {:members => [], :updates => parse_namestring(name).merge(updates).
+      merge(:groups=>group_ids)}
   end
 
   def self.find_by_phone(phone_number)
@@ -270,31 +278,35 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
       memb ||= g.member
       limited ||= g.limited
     end
-    return :administrator if admin
-    return :moderator if mod
-    return :member if memb
-    return :limited if limited
-    return nil
+    return case
+      when admin then :administrator
+      when mod then :moderator
+      when memb then :member
+      when limited then :limited
+      else nil
+    end
   end
  
+# role # Using Redis -- just left here as an example of Redis usage
+#  def role
+#    userkey = "user:#{self.id}"
+#    unless myrole = $redis.hget(userkey, :role)  # This is INTENTIONALLY an assignment, not a "==" comparison
+#      myrole = recalc_highest_role
+#      $redis.hset(userkey, :role, myrole) # Cache role so we don't have to check it a zillion times from the DB 
+#      $redis.expire(userkey, @role_cache_duration)  # keep cached for 60 seconds 
+#    end
+#    return myrole.nil? ? nil : myrole.downcase.to_sym
+#  end
+
   def role
-    userkey = "user:#{self.id}"
-# puts "**** Member.role $redis.hget(userkey, :role)=#{$redis.hget(userkey, :role)}"
-    unless myrole = $redis.hget(userkey, :role)  # This is INTENTIONALLY an assignment, not a "==" comparison
-      myrole = recalc_highest_role
-      $redis.hset(userkey, :role, myrole) # Cache role so we don't have to check it a zillion times from the DB 
-      $redis.expire(userkey, @role_cache_duration)  # keep cached for 60 seconds 
-#puts "**** caching role for @role_cache_duration=#{@role_cache_duration} sec"
-    end
-#puts "**** Member.role: user=[#{self.id}] #{self}, role=#{myrole}" 
-    return myrole.nil? ? nil : myrole.downcase.to_sym      
+    @role ||= recalc_highest_role
   end
 
   def roles_include?(queried_role)
     return nil if queried_role.nil?
-    role_hierarchy = [:limited, :member, :moderator, :administrator]
-    self_index = role_hierarchy.index(self.role)
-    queried_index = role_hierarchy.index(queried_role)
+#    role_hierarchy = [:limited, :member, :moderator, :administrator]
+    self_index = RoleHierarchy.index(self.role)
+    queried_index = RoleHierarchy.index(queried_role)
     return self_index && queried_index && (self_index >= queried_index)
   end
   
@@ -304,19 +316,38 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
       authorizations.create :provider => auth_hash["provider"], :uid => auth_hash["uid"]
     end
   end
-  
-  
+
   def format_phone_numbers
     self.phone_1, self.phone_2 = std_phone(phone_1), std_phone(phone_2)
   end
-#Not working
-#  def authorized_for_read?
-#    false
-#  end
 
-#  def phone_1_authorized_for_read?
-#    $current_user.roles_include? :moderator
-#    false
-#  end
+  # Return this member's group ids as a set of string, e.g. Set: {"1", "5"}
+  def group_ids_set
+    self.group_ids.uniq.map{|g| g.to_s}.to_set
+  end
+
+  # Given (a) the incoming group_ids from the form (params[:record][:groups]), and
+  #       (b) the set of which groups are changeable for this user (selectable)
+  # return the set of group_ids as they should be after the update.
+  # ToDo: It's probably not worth the trouble of using sets rather than arrays
+  def merge_group_ids(selected_groups, options={})
+    selectable = options[:selectable]
+    return selected_groups if selectable.nil?  # consider nil to mean "all groups selectable," i.e. by administrator
+    if options[:add]  # keep all existing groups, possibly add some
+      groups_to_keep = group_ids_set
+    else
+      # only keep existing groups which are not selectable
+      groups_to_keep = group_ids_set - selectable 
+    end
+    updates = (selected_groups || []).to_set
+    valid_updates = updates & selectable  # The selected groups which are changeable
+#puts "**** selected_groups=#{selected_groups}"
+#puts "**** selectable=#{selectable.to_a}"
+#puts "**** groups_to_keep=#{groups_to_keep.to_a}"
+#puts "**** group_ids_set=#{group_ids_set.to_a}"
+#puts "**** updates=#{updates.to_a}"
+#puts "**** valid_updates=#{valid_updates.to_a}"
+    return (groups_to_keep + valid_updates).to_a  # Add back the non-chosen groups which are not changeable
+  end
 
  end

@@ -242,7 +242,6 @@ GEM
     rdiscount (1.6.8)
     rdoc (3.12)
       json (~> 1.4)
-    redis (3.0.1)
     rest (2.0.2)
       net-http-persistent
       rest-client (>= 0.3.0)
@@ -361,7 +360,6 @@ DEPENDENCIES
   rails (= 3.2.11)
   rb-readline
   rdiscount
-  redis
   rspec-rails
   ruby-debug
   sass-rails (~> 3.2.3)
