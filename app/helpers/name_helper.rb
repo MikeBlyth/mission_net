@@ -36,7 +36,7 @@ module NameHelper
   end
   
   def short
-    short_name.blank? ? first_name : short_name
+    short_name.blank? ? (first_name || '-') : short_name
   end
 
   def full_name
