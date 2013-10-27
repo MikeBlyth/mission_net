@@ -453,7 +453,7 @@ describe Member do
         @member = FactoryGirl.build_stubbed(:member)
       end
 
-      after(:each) {$redis.flushall}  # Clear database 
+ #     after(:each) {$redis.flushall}  # Clear database if using Redis
 
     describe 'gets roles from group and follow hierarchy so' do   
       it 'administrator includes all roles' do
@@ -494,66 +494,81 @@ describe Member do
         @no_role_group = FactoryGirl.create(:group, :group_name => 'no_role')
         @administrator_group.administrator.should be_true
       end # build_role_groups
-      
-      it "creates role groups" do 
-        create_role_groups
+
+#      before(:each) { $redis.flushall} # may be needed if using Redis
+      before(:all) {create_role_groups}
+      after(:all) {Group.destroy_all}      
+      let(:user) {FactoryGirl.build_stubbed(:member)}
+
+      it "[test creates role groups correctly]" do 
         @administrator_group.administrator.should be_true
+        @moderator_group.administrator.should be_false
+        @moderator_group.moderator.should be_true
+        @member_group.member.should be_true
+        @member_group.moderator.should be_false
+        @limited_group.limited.should be_true
+        @limited_group.member.should be_false
       end  
 
-      it "finds highest among roles" do
-        create_role_groups
-        user = FactoryGirl.build_stubbed(:member, :groups => [@administrator_group, @limited_group])
-        user.role.should eq :administrator
-        $redis.flushall
-        user.stub(:groups => [@moderator_group, @limited_group, @no_role_group])
-        user.role.should eq :moderator
-        $redis.flushall
-        user.stub(:groups => [@limited_group, @no_role_group])
-        user.role.should eq :limited
-        $redis.flushall
-        user.stub(:groups => [])
-        user.role.should eq nil
-        $redis.flushall
-        user.stub(:groups => [@no_role_group])
-        user.role.should eq nil
+      describe "finds highest among roles" do
+        it '--administrator' do
+          user.stub(:groups=> [@administrator_group, @limited_group])
+          user.role.should eq :administrator
+        end
+        it '--moderator' do
+          user.stub(:groups => [@moderator_group, @limited_group, @no_role_group])
+          user.role.should eq :moderator
+        end
+        it '--limited' do
+          user.stub(:groups => [@limited_group, @no_role_group])
+          user.role.should eq :limited
+        end
+        it '--no group => no role' do
+          user.stub(:groups => [])
+          user.role.should eq nil
+        end  
+        it '--groups w/o role => no role' do
+          user.stub(:groups => [@no_role_group])
+          user.role.should eq nil
+        end
       end
       
     end # gets highest role among the user's groups
 
-    describe 'uses Redis:' do
+#    describe 'uses Redis:' do
 
-      def set_redis_user_role(user, role=nil)
-        key = "user:#{user.id}"
-        $redis.hset(key, :role, role)
-        $redis.expire(key, 5)  # So database is cleaned after the whole run, if not sooner
-      end
-    
-      it 'uses role from Redis when it exists' do
-        user = FactoryGirl.build_stubbed(:member)
-        user.stub(:recalc_highest_role, 'Should not get this!')
-        set_redis_user_role(user, 'cantelope')
-        user.role.should eq :cantelope
-      end
-      
-      it 'uses recalulated role when Redis does not exist' do
-        user = FactoryGirl.build_stubbed(:member)
-        user.stub(:recalc_highest_role => 'Administrator')
-        user.role.should eq :administrator
-      end
+#      def set_redis_user_role(user, role=nil)
+#        key = "user:#{user.id}"
+#        $redis.hset(key, :role, role)
+#        $redis.expire(key, 5)  # So database is cleaned after the whole run, if not sooner
+#      end
+#    
+#      it 'uses role from Redis when it exists' do
+#        user = FactoryGirl.build_stubbed(:member)
+#        user.stub(:recalc_highest_role, 'Should not get this!')
+#        set_redis_user_role(user, 'cantelope')
+#        user.role.should eq :cantelope
+#      end
+#      
+#      it 'uses recalulated role when Redis does not exist' do
+#        user = FactoryGirl.build_stubbed(:member)
+#        user.stub(:recalc_highest_role => 'Administrator')
+#        user.role.should eq :administrator
+#      end
 
-      it 'expires role after one minute' do
-        user = FactoryGirl.build_stubbed(:member)
-        user.stub(:recalc_highest_role => 'Administrator')
-        user.role_cache_duration.should > 10 # Make sure it's in use
-        user.role_cache_duration = 1  # Change duration to 1 sec so we don't have to wait
-        user.role.should eq :administrator
-        $redis.hget("user:#{user.id}", 'role').should eq 'Administrator'
-        sleep(2)
-#        Timecop.travel(Time.now + 80.seconds)
-        $redis.hget("user:#{user.id}", 'role').should be_nil
-      end     
-      
-    end # uses Redis
+#      it 'expires role after one minute' do
+#        user = FactoryGirl.build_stubbed(:member)
+#        user.stub(:recalc_highest_role => 'Administrator')
+#        user.role_cache_duration.should > 10 # Make sure it's in use
+#        user.role_cache_duration = 1  # Change duration to 1 sec so we don't have to wait
+#        user.role.should eq :administrator
+#        $redis.hget("user:#{user.id}", 'role').should eq 'Administrator'
+#        sleep(2)
+##        Timecop.travel(Time.now + 80.seconds)
+#        $redis.hget("user:#{user.id}", 'role').should be_nil
+#      end     
+#      
+#    end # uses Redis
   end  # Roles (privilege levels):
 
   describe 'Parse_update_command method' do
@@ -626,6 +641,37 @@ describe Member do
         results[:updates][:email_1].should eq email_1
         results[:updates][:email_2].should eq email_2
       end
+
+      describe 'sets groups array' do
+        let(:s_groups) {s + " group_1 grp2"}
+        before(:all) do
+          @group_1 = FactoryGirl.create(:group, :group_name => 'group_1', :abbrev=>'grp1')
+          @group_2 = FactoryGirl.create(:group, :group_name => 'group_2', :abbrev=>'grp2')
+        end
+        after(:all) {Group.destroy_all}
+        
+        it 'returns array of group ids' do
+          results = Member.parse_update_command(s_groups)[:updates][:groups].sort
+          expected = [@group_1.id.to_s, @group_2.id.to_s]
+ puts "**** s_groups=#{s_groups}"
+          results.should eq expected
+        end
+
+        it 'includes invalid group name as a string' do
+          results = Member.parse_update_command(s_groups + ' bad_name')[:updates][:groups].sort
+          expected = [@group_1.id.to_s, @group_2.id.to_s, 'bad_name']
+ puts "**** s_groups=#{s_groups}"
+          results.should eq expected
+        end
+  
+        it 'returns empty array if no groups specified' do
+          results = Member.parse_update_command(s)[:updates][:groups].sort
+          expected = []
+          results.should eq expected
+        end
+      end # sets groups array
+        
+        
     end #when member is found    
 
     context 'when two members are found' do
@@ -638,5 +684,63 @@ describe Member do
       end
     end # when two members are found
   end # Parse_update_command method
+
+  describe 'merge_group_ids method yields valid new group_ids' do
+    # This method handles the incoming (from form) group ids and only allows changes to
+    # the groups allowed for the given user role (privilege).
+    let(:member) {FactoryGirl.build_stubbed(:member)}
+    let(:selectable) {['11', '12', '13'].to_set}
+    before(:each) do  
+      member.stub(:group_ids => [1, 11])  # this what groups member appears to belong to
+    end             
+
+    context 'by default (merge) removes unselected groups if they are selectable' do
+      it 'merges new selectable group' do
+        member.merge_group_ids(['1', '11', '12'], {:selectable=>selectable}).
+          sort.should eq ['1', '11', '12']
+      end
+   
+      it 'does not merge new non-selectable group' do
+        member.merge_group_ids(['1', '2', '11'], {:selectable=>selectable}).
+          sort.should eq ['1', '11']
+      end
+   
+      it 'removes selectable group' do
+        member.merge_group_ids(['1'], {:selectable=>selectable}).should eq ['1']
+      end
+      it 'does not remove non-selectable group' do
+        member.merge_group_ids([ '11'], {:selectable=>selectable}).sort.should eq ['1', '11']
+      end
+
+      it 'merges/removes mix of updates' do
+         member.merge_group_ids(['2', '12', '13'], {:selectable=>selectable}).
+          sort.should eq ['1', '12', '13']
+      end
+
+      it 'returns all group updates when selectable is nil' do
+        member.merge_group_ids(['2', '11', '12', '99']).
+          to_set.should eq ['2', '11', '12', '99'].to_set
+      end
+   
+      it 'returns unchangeable groups when selected is empty' do
+        member.merge_group_ids([], {:selectable=>selectable}).should eq ['1']
+        member.merge_group_ids([''], {:selectable=>selectable}).should eq ['1']
+      end
+    end # by default ... (merge mode)
+    
+    context 'in add mode, only adds and never removes groups' do
+    
+      it 'adds selectable groups' do
+        member.merge_group_ids(['12', '13'], {:selectable=>selectable, :add=>true}).
+          sort.should eq ['1', '11', '12', '13']
+      end
+
+      it 'does not add non-selectable groups' do
+        member.merge_group_ids(['2', '12'], {:selectable=>selectable, :add=>true}).
+          sort.should eq ['1', '11', '12']
+      end
+    end # in add mode, only...
+  end # merge_group_ids method yields valid new group_ids
+
 end
 

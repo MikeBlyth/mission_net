@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.5'
+gem 'rails', '3.2.11'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -20,7 +20,7 @@ gem 'heroku-api'
 gem 'iron_worker_ng'
 gem 'rdiscount'
 gem 'cancan'
-gem 'redis'
+# gem 'redis'
 gem 'timecop'
 gem 'rb-readline'
 gem 'thin', :platforms => :ruby

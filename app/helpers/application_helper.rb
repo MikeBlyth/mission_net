@@ -147,6 +147,10 @@ module ApplicationHelper
       return s.phone_std
     end
 
+    # [object_1, object_27 ...] => ['1', '27']
+    def to_id_set
+      self.map {|x| x.id.to_s}.compact.to_set
+    end
 #    # Standardize phone number string to "+2349999999" format
 #    def phone_std(s,options={})
 #      return s unless s.respond_to? :phone_std
@@ -200,6 +204,34 @@ module ApplicationHelper
     add_indexed_name(name_hash)
   end
   
+  def to_strings
+    return self.to_s unless self.respond_to? :map
+    self.map {|x| x.to_s}
+  end
+  
+  def to_integers
+    if self.respond_to? :map
+      self.map {|x| x.respond_to?(:to_i) ? x.to_i : nil }
+    else
+      self.respond_to? :to_i ? self.to_i : nil 
+    end
+  end
+  
+  ### GROUPS ##
+
+  # Which groups can the current user control (add or remove from users)?
+  # (Moderator can control all but administrator groups, while anyone else
+  # can control only ones that are "user_selectable")
+  def controllable_groups
+    return nil if current_user_role == :administrator
+    if current_user_role == :moderator
+      groups = Group.where("administrator = ? OR administrator IS ?", false, nil)
+    else
+      groups = Group.where("user_selectable")
+    end
+    return groups.to_id_set
+  end  
+
 
 #******* Anything below this point is not in the module itself *********
 end  # ApplicationHelper module
