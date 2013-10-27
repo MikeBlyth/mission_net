@@ -62,6 +62,7 @@ class Member < ActiveRecord::Base
   belongs_to :bloodtype
   validates_uniqueness_of :name
   validates_presence_of :name
+  validate :first_or_last_name_present
   before_save :format_phone_numbers
   
   def initialize(*args)
@@ -82,6 +83,7 @@ class Member < ActiveRecord::Base
     self.all.each {|m| m.auto_update_in_country_status(do_updates)}
   end
   
+
   def self.find_with_name(name, conditions="true")
 #puts "Find_with_name #{name}"
     return [] if name.blank?
@@ -348,6 +350,10 @@ logger.info "**** #{self.shorter_name}:\t#{original_status[0]}=>#{new_status[0]}
 #puts "**** updates=#{updates.to_a}"
 #puts "**** valid_updates=#{valid_updates.to_a}"
     return (groups_to_keep + valid_updates).to_a  # Add back the non-chosen groups which are not changeable
+  end
+
+  def first_or_last_name_present
+    errors.add(:last_name,'must be present if first name is missing') if last_name.blank? && first_name.blank?
   end
 
  end

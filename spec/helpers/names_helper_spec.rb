@@ -1,40 +1,67 @@
 describe NameHelper do
 extend NameHelper
 
+  let(:full) { Member.new(:last_name=>'Last', :first_name=>'First', :middle_name=>'Middle', :short_name=>'Short')}
+  let(:first_last) { Member.new(:last_name=>'Last', :first_name=>'First')}
+  let(:last_only) { Member.new(:last_name=>'Last')}
+  let(:first_only) { Member.new(:first_name=>'First')}
+  let(:first_middle_last) { Member.new(:last_name=>'Last', :first_name=>'First', :middle_name=>'Middle')}
+  
   describe 'Handles to_s' do
     
-    it 'returns a name when last name is nil' do
-      @member = Member.new(:last_name => "A")
-      @member.to_s.should eq "A"
+    it 'returns last name when first name is nil' do
+      last_only.to_s.should eq "Last"
     end
 
-    it 'returns a name when first name is nil' do
-      @member = Member.new(:first_name => "A")
-      @member.to_s.should eq "A"
+    it 'returns first name when last name is nil' do 
+      first_only.to_s.should eq "First"
     end
 
   end
 
-  describe 'generates short name' do
-    before(:each) {@member = Member.new(:last_name => "Last", :first_name => 'First', :short_name => 'Short') }
+  describe 'generates shorter name (first name initial + last name)' do
+
     it 'uses short name if present' do
-      @member.short.should eq 'Short'
+      full.shorter_name.should eq 'S Last'
     end
     
     it 'uses first name if short name not present' do
-      @member.short_name = nil
-      @member.short.should eq 'First'
-    end
-    
-    it 'uses first name if short name is blank' do
-      @member.short_name = ''
-      @member.short.should eq 'First'
+      first_last.shorter_name.should eq 'F Last'
     end
     
     it 'handles missing first name' do
-      @member = Member.new(:last_name => "A")
-      @member.short.should eq "-"
+      last_only.shorter_name.should eq "Last"
     end
+    
+  end
+
+  describe 'full name' do
+
+    it 'combines all three names' do
+      full.full_name.should eq 'First Middle Last'
+    end
+    
+    it 'gives last name only if others missing' do
+      last_only.full_name.should eq 'Last'
+    end
+    
   end
   
+  describe 'full_name_short gives {short | first} last' do
+    it 'uses short name' do
+      full.full_name_short.should eq 'Short Last'
+    end
+    
+    it 'uses first name' do
+      first_last.full_name_short.should eq 'First Last'
+    end
+    
+    it 'uses last only' do
+      last_only.full_name_short.should eq 'Last'
+    end
+    
+    it 'uses first only' do
+      first_only.full_name_short.should eq 'First'
+    end
+  end
 end

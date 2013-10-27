@@ -19,6 +19,12 @@ describe Member do
       @member.should be_valid
     end
 
+    it "is not valid with missing first and last name" do
+      @member.first_name = nil
+      @member.last_name = nil
+      @member.should_not be_valid
+    end
+
   end # basic validation
 
   it 'formats phone numbers before save' do

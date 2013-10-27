@@ -35,27 +35,21 @@ module NameHelper
     last_name_first(:initial=>true, :paren_short => true)
   end
   
+
   def short
-    short_name.blank? ? (first_name || '-') : short_name
+    short_name.blank? ? first_name : short_name
   end
 
   def full_name
-    s = self.first_name
-    s = s + ' ' + self.middle_name unless self.middle_name.blank?
-    s = s + ' ' + self.last_name
-    return s
+    return smart_join([first_name, middle_name, last_name], ' ')
   end
 
   def shorter_name
-    "#{short[0]} #{last_name}"
+    short.blank? ? last_name : "#{short[0]} #{last_name}" 
   end
 
-  def full_name_short
-    if short_name.blank?
-      s = first_name + " " + last_name
-    else
-      s = short_name + " " + last_name
-    end
+  def full_name_short  # Use short name (e.g. Mike) instead of first name
+    return smart_join([short, last_name], ' ')
   end
 
   def middle_initial
@@ -84,7 +78,7 @@ module NameHelper
   # * :initial => _boolean_ default false; use the initial instead of whole _middle_ name
   # * :middle => _boolean_ default true; include the middle name (or initial)
   def last_name_first(options={})
-    return (last_name || '') + (first_name || '') if last_name.nil? || first_name.nil?
+    return (last_name || '') + (first_name || '') if last_name.blank? || first_name.blank?
     options[:short] = false if options[:paren_short] # paren_short overrides the short option
     if options[:short] && !short_name.blank?   # use the short form of first name if it's defined
       first = short_name
